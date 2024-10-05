@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "chashurina-brows-bot"
+version = "0.1.0"
+description = ""
+authors = ["Moses-93 <moieseenko2001@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.3"
+aiogram = "^3.13.1"
+asyncio = "^3.4.3"
+sqlalchemy = "^2.0.35"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.1"
+flake8 = "^7.1.1"
+black = "^24.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
