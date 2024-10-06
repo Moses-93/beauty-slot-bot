@@ -1,11 +1,13 @@
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Boolean, create_engine, Integer, Column, String
+from os import getenv
 
+URI = getenv('URI')
 
 Base = declarative_base()
 
 engine = create_engine(
-    "postgresql+psycopg2://moses:brows_project@64.226.65.110:5432/postgres"
+    URI
 )
 Session = sessionmaker(bind=engine)
 session = Session()
