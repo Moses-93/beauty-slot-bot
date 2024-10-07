@@ -4,7 +4,7 @@ from aiogram.types import (
     KeyboardButton,
     InlineKeyboardButton,
 )
-from utils.db import free_dates
+from utils.db import free_dates, services
 
 
 keyboard = ReplyKeyboardMarkup(
@@ -15,14 +15,26 @@ keyboard = ReplyKeyboardMarkup(
 
 services_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Корекція", callback_data="correction")],
-        [InlineKeyboardButton(text="Фарбування", callback_data="coloring")],
-        [InlineKeyboardButton(text="Корекція+Фарбування", callback_data="correction_coloring")]
+        [InlineKeyboardButton(text=str(service), callback_data=f"service_{service.id}")]
+        for service in services
     ]
 )
 
 
-free_dates_list = InlineKeyboardMarkup(
+free_dates_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text=str(free_date), callback_data=f"service_{free_date.id}")]
-        for free_date in free_dates])
+        [
+            InlineKeyboardButton(
+                text=str(free_date), callback_data=f"date_{free_date.id}"
+            )
+        ]
+        for free_date in free_dates
+    ]
+)
+def confirm_time_keyboard(time):
+    confirm = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=f"Підтвердити {time}", callback_data=f"confirm_{time}")]
+        ]
+    )
+    return confirm

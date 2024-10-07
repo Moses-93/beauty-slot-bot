@@ -1,14 +1,22 @@
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy import Boolean, create_engine, Integer, Column, String
+from sqlalchemy import (
+    Boolean,
+    create_engine,
+    Integer,
+    Column,
+    String,
+    DateTime,
+    ForeignKey,
+    TIMESTAMP,
+)
+
 from os import getenv
 
-URI = getenv('URI')
+URI = getenv("URI")
 
 Base = declarative_base()
 
-engine = create_engine(
-    URI
-)
+engine = create_engine(URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -22,16 +30,28 @@ class FreeDate(Base):
     def __str__(self):
         return self.date
 
+
 class Service(Base):
     __tablename__ = "main_service"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     price = Column(String)
+    durations = Column(DateTime)
 
     def __str__(self):
         return f"{self.name} - {self.price} грн."
 
 
-services = session.query(Service).all()
-free_dates = session.query(FreeDate).filter(FreeDate.free==True)
+class Notes(Base):
+    __tablename__ = "main_notes"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    phone = Column(String)
+    time = Column(String)
+    created_at = Column(TIMESTAMP)
+    service_id = Column(Integer, ForeignKey("main_service.id"))
+    date = Column(String)
 
+
+services = session.query(Service).all()
+free_dates = session.query(FreeDate).filter(FreeDate.free == True)
