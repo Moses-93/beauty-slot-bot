@@ -25,16 +25,22 @@ free_dates_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text=str(free_date), callback_data=f"date_{free_date.id}"
+                text=str(free_date.date), callback_data=f"date_{free_date.id}"
             )
         ]
         for free_date in free_dates
     ]
 )
+
+
 def confirm_time_keyboard(time):
     confirm = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=f"Підтвердити {time}", callback_data=f"confirm_{time}")]
+            [
+                InlineKeyboardButton(
+                    text=f"Підтвердити {time}", callback_data=f"confirm_{time}"
+                )
+            ]
         ]
     )
     return confirm
