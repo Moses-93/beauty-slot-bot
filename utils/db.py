@@ -29,7 +29,7 @@ class FreeDate(Base):
     now = Column(DateTime)
 
     def __str__(self):
-        return self.date.strftime('%Y-%m-%d %H:%M:%S')
+        return self.date.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class Service(Base):
@@ -60,7 +60,11 @@ class Notes(Base):
 
 Base.metadata.create_all(bind=engine)
 
-free_dates = session.query(FreeDate).filter(FreeDate.free==True, FreeDate.now > datetime.now()).all()
+free_dates = (
+    session.query(FreeDate)
+    .filter(FreeDate.free == True, FreeDate.now > datetime.now())
+    .all()
+)
 services = session.query(Service).all()
 
 
