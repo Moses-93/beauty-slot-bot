@@ -1,30 +1,20 @@
-from datetime import timedelta
 import logging
 
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
-from .keyboards import services_keyboard, free_dates_keyboard
-from utils.db import get_free_date, get_service
+from .keyboards import services_keyboard, free_dates_keyboard, main_keyboard
+from db.commands import GetService, GetNotes, GetFreeDate
+from db.queries import add_notes
 from utils.format_datetime import NowDatetime
-from utils.utils import handlers_time, add_notes, get_service, get_user_data
+from utils.utils import handlers_time
 from decorators.check_user_data import check_user_id
-from user_data import user_data, get_user_data, set_user_data
+from user_data import get_user_data, set_user_data, user_data
 
 logger = logging.getLogger(__name__)
 
-# Установка рівня логування
-# logging.basicConfig(
-#     level=logging.DEBUG,  # Можна змінити на DEBUG для виведення більшої кількості інформації
-#     format="%(asctime)s - %(levelname)s - %(message)s",
-#     handlers=[
-#         logging.FileHandler("logs/bot.log"),
-#         logging.StreamHandler(),  # Виведення в консоль
-#     ],
-# )
-
-
 router = Router()
+
 current_datetime = NowDatetime()
 
 
@@ -34,20 +24,62 @@ async def start(message: Message):
     set_user_data(
         user_id, name=message.from_user.first_name, username=message.from_user.username
     )
-    logger.info(f"USER_DATA(start) --- {user_data}")
+    logger.info(f"USER_DATA(start) --- {get_user_data(user_id)}")
     await message.answer(
         text="Вітаю. \nЯ - сертифікований майстер-бровіст Дарія.\n"
         "Надаю професійні послуги з догляду за бровами.\n"
-        "Оберіть будь ласка послугу:",
-        reply_markup=services_keyboard,
+        "Тут ви можете ознайомитись з послугами, цінами, та записатись",
+        reply_markup=main_keyboard,
     )
+
+
+@router.message(lambda message: message.text == "Записатись")
+async def make_an_appointment(message: Message):
+    msg = "Оберіть бажану послугу:"
+    await message.answer(text=msg, reply_markup=services_keyboard)
+
+
+@router.message(lambda message: message.text == "Мої записи")
+async def show_contacts(message: Message):
+    user_id = message.from_user.id
+
+    notes = GetNotes(user_id=user_id).get_all_notes()
+    if not notes:
+        await message.answer(text="Нажаль я не зміг знайти ваші записи(")
+        return
+    formatted_notes = "\n\n".join([f"{i+1}: {note}" for i, note in enumerate(notes)])
+    await message.answer(text=f"Ваші записи: \n\n{formatted_notes}")
+
+
+@router.message(lambda message: message.text == "Послуги")
+async def show_contacts(message: Message):
+    formatted_service = "\n\n".join(
+        [
+            f"{i+1}: {service}"
+            for i, service in enumerate(GetService().get_all_services())
+        ]
+    )
+
+    await message.answer(text=f"Послуги:\n\n {formatted_service}")
+
+
+@router.message(lambda message: message.text == "Контакти")
+async def show_contacts(message: Message):
+    msg = (
+        "Адреса: [Вул. Перлинна 3](https://maps.app.goo.gl/coiRjcbFzwMTzppz8)\n"
+        "Telegram: @chashurina\n"
+        "Instagram: [chashurina_brows](https://www.instagram.com/chashurina_brows?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)\n"
+        "Телефон: +380934050798"
+    )
+    await message.answer(text=msg, parse_mode="Markdown")
 
 
 @check_user_id
 @router.callback_query(lambda c: c.data.startswith("service_"))
 async def processes_services(callback: CallbackQuery):
     service_id = int(callback.data.split("_")[1])
-    service = get_service(service_id)
+    service = GetService(service_id)
+
     logger.info(f"Selected date: {service.name}. Type:{type(service.name)}")
 
     await callback.message.answer(
@@ -56,7 +88,7 @@ async def processes_services(callback: CallbackQuery):
     )
     user_id = callback.from_user.id
     set_user_data(user_id, service=service)
-    logger.info(f"USER_DATA(handle_services) --- {user_data}")
+    logger.info(f"USER_DATA(handle_services) --- {get_user_data(user_id)}")
     await callback.answer()
 
 
@@ -64,7 +96,7 @@ async def processes_services(callback: CallbackQuery):
 @router.callback_query(lambda c: c.data.startswith("date_"))
 async def processes_dates(callback: CallbackQuery):
     date_id = int(callback.data.split("_")[1])
-    date = get_free_date(date_id)
+    date = GetFreeDate(date_id)
     logger.info(f"Selected date: {date.date}. Type:{type(date.date)}")
 
     await callback.message.answer(
@@ -72,7 +104,7 @@ async def processes_dates(callback: CallbackQuery):
     )
     user_id = callback.from_user.id
     set_user_data(user_id, date=date)
-    logger.info(f"USER_DATA(date_handler)---{user_data}")
+    logger.info(f"USER_DATA(date_handler)---{get_user_data(user_id)}")
     await callback.answer()
 
 
@@ -89,9 +121,9 @@ async def processes_time(message: Message):
 
     handlers = handlers_time(user_id, time)
     if handlers is None:
-        user = get_user_data(user_id, "name", "service", "date")
+        name, service, date = get_user_data(user_id, "name", "service", "date")
         await message.answer(
-            text=f"{user.get('name')}, Ви успішно записались на послугу - {user.get('service').name}\n Чекаю на Вас {user.get('date').date} о {time}"
+            text=f"{name}, Ви успішно записались на послугу - {service.name}\n Чекаю на Вас {date.date} о {time}"
         )
         user_data.pop(user_id)
     elif handlers[0] == False:
@@ -107,15 +139,11 @@ async def processes_time(message: Message):
 async def confirm_the_entry(callback: CallbackQuery):
     user_id = callback.from_user.id
     time = callback.data.split("_")[-1]
-    user = get_user_data(user_id, "name", "username", "date", "service")
-    add_notes(
-        user.get("name"),
-        user.get("username"),
-        time,
-        user.get("date"),
-        user.get("service"),
+    name, username, date, service = get_user_data(
+        user_id, "name", "username", "date", "service"
     )
+    add_notes(name, username, time, date, service, user_id)
     await callback.message.answer(
-        f"Ви успішно записались на послугу - {user.get('service').name}. \nЧекаю на Вас {user.get('date').date} о {time}"
+        f"Ви успішно записались на послугу - {service.name}. \nЧекаю на Вас {date.date} о {time}"
     )
     user_data.pop(user_id)

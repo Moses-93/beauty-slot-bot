@@ -4,11 +4,19 @@ from aiogram.types import (
     KeyboardButton,
     InlineKeyboardButton,
 )
-from utils.db import free_dates, services
+from db.commands import GetFreeDate, GetService
+
+free_dates = GetFreeDate().get_all_free_dates()
+services = GetService().get_all_services()
 
 
-keyboard = ReplyKeyboardMarkup(
-    keyboard=[[KeyboardButton(text="Послуги")], [KeyboardButton(text="Записатись")]],
+main_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Записатись")],
+        [KeyboardButton(text="Мої записи")],
+        [KeyboardButton(text="Послуги")],
+        [KeyboardButton(text="Контакти")],
+    ],
     resize_keyboard=True,
 )
 
