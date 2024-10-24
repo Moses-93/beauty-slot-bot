@@ -3,6 +3,7 @@ from os import getenv
 from sqlalchemy import (
     Boolean,
     Interval,
+    Time,
     create_engine,
     Integer,
     Column,
@@ -49,7 +50,8 @@ class Notes(Base):
     user_id = Column(Integer, index=True)
     name = Column(String)
     username = Column(String)
-    time = Column(String)
+    time = Column(Time, nullable=True)
+    reminder_hours = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     service_id = Column(Integer, ForeignKey("main_service.id"))
     date_id = Column(Integer, ForeignKey("main_freedate.id"))

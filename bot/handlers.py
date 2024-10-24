@@ -3,57 +3,57 @@ import logging
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
-from .keyboards import services_keyboard, free_dates_keyboard, main_keyboard
-from db.commands import GetService, GetNotes, GetFreeDate
-from db.queries import add_notes
-from utils.format_datetime import NowDatetime
-from utils.utils import handlers_time
-from decorators.check_user_data import check_user_id
+from .keyboards import (
+    services_keyboard,
+    free_dates_keyboard,
+    main_keyboard,
+    notes,
+    cancel_the_notes,
+    create_reminder_keyboards,
+    reminder_button,
+)
+from db.db_reader import GetService, GetNotes, GetFreeDate, DeleteNotes, UpdateNotes
+from utils.utils import handlers_time, promote_booking
+from decorators import adding_user_data as add_usr_data, data_validation_in_user_data as check_user_data
 from user_data import get_user_data, set_user_data, user_data
+from .middleware import UserIDMiddleware
+from utils.message_sender import manager
+from utils.message_templates import template_manager
+
 
 logger = logging.getLogger(__name__)
 
 router = Router()
-
-current_datetime = NowDatetime()
+router.message.middleware(UserIDMiddleware())
+router.callback_query.middleware(UserIDMiddleware())
+time_pattern = r"^(1[0-7]:[0-5]\d|18:00)$"
 
 
 @router.message(CommandStart())
-async def start(message: Message):
-    user_id = message.from_user.id
-    set_user_data(
-        user_id, name=message.from_user.first_name, username=message.from_user.username
-    )
-    logger.info(f"USER_DATA(start) --- {get_user_data(user_id)}")
-    await message.answer(
-        text="Вітаю. \nЯ - сертифікований майстер-бровіст Дарія.\n"
-        "Надаю професійні послуги з догляду за бровами.\n"
-        "Тут ви можете ознайомитись з послугами, цінами, та записатись",
-        reply_markup=main_keyboard,
-    )
+async def start(message: Message, user_id):
+    set_user_data(user_id)
+    logger.info(f"USER_ID - {user_id}")
+    msg = template_manager.get_greeting_message()
+    await message.answer(text=msg, reply_markup=main_keyboard)
 
 
 @router.message(lambda message: message.text == "Записатись")
 async def make_an_appointment(message: Message):
-    msg = "Оберіть бажану послугу:"
+    msg = template_manager.get_service_options()
     await message.answer(text=msg, reply_markup=services_keyboard)
+    return
 
 
 @router.message(lambda message: message.text == "Мої записи")
-async def show_contacts(message: Message):
-    user_id = message.from_user.id
-
-    notes = GetNotes(user_id=user_id).get_all_notes()
-    if not notes:
-        await message.answer(text="Нажаль я не зміг знайти ваші записи(")
-        return
-    formatted_notes = "\n\n".join([f"{i+1}: {note}" for i, note in enumerate(notes)])
-    await message.answer(text=f"Ваші записи: \n\n{formatted_notes}")
+async def show_notes(message: Message, user_id):
+    msg = template_manager.get_entry_options()
+    await message.answer(text=msg, reply_markup=notes)
+    return
 
 
 @router.message(lambda message: message.text == "Послуги")
-async def show_contacts(message: Message):
-    formatted_service = "\n\n".join(
+async def show_services(message: Message):
+    formatted_service = "\n".join(
         [
             f"{i+1}: {service}"
             for i, service in enumerate(GetService().get_all_services())
@@ -65,66 +65,99 @@ async def show_contacts(message: Message):
 
 @router.message(lambda message: message.text == "Контакти")
 async def show_contacts(message: Message):
-    msg = (
-        "Адреса: [Вул. Перлинна 3](https://maps.app.goo.gl/coiRjcbFzwMTzppz8)\n"
-        "Telegram: @chashurina\n"
-        "Instagram: [chashurina_brows](https://www.instagram.com/chashurina_brows?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)\n"
-        "Телефон: +380934050798"
-    )
+    msg = template_manager.get_contacts_info()
     await message.answer(text=msg, parse_mode="Markdown")
 
 
-@check_user_id
+@router.callback_query(lambda c: c.data.startswith("all_notes"))
+async def show_all_notes(callback: CallbackQuery, user_id):
+
+    notes = GetNotes(user_id=user_id).get_all_notes()
+    if notes:
+        formatted_notes = "\n".join([f"{i+1}: {note}" for i, note in enumerate(notes)])
+        await callback.message.answer(text=f"Всі записи: \n\n{formatted_notes}")
+        await callback.answer()
+
+    else:
+        msg = template_manager.no_entries_found()
+        await callback.message.answer(text=msg)
+        await callback.answer()
+
+
+@router.callback_query(lambda c: c.data.startswith("active_notes"))
+async def show_active_notes(callback: CallbackQuery, user_id):
+
+    active_notes = GetNotes(user_id=user_id, only_active=True).get_all_notes()
+    cancel = cancel_the_notes(active_notes)
+    logger.info(f"Active notes: {active_notes}")
+    if active_notes:
+        formatted_notes = "\n".join(
+            [f"{i+1}: {note}" for i, note in enumerate(active_notes)]
+        )
+        await callback.message.answer(
+            text=f"Активні записи: \n\n{formatted_notes}", reply_markup=cancel
+        )
+        await callback.answer()
+    else:
+        msg = template_manager.no_entries_found()
+        await callback.message.answer(text=msg)
+        await callback.answer()
+
+
+@router.callback_query(lambda c: c.data.startswith("note_"))
+async def cancel_the_entry(callback: CallbackQuery, user_id):
+    note_id = int(callback.data.split("_")[1])
+    note = GetNotes(note_id=note_id).get_all_notes()
+    msg_for_master = template_manager.get_booking_cancellation(note)
+    await manager.send_message(user_id, message=msg_for_master)
+    DeleteNotes(note_id=note_id).delete_note()
+    msg = template_manager.get_cancel_notification()
+    await callback.message.answer(text=msg)
+    await callback.answer()
+
+
 @router.callback_query(lambda c: c.data.startswith("service_"))
-async def processes_services(callback: CallbackQuery):
+@add_usr_data.set_username
+async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):
     service_id = int(callback.data.split("_")[1])
     service = GetService(service_id)
 
     logger.info(f"Selected date: {service.name}. Type:{type(service.name)}")
-
+    msg = template_manager.service_selection_info(service)
     await callback.message.answer(
-        f"Ви обрали '{service.name}'. Вартість: {service.price} грн. \nОберіть дату, на яку бажаєте записатись",
+        text=msg,
         reply_markup=free_dates_keyboard,
     )
-    user_id = callback.from_user.id
     set_user_data(user_id, service=service)
     logger.info(f"USER_DATA(handle_services) --- {get_user_data(user_id)}")
     await callback.answer()
 
 
-@check_user_id
 @router.callback_query(lambda c: c.data.startswith("date_"))
-async def processes_dates(callback: CallbackQuery):
+@check_user_data.check_user_data(["service"])
+async def processes_dates(callback: CallbackQuery, user_id, *args, **kwargs):
     date_id = int(callback.data.split("_")[1])
     date = GetFreeDate(date_id)
     logger.info(f"Selected date: {date.date}. Type:{type(date.date)}")
-
-    await callback.message.answer(
-        f"Ви обрали дату '{date.date}'. Напишіть час до 18:00 у форматі 'ГГ:ХХ'"
-    )
-    user_id = callback.from_user.id
+    msg = template_manager.date_selection_prompt(date)
+    await callback.message.answer(text=msg)
     set_user_data(user_id, date=date)
     logger.info(f"USER_DATA(date_handler)---{get_user_data(user_id)}")
     await callback.answer()
 
 
-time_pattern = r"^(1[0-7]:[0-5]\d|18:00)$"
-
-
-@check_user_id
 @router.message(F.text.regexp(time_pattern))
-async def processes_time(message: Message):
+@check_user_data.check_user_data(["date", "service"])
+async def processes_time(message: Message, user_id, *args, **kwars):
     logger.debug("Запуск обробника часу")  # Логування початку виконання функції
-    user_id = message.from_user.id
     time = message.text
     logger.info(f"User {message.from_user.full_name} selected time: {time}")
-
-    handlers = handlers_time(user_id, time)
+    logger.info(f"USER DATE(processes_time) -- {user_data}")
+    handlers = await handlers_time(user_id, time)
     if handlers is None:
-        name, service, date = get_user_data(user_id, "name", "service", "date")
-        await message.answer(
-            text=f"{name}, Ви успішно записались на послугу - {service.name}\n Чекаю на Вас {date.date} о {time}"
-        )
+        service, date = get_user_data(user_id, "service", "date")
+        msg = template_manager.successful_booking_notification(service, date, time)
+        await message.answer(text=msg, reply_markup=reminder_button)
         user_data.pop(user_id)
     elif handlers[0] == False:
         _, msg = handlers
@@ -134,16 +167,34 @@ async def processes_time(message: Message):
         await message.answer(text=message_text, reply_markup=keyboard)
 
 
-@check_user_id
 @router.callback_query(lambda c: c.data.startswith("confirm_"))
-async def confirm_the_entry(callback: CallbackQuery):
-    user_id = callback.from_user.id
+async def confirm_the_entry(callback: CallbackQuery, user_id):
     time = callback.data.split("_")[-1]
     name, username, date, service = get_user_data(
         user_id, "name", "username", "date", "service"
     )
-    add_notes(name, username, time, date, service, user_id)
-    await callback.message.answer(
-        f"Ви успішно записались на послугу - {service.name}. \nЧекаю на Вас {date.date} о {time}"
-    )
+    await promote_booking(name, username, time, date, service, user_id)
+    logger.info(f"SERVICE(in confirm_the_entry - {service})")
+    msg = template_manager.successful_booking_notification(service, date, time)
+    keyboard = create_reminder_keyboards()
+    await callback.message.answer(text=msg, reply_markup=keyboard)
+    await callback.answer()
     user_data.pop(user_id)
+
+
+@router.callback_query(lambda c: c.data.startswith("show_reminder"))
+async def offers_reminders(callback: CallbackQuery):
+    msg = template_manager.get_reminder()
+    keyboard = create_reminder_keyboards()
+    await callback.message.answer(text=msg, reply_markup=keyboard)
+    await callback.answer()
+
+
+@router.callback_query(lambda c: c.data.startswith("reminder_"))
+async def process_reminder_callback(callback: CallbackQuery, user_id):
+    hour = int(callback.data.split("_")[1])
+    logger.info(f"User selected time: {hour}")
+    UpdateNotes(user_id=user_id, reminder_hours=hour).update_reminder()
+    msg = template_manager.get_reminder_notification(hour)
+    await callback.message.answer(text=msg)
+    await callback.answer()

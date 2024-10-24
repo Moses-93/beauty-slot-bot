@@ -1,15 +1,16 @@
 from .models import FreeDate, Notes, session
-from datetime import datetime
+from utils.format_datetime import NowDatetime
 
+now = NowDatetime().now_datetime()
 
-def add_notes(
+async def add_notes(
     name: str,
     username: str,
     time: str,
     date: FreeDate,
     service,
     user_id: int,
-    created_at=datetime.now(),
+    created_at=now,
 ):
     note = Notes(
         name=name,
