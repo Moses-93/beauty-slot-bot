@@ -5,6 +5,7 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 from db.db_reader import GetFreeDate, GetService
+from user_data import set_user_data
 
 free_dates = GetFreeDate().get_all_free_dates()
 services = GetService().get_all_services()
@@ -47,13 +48,6 @@ free_dates_keyboard = InlineKeyboardMarkup(
 )
 
 
-reminder_button = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Нагадати про запис", callback_data="show_reminder")]
-    ]
-)
-
-
 def confirm_time_keyboard(time):
     confirm = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -67,28 +61,40 @@ def confirm_time_keyboard(time):
     return confirm
 
 
-def cancel_the_notes(active_notes):
-    cancel = InlineKeyboardMarkup(
+def cancel_booking_button(active_notes):
+    for note in active_notes:
+        set_user_data(note.user_id, note=note)
+    keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=f"Скасувати запис на {str(note.free_date.date)} {note.time}",
-                    callback_data=f"note_{note.id}",
+                    text=f"Скасувати запис - {note.id}", callback_data=f"note_{note.id}"
                 )
             ]
             for note in active_notes
         ]
     )
-    return cancel
+    return keyboard
 
 
-def create_reminder_keyboards():
+reminder_button = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Нагадати про запис", callback_data=f"show_reminder_button"
+            )
+        ]
+    ]
+)
+
+
+def create_reminder_keyboards(note_id):
     hours = [1, 2, 4, 6]
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=f" За {hour} год.", callback_data=f"reminder_{hour}"
+                    text=f" За {hour} год.", callback_data=f"reminder_{hour}_{note_id}"
                 )
                 for hour in hours
             ]

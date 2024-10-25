@@ -90,8 +90,8 @@ class DeleteNotes:
 
 
 class UpdateNotes:
-    def __init__(self, user_id: int, reminder_hours: int) -> None:
-        self.note = UpdateNotesRepository().update_reminder(user_id, reminder_hours)
+    def __init__(self, note_id: int, reminder_hours: int) -> None:
+        self.note = UpdateNotesRepository().update_reminder(note_id, reminder_hours)
 
     def update_reminder(self) -> None:
         return self.note

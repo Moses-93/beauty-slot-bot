@@ -1,8 +1,13 @@
 from .models import FreeDate, Notes, session
 from utils.format_datetime import NowDatetime
+import logging
+from decorators.adding_user_data import set_note_id
 
 now = NowDatetime().now_datetime()
+logger = logging.getLogger(__name__)
 
+
+@set_note_id
 async def add_notes(
     name: str,
     username: str,
@@ -24,3 +29,5 @@ async def add_notes(
     session.add(note)
     session.commit()
     session.refresh(note)
+    logger.info(f"NOTE ID(in add_notes): {note.id}")
+    return note

@@ -110,7 +110,7 @@ class NotesDeleteRepository:
 class UpdateNotesRepository:
 
     @staticmethod
-    def update_reminder(user_id, reminder_hours: int):
-        note = session.query(Notes).filter_by(user_id=user_id).first()
+    def update_reminder(note_id, reminder_hours: int):
+        note = session.query(Notes).filter_by(id=note_id).first()
         note.reminder_hours = reminder_hours
         session.commit()

@@ -68,11 +68,11 @@ def check_slot(user_id: int, time: datetime):
                 logger.info(f"check_slot ВИКЛИКАВ find_nearest_available_time")
                 return find_nearest_available_time(user_id, time, busy_slots)
 
-        logger.info(f"check_slot ПОВЕРНУВ {time.time()} ПІСЛЯ ІТЕРАЦІЇ")
-        return time.time()
+        logger.info(f"check_slot ПОВЕРНУВ {time} ПІСЛЯ ІТЕРАЦІЇ")
+        return time
     else:
-        logger.info(f"check_slot ПОВЕРНУВ {time.time()}")
-        return time.time()
+        logger.info(f"check_slot ПОВЕРНУВ {time}")
+        return time
 
 
 def time_check(time: datetime, date: FreeDate):

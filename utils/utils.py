@@ -14,10 +14,14 @@ USER_ID = getenv("USER_ID_MASTER")
 logger = logging.getLogger(__name__)
 
 
-async def promote_booking(name: str, username: str, time, date: FreeDate, service: Service, user_id: int):
-    '''Проміжна функція для запису в БД та відправлення повідоомлень користувачу та майстру'''
+async def promote_booking(
+    name: str, username: str, time, date: FreeDate, service: Service, user_id: int
+):
+    """Проміжна функція для запису в БД та відправлення повідоомлень користувачу та майстру"""
     await add_notes(name, username, time, date, service, user_id)
-    msg_for_master = template_manager.message_to_the_master(username, service, date, time)
+    msg_for_master = template_manager.message_to_the_master(
+        username, service, date, time
+    )
     await manager.send_message(USER_ID, msg_for_master)
     msg_for_user = template_manager.get_booking_confirmation(service, date, time)
     await manager.send_message(user_id, msg_for_user)
@@ -34,7 +38,7 @@ async def handlers_time(user_id: int, time: str):
     time = format_time.formats_time_str_to_datetime(time_str).time()
     if time_check(time, date) == False:
         message = template_manager.elapsed_time_warning(time_str)
-        logger.warning("handlers_time ПОВЕРНУВ False, message")
+        logger.warning("handlers_time - Час, який обрав користувач вже пройшов")
         return False, message
 
     nearest_time = check_slot(user_id, time)
@@ -42,15 +46,15 @@ async def handlers_time(user_id: int, time: str):
     logger.info(f"time {time}")
 
     if nearest_time == time:
-        logger.info(f"handlers_time ВИКЛИКАВ promote_booking ДЛЯ ЗАПИСУ В БД ТА ВІДПРАЛЕННЯ ПООВІДОМЛЕННЯ")
+        logger.info(
+            f"handlers_time ВИКЛИКАВ promote_booking ДЛЯ ЗАПИСУ В БД ТА ВІДПРАЛЕННЯ ПООВІДОМЛЕННЯ"
+        )
         await promote_booking(name, username, time, date, service, user_id)
-        
+
     else:
         keyboard = confirm_time_keyboard(nearest_time)
-        logger.info("handlers_time ПОВЕРНУВ msg keyboard")
+        logger.info(
+            "handlers_time Час, який обрав користувач - зайнятий, повернулась пропозиція з часом"
+        )
         msg = template_manager.busy_time_notification(nearest_time)
         return (msg, keyboard)
-
-
-
-

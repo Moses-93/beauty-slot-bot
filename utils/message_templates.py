@@ -14,9 +14,7 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_booking_confirmation(
-        service: Service, date: FreeDate, time: str
-    ):
+    def get_booking_confirmation(service: Service, date: FreeDate, time: str):
         message = (
             f"Ви щойно здійснили запис на послугу - {service.name}\n"
             f"Чекаю Вас {date.date} o {time}.\n"
@@ -25,13 +23,15 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def message_to_the_master(username:str, service:Service, date: FreeDate, time):
-        message = f"Новий запис:\n"\
-                f"Користувач - {username}\n"\
-                f"Послуга - {service.name}\n"\
-                f"Дата - {date.date}\n"\
-                f"Час - {time}\n"
-                
+    def message_to_the_master(username: str, service: Service, date: FreeDate, time):
+        message = (
+            f"Новий запис:\n"
+            f"Користувач - {username}\n"
+            f"Послуга - {service.name}\n"
+            f"Дата - {date.date}\n"
+            f"Час - {time}\n"
+        )
+
         return message
 
     @staticmethod
@@ -73,7 +73,7 @@ class TemplateManager:
 
     @staticmethod
     def no_entries_found():
-        message = "На жаль я не зміг знайти жодних записів у обраній категорії("
+        message = "На жаль, я не зміг знайти жодних записів у обраній категорії("
         return message
 
     @staticmethod
@@ -98,9 +98,11 @@ class TemplateManager:
 
     @staticmethod
     def recording_reminder(note: Notes):
-        message = f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"\
-            f"Дата - {note.free_date.date}\n"\
+        message = (
+            f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"
+            f"Дата - {note.free_date.date}\n"
             f"Час - {note.time}"
+        )
         return message
 
     @staticmethod
@@ -112,5 +114,11 @@ class TemplateManager:
             f"Час - {note.time}"
         )
         return message
-    
+
+    @staticmethod
+    def booking_not_found():
+        message = "На жаль, такого запису не знайдено"
+        return message
+
+
 template_manager = TemplateManager()

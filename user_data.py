@@ -1,4 +1,6 @@
-user_data = {}
+from cachetools import TTLCache
+
+user_data = TTLCache(maxsize=50, ttl=1800)
 
 
 def get_user_data(user_id, *args):
