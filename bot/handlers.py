@@ -209,3 +209,5 @@ async def process_reminder_callback(callback: CallbackQuery, user_id):
     msg = template_manager.get_reminder_notification(hour)
     await callback.message.answer(text=msg)
     await callback.answer()
+    user_data.pop(user_id)
+

@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from db.db_writer import add_notes
 from bot.keyboards import confirm_time_keyboard
@@ -34,10 +35,10 @@ async def handlers_time(user_id: int, time: str):
     logger.info(
         f"NAME - {name}, USERNAME - {username}, DATE - {date}, SERVICE - {service}"
     )
-    time_str = time
-    time = format_time.formats_time_str_to_datetime(time_str).time()
-    if time_check(time, date) == False:
-        message = template_manager.elapsed_time_warning(time_str)
+    time = format_time.formats_time_str_to_datetime(time).time()
+    time = datetime.combine(date.date, time)
+    if time_check(time) == False:
+        message = template_manager.elapsed_time_warning(time)
         logger.warning("handlers_time - Час, який обрав користувач вже пройшов")
         return False, message
 
