@@ -26,7 +26,7 @@ class FreeDate(Base):
     __tablename__ = "main_freedate"
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date)
-    free = Column(Boolean)
+    free = Column(Boolean, default=True)
     now = Column(DateTime)
 
     def __str__(self):

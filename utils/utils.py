@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from db.db_writer import add_notes
-from bot.keyboards import confirm_time_keyboard
+from bot.keyboards.keyboards import confirm_time_keyboard
 from user_data import get_user_data
 from .time_processing import check_slot, time_check, format_time
 from .message_sender import manager
@@ -9,7 +9,8 @@ from .message_templates import template_manager
 from db.models import FreeDate, Service
 from os import getenv
 
-USER_ID = getenv("USER_ID_MASTER")
+
+USER_ID = getenv("USER_ID_ADMIN")
 
 
 logger = logging.getLogger(__name__)
@@ -59,3 +60,21 @@ async def handlers_time(user_id: int, time: str):
         )
         msg = template_manager.busy_time_notification(nearest_time)
         return (msg, keyboard)
+
+
+def format_services(services):
+    # Формат заголовка
+    header = "ID | Name                     | Price | Durations"
+    separator = "-" * len(header)
+    formatted_services = f"{header}\n{separator}\n"
+
+    for service in services:
+        # Форматування рядка для кожної послуги
+        formatted_services += (
+            f"{service.id:<2} | "
+            f"{service.name:<25} | "
+            f"{service.price:<5} | "
+            f"{service.durations}\n"
+        )
+
+    return formatted_services

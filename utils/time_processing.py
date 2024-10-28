@@ -41,9 +41,7 @@ def find_nearest_available_time(user_id: int, time: datetime, busy_slots: list):
         logger.info(f"КІНЦЕВИЙ ЧАС: {busy_slot['end'].time()}")
 
         if busy_slot["start"] <= current_time <= busy_slot["end"]:
-            logger.info(
-                f"УВІЙШЛИ В УМОВНУ ПЕРЕВІРКУ."
-            )
+            logger.info(f"УВІЙШЛИ В УМОВНУ ПЕРЕВІРКУ.")
             # Якщо вибраний час зайнятий, переносимо на кінець зайнятого часу
             current_time = busy_slot["end"]
             logger.info(f"CURRENT TIME ПІСЛЯ ПРИСВОЄННЯ: {current_time}")
@@ -52,7 +50,7 @@ def find_nearest_available_time(user_id: int, time: datetime, busy_slots: list):
         logger.info(
             f"find_nearest_available_time ПОВЕРНУВ ПІСЛЯ ІТЕРАЦІЇ: {current_time}"
         )
-        return current_time.time() # Повертаємо найближчий доступний час
+        return current_time.time()  # Повертаємо найближчий доступний час
     logger.info(f"find_nearest_available_time ПОВЕРНУВ {current_time}")
     return current_time.time()
 

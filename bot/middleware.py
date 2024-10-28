@@ -7,11 +7,13 @@ class UserIDMiddleware(BaseMiddleware):
         return await handler(event, data)
 
 
-# class UserNameMiddleware(BaseMiddleware):
-#     async def __call__(self, handler, event, data: dict):
-#         user_id = event.from_user.id
-#         user_data[user_id] = {
-#             "name": event.from_user.full_name,
-#             "username": event.from_user.username
-#         }
-#         return await handler(event, data)
+class AdminMiddleware(BaseMiddleware):
+
+    def __init__(self, admin_ids: list):
+        super().__init__()
+        self.admin_ids = admin_ids
+
+    async def __call__(self, handler, event, data: dict):
+        user_id = event.from_user.id
+        data["is_admin"] = user_id in self.admin_ids
+        return await handler(event, data)

@@ -8,9 +8,11 @@ from .repository import (
 
 
 class GetService:
-    def __init__(self, service_id=None):
+    def __init__(self, service_id=None, name=None):
         if service_id:
             self.service = ServiceRepository().get_service_by_id(service_id)
+        elif name:
+            self.service = ServiceRepository().get_service_by_name(name)
         else:
             self.service = None
 
@@ -35,14 +37,16 @@ class GetService:
 
 
 class GetFreeDate:
-    def __init__(self, date_id=None):
+    def __init__(self, date_id=None, date=None):
         if date_id:
             self.free_date = FreeDateRepository().get_free_dates_by_service_id(date_id)
+        elif date:
+            self.free_date = FreeDateRepository().get_free_date_by_date(date)
         else:
             self.free_date = None
 
     def get_all_free_dates(self):
-        return FreeDateRepository.get_all_free_dates()
+        return FreeDateRepository().get_all_free_dates()
 
     @property
     def id(self):

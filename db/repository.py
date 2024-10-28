@@ -9,8 +9,12 @@ format_time = FormatTime()
 class ServiceRepository:
 
     @staticmethod
-    def get_service_by_id(service_id):
+    def get_service_by_id(service_id: int):
         return session.query(Service).get(service_id)
+    
+    @staticmethod
+    def get_service_by_name(name: str):
+        return session.query(Service).filter_by(name=name).first()
 
     def get_all_services():
         return session.query(Service).all()
@@ -21,6 +25,10 @@ class FreeDateRepository:
     @staticmethod
     def get_free_dates_by_service_id(date_id):
         return session.query(FreeDate).get(date_id)
+    
+    @staticmethod
+    def get_free_date_by_date(date):
+        return session.query(FreeDate).filter_by(date=date).first()
 
     @staticmethod
     def get_all_free_dates():

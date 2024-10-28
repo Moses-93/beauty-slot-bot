@@ -7,9 +7,6 @@ from aiogram.types import (
 from db.db_reader import GetFreeDate, GetService
 from user_data import set_user_data
 
-free_dates = GetFreeDate().get_all_free_dates()
-services = GetService().get_all_services()
-
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Записатись")],
@@ -28,24 +25,30 @@ notes = InlineKeyboardMarkup(
 )
 
 
-services_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text=str(service), callback_data=f"service_{service.id}")]
-        for service in services
-    ]
-)
-
-
-free_dates_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text=str(free_date.date), callback_data=f"date_{free_date.id}"
-            )
+def services_keyboard(act):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=service.name, callback_data=f"{act}_service_{service.id}"
+                )
+            ]
+            for service in GetService().get_all_services()
         ]
-        for free_date in free_dates
-    ]
-)
+    )
+
+
+def free_dates_keyboard(act):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=str(free_date.date), callback_data=f"{act}_date_{free_date.id}"
+                )
+            ]
+            for free_date in GetFreeDate().get_all_free_dates()
+        ]
+    )
 
 
 def confirm_time_keyboard(time):

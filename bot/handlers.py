@@ -3,7 +3,7 @@ import logging
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
-from .keyboards import (
+from .keyboards.keyboards import (
     services_keyboard,
     free_dates_keyboard,
     main_keyboard,
@@ -27,8 +27,7 @@ from utils.message_templates import template_manager
 logger = logging.getLogger(__name__)
 
 router = Router()
-router.message.middleware(UserIDMiddleware())
-router.callback_query.middleware(UserIDMiddleware())
+
 time_pattern = r"^(1[0-7]:[0-5]\d|18:00)$"
 
 
@@ -43,12 +42,13 @@ async def start(message: Message, user_id):
 @router.message(lambda message: message.text == "Записатись")
 async def make_an_appointment(message: Message):
     msg = template_manager.get_service_options()
-    await message.answer(text=msg, reply_markup=services_keyboard)
+    service = services_keyboard("service")
+    await message.answer(text=msg, reply_markup=service)
     return
 
 
 @router.message(lambda message: message.text == "Мої записи")
-async def show_notes(message: Message, user_id):
+async def show_notes(message: Message):
     msg = template_manager.get_entry_options()
     await message.answer(text=msg, reply_markup=notes)
     return
@@ -132,19 +132,20 @@ async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):
 
     logger.info(f"Selected date: {service.name}. Type:{type(service.name)}")
     msg = template_manager.service_selection_info(service)
+    free_date = free_dates_keyboard("date")
     await callback.message.answer(
         text=msg,
-        reply_markup=free_dates_keyboard,
+        reply_markup=free_date,
     )
     set_user_data(user_id, service=service)
     logger.info(f"USER_DATA(handle_services) --- {get_user_data(user_id)}")
     await callback.answer()
 
 
-@router.callback_query(lambda c: c.data.startswith("date_"))
+@router.callback_query(lambda c: c.data.startswith("date_date_"))
 @check_user_data.check_user_data(["service"])
 async def processes_dates(callback: CallbackQuery, user_id, *args, **kwargs):
-    date_id = int(callback.data.split("_")[1])
+    date_id = int(callback.data.split("_")[2])
     date = GetFreeDate(date_id)
     logger.info(f"Selected date: {date.date}. Type:{type(date.date)}")
     msg = template_manager.date_selection_prompt(date)
@@ -210,4 +211,3 @@ async def process_reminder_callback(callback: CallbackQuery, user_id):
     await callback.message.answer(text=msg)
     await callback.answer()
     user_data.pop(user_id)
-

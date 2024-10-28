@@ -1,1 +1,2 @@
-from bot import keyboards, handlers
+from bot import handlers
+from bot.keyboards import keyboards
