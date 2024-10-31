@@ -19,7 +19,6 @@ from decorators import (
     data_validation_in_user_data as check_user_data,
 )
 from user_data import get_user_data, set_user_data, user_data
-from .middleware import UserIDMiddleware
 from utils.message_sender import manager
 from utils.message_templates import template_manager
 
@@ -127,7 +126,7 @@ async def cancel_booking(callback: CallbackQuery, user_id):
 @router.callback_query(lambda c: c.data.startswith("service_"))
 @add_usr_data.set_username
 async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):
-    service_id = int(callback.data.split("_")[1])
+    service_id = int(callback.data.split("_")[2])
     service = GetService(service_id)
 
     logger.info(f"Selected date: {service.name}. Type:{type(service.name)}")

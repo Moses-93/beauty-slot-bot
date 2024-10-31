@@ -54,7 +54,7 @@ async def handlers_time(user_id: int, time: str):
         await promote_booking(name, username, time, date, service, user_id)
 
     else:
-        keyboard = confirm_time_keyboard(nearest_time)
+        keyboard = confirm_time_keyboard(nearest_time.time())
         logger.info(
             "handlers_time Час, який обрав користувач - зайнятий, повернулась пропозиція з часом"
         )
