@@ -1,8 +1,7 @@
 import logging
 from utils.format_datetime import NowDatetime, FormatDate, FormatTime
 from user_data import get_user_data
-from db.models import FreeDate
-from db.db_reader import GetService, GetNotes
+from db.db_reader import GetNotes
 from datetime import datetime
 
 
@@ -14,11 +13,11 @@ format_time = FormatTime()
 logger = logging.getLogger(__name__)
 
 
-def get_busy_slots(user_id: int):
+async def get_busy_slots(user_id: int):
     service, date = get_user_data(user_id, "service", "date")
     logger.info(f"SERVICE -- {service}")
     busy_slots = []
-    notes = GetNotes(date_id=date.id).get_all_notes()
+    notes = await GetNotes(date_id=date.id).get_all_notes()
     logger.info(f"NOTES -- {notes}")
     for time in notes:
         time = datetime.combine(date.date, time.time)
@@ -30,7 +29,7 @@ def get_busy_slots(user_id: int):
     return busy_slots
 
 
-def find_nearest_available_time(user_id: int, time: datetime, busy_slots: list):
+async def find_nearest_available_time(user_id: int, time: datetime, busy_slots: list):
     (service,) = get_user_data(user_id, "service")
     current_time = time
     logger.info(f"CURRENT_TIME: - {current_time}")
@@ -55,14 +54,14 @@ def find_nearest_available_time(user_id: int, time: datetime, busy_slots: list):
     return current_time
 
 
-def check_slot(user_id: int, time: datetime):
-    busy_slots = get_busy_slots(user_id)
+async def check_slot(user_id: int, time: datetime):
+    busy_slots = await get_busy_slots(user_id)
     if busy_slots:
         logger.info(f"TIME(in check_slot) -- {time}")
         for slot in busy_slots:
             if slot["start"] <= time <= slot["end"]:
                 logger.info(f"check_slot ВИКЛИКАВ find_nearest_available_time")
-                return find_nearest_available_time(user_id, time, busy_slots)
+                return await find_nearest_available_time(user_id, time, busy_slots)
 
         logger.info(f"check_slot ПОВЕРНУВ {time} ПІСЛЯ ІТЕРАЦІЇ")
         return time
@@ -71,9 +70,9 @@ def check_slot(user_id: int, time: datetime):
         return time
 
 
-def time_check(date_time: datetime):
+async def time_check(date_time: datetime):
     now = current_date_time.now_datetime()
     logger.info(f"NOW(in time_check): {now}")
     logger.info(f"DATE_TIME(in time_check): {date_time}")
     if date_time < now:
-        return False
+        return await False

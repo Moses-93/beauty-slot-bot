@@ -20,6 +20,7 @@ alembic = "^1.13.3"
 requests = "^2.32.3"
 apscheduler = "^3.10.4"
 cachetools = "^5.5.0"
+asyncpg = "^0.30.0"
 
 
 [build-system]

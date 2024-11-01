@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 def validate_service_name(func):
     async def wrapper(message: Message, *args, **kwargs):
         service_name = message.text
-        logger(f"NAME: {service_name}")
-        existing_service = GetService(name=service_name).get_service_by_name()
+        existing_service = await GetService(name=service_name).get_name()
         if existing_service:
             await message.answer(
                 text="Така назва послуги вже існує.\nСпробуйте Ще раз."

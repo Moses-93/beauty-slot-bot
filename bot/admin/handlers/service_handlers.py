@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @service_router.callback_query(lambda c: c.data.startswith("show_services"))
 async def show_services(callback: CallbackQuery, *args, **kwargs):
-    services = GetService().get_all_services()
+    services = await GetService().get_all_services()
     formatted_services = format_services(services)
 
     await callback.message.answer(
@@ -75,7 +75,7 @@ async def set_service_duration(message: Message, durations:timedelta, state: FSM
 async def choosing_service(callback: CallbackQuery, state: FSMContext):
     logger.info(f"CALLBACK DATA: {callback.data}")
     await state.set_state("editing_service")
-    edit = services_keyboard("edit")
+    edit = await services_keyboard("edit")
     await callback.message.answer(
         text="Оберіть, яку послугу Ви хочете редагувати", reply_markup=edit
     )
@@ -134,7 +134,7 @@ async def set_new_field_value(message: Message, state: FSMContext):
 @service_router.callback_query(lambda c: c.data == "delete_service")
 async def delete_service(callback: CallbackQuery):
     logger.info(f"CALLBACK DATA: {callback.data}")
-    delete = services_keyboard("delete")
+    delete = await services_keyboard("delete")
     await callback.message.answer(
         text="Оберіть, яку послугу Ви хочете видалити", reply_markup=delete
     )

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @date_router.callback_query(lambda c: c.data == "available_dates")
 async def show_dates(callback: CallbackQuery):
-    free_dates = GetFreeDate().get_all_free_dates()
+    free_dates = await GetFreeDate().get_all_free_dates()
     formatted_date = "\n".join([f"ID: {date.id}: {date.date}" for date in free_dates])
     await callback.message.answer(text=f"Доступні дати: \n\n{formatted_date}")
     await callback.answer()
@@ -39,7 +39,7 @@ async def set_date(message: Message, full_date, state: FSMContext, **kwargs):
 @date_router.callback_query(lambda c: c.data == "delete_date")
 async def delete_date(callback: CallbackQuery):
     msg = "Виберіть дату, яку Ви хочете видалити:"
-    delete = free_dates_keyboard("delete")
+    delete = await free_dates_keyboard("delete")
     await callback.message.answer(text=msg, reply_markup=delete)
     await callback.answer()
 
@@ -47,7 +47,7 @@ async def delete_date(callback: CallbackQuery):
 @date_router.callback_query(lambda c: c.data.startswith("delete_date_"))
 async def delete_selected_date(callback: CallbackQuery):
     logger.info(f"CALLBACK DATA: {callback.data}")
-    date_id = callback.data.split("_")[2]
+    date_id = int(callback.data.split("_")[2])
     logger.info(f"date_id: {date_id}")
     date = await date_manager.delete(date_id)
     await callback.message.answer(text=f"Обрана Вами дата успішно видалена!")

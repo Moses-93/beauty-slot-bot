@@ -6,7 +6,7 @@ from utils.message_sender import manager
 
 
 async def find_time_for_reminder():
-    active_notes = GetNotes(only_active=True).get_all_notes()
+    active_notes = await GetNotes(only_active=True).get_all_notes()
     now = NowDatetime().now_datetime()
 
     for note in active_notes:

@@ -1,10 +1,10 @@
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.orm import declarative_base, relationship
 from os import getenv
 from sqlalchemy import (
     Boolean,
     Interval,
     Time,
-    create_engine,
     Integer,
     Column,
     String,
@@ -16,9 +16,9 @@ from datetime import datetime
 
 
 URI = getenv("URI")
-engine = create_engine(URI)
-Session = sessionmaker(bind=engine)
-session = Session()
+engine = create_async_engine(URI, echo=True)
+Session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
+async_session = Session
 Base = declarative_base()
 
 
@@ -37,8 +37,8 @@ class Service(Base):
     __tablename__ = "main_service"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    price = Column(String)
-    durations = Column(Interval)  # або можна використовувати Interval
+    price = Column(Integer)
+    durations = Column(Interval)
 
     def __str__(self):
         return f"{self.name}: - {self.price} грн."
@@ -60,6 +60,4 @@ class Notes(Base):
 
     def __str__(self):
         return f"Послуга: {self.service.name} | Дата: {self.free_date.date} | Час: {self.time}"
-
-
-Base.metadata.create_all(bind=engine)
+    

@@ -25,7 +25,7 @@ notes = InlineKeyboardMarkup(
 )
 
 
-def services_keyboard(act):
+async def services_keyboard(act):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -33,12 +33,12 @@ def services_keyboard(act):
                     text=service.name, callback_data=f"{act}_service_{service.id}"
                 )
             ]
-            for service in GetService().get_all_services()
+            for service in await GetService().get_all_services()
         ]
     )
 
 
-def free_dates_keyboard(act):
+async def free_dates_keyboard(act):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -46,7 +46,7 @@ def free_dates_keyboard(act):
                     text=str(free_date.date), callback_data=f"{act}_date_{free_date.id}"
                 )
             ]
-            for free_date in GetFreeDate().get_all_free_dates()
+            for free_date in await GetFreeDate().get_all_free_dates()
         ]
     )
 

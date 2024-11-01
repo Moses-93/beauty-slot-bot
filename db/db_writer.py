@@ -1,8 +1,8 @@
-from .models import FreeDate, Notes, Service, session
+from sqlalchemy import select
+from .models import FreeDate, Notes, Service, async_session
 from utils.format_datetime import NowDatetime
 import logging
 from decorators.adding_user_data import set_note_id
-from sqlalchemy.ext.asyncio import AsyncSession
 
 now = NowDatetime().now_datetime()
 logger = logging.getLogger(__name__)
@@ -27,49 +27,60 @@ async def add_notes(
         date_id=date.id,
         user_id=user_id,
     )
-    session.add(note)
-    session.commit()
-    session.refresh(note)
-    logger.info(f"NOTE ID(in add_notes): {note.id}")
-    return note
+    async with async_session() as session:
+        session.add(note)
+        await session.commit()
+        await session.refresh(note)
+        logger.info(f"NOTE ID(in add_notes): {note.id}")
+        return note
 
 
 class ServiceManager:
-    def __init__(self, session) -> None:
-        self.session = session
+    def __init__(self, async_session) -> None:
+        self.async_session = async_session
 
     async def create(self, **kwargs):
         new_service = Service(**kwargs)
-        self.session.add(new_service)
-        self.session.commit()
-        self.session.refresh(new_service)
+        async with self.async_session() as session:
+            session.add(new_service)
+            await session.commit()
+            await session.refresh(new_service)
 
     async def update(self, service_id, **kwargs):
-        updated_service = self.session.query(Service).filter_by(id=service_id)
-        updated_service.update(kwargs)
-        self.session.commit()
+        async with self.async_session() as session:
+            updated_service = await session.execute(select(Service).filter_by(id=service_id))
+            service = updated_service.scalars().first()
+            if service:
+                for key, value in kwargs.items():
+                    setattr(service, key, value)
+                await session.commit()
 
     async def delete(self, service_id):
-        service = self.session.query(Service).filter_by(id=service_id).delete()
-        self.session.commit()
-        return service
+        async with self.async_session() as session:
+            service = await session.get(Service, service_id)
+            if service:
+                await session.delete(service)
+                await session.commit()
 
 
 class FreeDatesManager:
-    def __init__(self, session) -> None:
-        self.session = session
+    def __init__(self, async_session) -> None:
+        self.async_session = async_session
 
     async def create(self, **kwargs):
         new_date = FreeDate(**kwargs)
-        self.session.add(new_date)
-        self.session.commit()
-        self.session.refresh(new_date)
+        async with self.async_session() as session:
+            session.add(new_date)
+            await session.commit()
+            await session.refresh(new_date)
 
     async def delete(self, date_id):
-        date = self.session.query(FreeDate).filter_by(id=date_id).delete()
-        self.session.commit()
-        return date
+        async with self.async_session() as session:
+            date = await session.get(FreeDate, date_id)
+            if date:
+                await session.delete(date)
+                await session.commit()
 
 
-service_manager = ServiceManager(session)
-date_manager = FreeDatesManager(session)
+service_manager = ServiceManager(async_session)
+date_manager = FreeDatesManager(async_session)

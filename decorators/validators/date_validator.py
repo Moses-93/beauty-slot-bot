@@ -21,7 +21,7 @@ def validator_date(fucn):
             await message.answer("Дата повинна бути більшою або дорівнювати поточній даті. \nСпробуйте ще раз.")
             return
         try:
-            existing_date = GetFreeDate(date=date).date
+            existing_date = await GetFreeDate(date=date).date
         except AttributeError:
             date = datetime.combine(date, time(18, 0))
             await fucn(message, date, *args, **kwargs)

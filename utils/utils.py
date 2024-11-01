@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 async def promote_booking(
     name: str, username: str, time, date: FreeDate, service: Service, user_id: int
 ):
-    """Проміжна функція для запису в БД та відправлення повідоомлень користувачу та майстру"""
+    """Проміжна функція для запису в БД та відправлення повідомлень користувачу та майстру"""
+    logger.info(f"TIME: {time} | TYPE: {type(time)}")
+    time = datetime.strptime(time, "%H:%M:%S")
     await add_notes(name, username, time, date, service, user_id)
     msg_for_master = template_manager.message_to_the_master(
         username, service, date, time
@@ -38,12 +40,12 @@ async def handlers_time(user_id: int, time: str):
     )
     time = format_time.formats_time_str_to_datetime(time).time()
     time = datetime.combine(date.date, time)
-    if time_check(time) == False:
+    if await time_check(time) == False:
         message = template_manager.elapsed_time_warning(time)
         logger.warning("handlers_time - Час, який обрав користувач вже пройшов")
         return False, message
 
-    nearest_time = check_slot(user_id, time)
+    nearest_time = await check_slot(user_id, time)
     logger.info(f"nearest_time {nearest_time}")
     logger.info(f"time {time}")
 
