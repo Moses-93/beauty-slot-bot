@@ -48,7 +48,9 @@ class ServiceManager:
 
     async def update(self, service_id, **kwargs):
         async with self.async_session() as session:
-            updated_service = await session.execute(select(Service).filter_by(id=service_id))
+            updated_service = await session.execute(
+                select(Service).filter_by(id=service_id)
+            )
             service = updated_service.scalars().first()
             if service:
                 for key, value in kwargs.items():

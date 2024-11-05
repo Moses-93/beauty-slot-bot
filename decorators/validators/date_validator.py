@@ -12,18 +12,23 @@ def validator_date(fucn):
     async def wrapper(message: Message, *args, **kwargs):
         date = message.text
         if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", date):
-            await message.answer("Дата повинна бути у форматі YYYY-MM-DD. \nПриклад: 1900-01-01.")
+            await message.answer(
+                "Дата повинна бути у форматі YYYY-MM-DD. \nПриклад: 1900-01-01."
+            )
             return
-        
+
         date = FormatDate().formats_date_str_to_datetime(date).date()
-        logger.info(f"DATE {date}")
+        logger.info(f"DATE(in validator_date): {date} | type: {type(date)}")
         if date < NowDatetime().now_datetime().date():
-            await message.answer("Дата повинна бути більшою або дорівнювати поточній даті. \nСпробуйте ще раз.")
+            await message.answer(
+                "Дата повинна бути більшою або дорівнювати поточній даті. \nСпробуйте ще раз."
+            )
             return
         try:
-            existing_date = await GetFreeDate(date=date).date
+            existing_date = await GetFreeDate(date=date).get_date
         except AttributeError:
             date = datetime.combine(date, time(18, 0))
+            logger.info(f"DATE(in validator_date): {date} | type: {type(date)}")
             await fucn(message, date, *args, **kwargs)
             return
         if existing_date:

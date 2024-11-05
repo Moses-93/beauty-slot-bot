@@ -49,7 +49,7 @@ async def find_nearest_available_time(user_id: int, time: datetime, busy_slots: 
         logger.info(
             f"find_nearest_available_time ПОВЕРНУВ ПІСЛЯ ІТЕРАЦІЇ: {current_time}"
         )
-        return current_time # Повертаємо найближчий доступний час
+        return current_time  # Повертаємо найближчий доступний час
     logger.info(f"find_nearest_available_time ПОВЕРНУВ {current_time}")
     return current_time
 
@@ -75,4 +75,4 @@ async def time_check(date_time: datetime):
     logger.info(f"NOW(in time_check): {now}")
     logger.info(f"DATE_TIME(in time_check): {date_time}")
     if date_time < now:
-        return await False
+        return False

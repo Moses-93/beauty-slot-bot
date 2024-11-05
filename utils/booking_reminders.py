@@ -5,9 +5,8 @@ from utils.message_templates import template_manager
 from utils.message_sender import manager
 
 
-async def find_time_for_reminder():
+async def find_time_for_reminder(now=datetime.now()):
     active_notes = await GetNotes(only_active=True).get_all_notes()
-    now = NowDatetime().now_datetime()
 
     for note in active_notes:
         if not note.reminder_hours:

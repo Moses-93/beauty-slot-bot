@@ -1,3 +1,4 @@
+from datetime import time
 from db.models import Notes, Service, FreeDate
 
 
@@ -14,12 +15,12 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_booking_confirmation(service: Service, date: FreeDate, time: str):
+    def get_booking_confirmation(service: Service, date: FreeDate, time: time):
         message = (
             f"Ви щойно здійснили запис на послугу - {service.name}\n"
             f"Чекаю Вас {date.date} o {time}.\n"
             f"Будь ласка, зв'яжіться зі мною, коли будете знаходитись за моєю адресою. Я Вас зустріну\n"
-            "Якщо Ви розумієте, що не прийдете або запізнюєтесь - будь ласка, скасуйте запис або повідомте про мене"
+            "Якщо Ви розумієте, що не прийдете або запізнюєтесь - будь ласка, скасуйте запис або повідомте про це мене"
         )
         return message
 

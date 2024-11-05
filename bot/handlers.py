@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import F, Router
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from .keyboards.keyboards import (
     services_keyboard,
@@ -14,6 +14,7 @@ from .keyboards.keyboards import (
 )
 from db.db_reader import GetService, GetNotes, GetFreeDate, DeleteNotes, UpdateNotes
 from utils.utils import handlers_time, promote_booking
+from utils.formatted_view import format_notes, format_services
 from decorators import (
     adding_user_data as add_usr_data,
     data_validation_in_user_data as check_user_data,
@@ -21,6 +22,7 @@ from decorators import (
 from user_data import get_user_data, set_user_data, user_data
 from utils.message_sender import manager
 from utils.message_templates import template_manager
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -55,14 +57,10 @@ async def show_notes(message: Message):
 
 @router.message(lambda message: message.text == "Послуги")
 async def show_services(message: Message):
-    formatted_service = "\n".join(
-        [
-            f"{i+1}: {service}"
-            for i, service in enumerate(await GetService().get_all_services())
-        ]
-    )
+    service = await GetService().get_all_services()
+    formatted_service = format_services(service)
 
-    await message.answer(text=f"Послуги:\n\n{formatted_service}")
+    await message.answer(text=formatted_service, parse_mode="Markdown")
 
 
 @router.message(lambda message: message.text == "Контакти")
@@ -76,8 +74,8 @@ async def show_all_notes(callback: CallbackQuery, user_id):
 
     notes = await GetNotes(user_id=user_id).get_all_notes()
     if notes:
-        formatted_notes = "\n".join([f"{i+1}: {note}" for i, note in enumerate(notes)])
-        await callback.message.answer(text=f"Всі записи: \n\n{formatted_notes}")
+        formatted_notes = format_notes(notes)
+        await callback.message.answer(text=f"{formatted_notes}", parse_mode="Markdown")
         await callback.answer()
 
     else:
@@ -93,12 +91,9 @@ async def show_active_notes(callback: CallbackQuery, user_id):
     cancel = cancel_booking_button(active_notes)
     logger.info(f"Active notes: {active_notes}")
     if active_notes:
-        formatted_notes = "\n".join(
-            [f"{note.id}: {note}" for i, note in enumerate(active_notes)]
-        )
+        formatted_notes = format_notes(active_notes, active_notes=True)
         await callback.message.answer(
-            text=f"Активні записи: \n\n{formatted_notes}", reply_markup=cancel
-        )
+            text=f"{formatted_notes}", reply_markup=cancel, parse_mode="Markdown")
         await callback.answer()
     else:
         msg = template_manager.no_entries_found()
@@ -110,6 +105,8 @@ async def show_active_notes(callback: CallbackQuery, user_id):
 async def cancel_booking(callback: CallbackQuery, user_id):
     note_id = int(callback.data.split("_")[1])
     (note,) = get_user_data(user_id, "note")
+    logger.info(f"NOTE_ID(in cancel_booking): {note_id}")
+    logger.info(f"NOTE(in cancel_booking): {note}")
     if not note:
         msg = template_manager.booking_not_found()
         await callback.message.answer(text=msg)
@@ -117,7 +114,7 @@ async def cancel_booking(callback: CallbackQuery, user_id):
     else:
         msg_for_master = template_manager.get_booking_cancellation(note)
         await manager.send_message(user_id, message=msg_for_master)
-        DeleteNotes(note_id=note_id).delete_note()
+        await DeleteNotes(note_id=note_id).delete_note()
         msg = template_manager.get_cancel_notification()
         await callback.message.answer(text=msg)
         await callback.answer()
@@ -178,13 +175,14 @@ async def processes_time(message: Message, user_id, *args, **kwars):
 @router.callback_query(lambda c: c.data.startswith("confirm_"))
 async def confirm_the_entry(callback: CallbackQuery, user_id):
     time = callback.data.split("_")[-1]
+    time = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     logger.info(f"Time selected: {time} | type: {type(time)}")
     name, username, date, service = get_user_data(
         user_id, "name", "username", "date", "service"
     )
     await promote_booking(name, username, time, date, service, user_id)
     logger.info(f"SERVICE(in confirm_the_entry - {service})")
-    msg = template_manager.successful_booking_notification(service, date, time)
+    msg = template_manager.successful_booking_notification(service, date, time.time())
     await callback.message.answer(text=msg, reply_markup=reminder_button)
     await callback.answer()
 
@@ -202,10 +200,10 @@ async def offers_reminders(callback: CallbackQuery, user_id):
 
 @router.callback_query(lambda c: c.data.startswith("reminder_"))
 async def process_reminder_callback(callback: CallbackQuery, user_id):
-    logger.info(f"hour(int procces remonder -- {callback.data})")
+    logger.info(f"hour(in procces reminder -- {callback.data})")
     _, hour, note_id = callback.data.split("_")
     logger.info(f"User selected time: {hour}, {note_id}")
-    UpdateNotes(note_id=note_id, reminder_hours=hour).update_reminder()
+    await UpdateNotes(note_id=int(note_id), reminder_hours=int(hour)).update_reminder()
     msg = template_manager.get_reminder_notification(hour)
     await callback.message.answer(text=msg)
     await callback.answer()

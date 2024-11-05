@@ -20,14 +20,13 @@ async def promote_booking(
     name: str, username: str, time, date: FreeDate, service: Service, user_id: int
 ):
     """Проміжна функція для запису в БД та відправлення повідомлень користувачу та майстру"""
-    logger.info(f"TIME: {time} | TYPE: {type(time)}")
-    time = datetime.strptime(time, "%H:%M:%S")
-    await add_notes(name, username, time, date, service, user_id)
+    logger.info(f"TIME(in promote_booking): {time} | TYPE: {type(time)}")
+    await add_notes(name, username, time.time(), date, service, user_id)
     msg_for_master = template_manager.message_to_the_master(
-        username, service, date, time
+        username, service, date, time.time(),
     )
     await manager.send_message(USER_ID, msg_for_master)
-    msg_for_user = template_manager.get_booking_confirmation(service, date, time)
+    msg_for_user = template_manager.get_booking_confirmation(service, date, time.time())
     await manager.send_message(user_id, msg_for_user)
 
 
@@ -51,32 +50,16 @@ async def handlers_time(user_id: int, time: str):
 
     if nearest_time == time:
         logger.info(
-            f"handlers_time ВИКЛИКАВ promote_booking ДЛЯ ЗАПИСУ В БД ТА ВІДПРАЛЕННЯ ПООВІДОМЛЕННЯ"
+            f"handlers_time ВИКЛИКАВ promote_booking ДЛЯ ЗАПИСУ В БД ТА ВІДПРАЛЕННЯ ПОВІДОМЛЕННЯ"
         )
         await promote_booking(name, username, time, date, service, user_id)
 
     else:
-        keyboard = confirm_time_keyboard(nearest_time.time())
+        keyboard = confirm_time_keyboard(nearest_time)
         logger.info(
             "handlers_time Час, який обрав користувач - зайнятий, повернулась пропозиція з часом"
         )
-        msg = template_manager.busy_time_notification(nearest_time)
+        logger.info(f"NEAREST TIME: {nearest_time} type: {type(nearest_time)}")
+        msg = template_manager.busy_time_notification(nearest_time.time())
         return (msg, keyboard)
 
-
-def format_services(services):
-    # Формат заголовка
-    header = "ID | Name                     | Price | Durations"
-    separator = "-" * len(header)
-    formatted_services = f"{header}\n{separator}\n"
-
-    for service in services:
-        # Форматування рядка для кожної послуги
-        formatted_services += (
-            f"{service.id:<2} | "
-            f"{service.name:<25} | "
-            f"{service.price:<5} | "
-            f"{service.durations}\n"
-        )
-
-    return formatted_services

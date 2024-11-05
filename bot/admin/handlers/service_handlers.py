@@ -8,7 +8,7 @@ from db.db_reader import GetService
 from ..keyboards.service_keybord import edit_service_keyboard
 from ...keyboards.keyboards import services_keyboard
 import logging
-from utils.utils import format_services
+from utils.formatted_view import format_services
 from decorators.validators.service_validator import (
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,
@@ -25,7 +25,7 @@ async def show_services(callback: CallbackQuery, *args, **kwargs):
     formatted_services = format_services(services)
 
     await callback.message.answer(
-        text=f"```\n{formatted_services}```", parse_mode="MarkdownV2"
+        text=formatted_services, parse_mode="Markdown"
     )
     await callback.answer()
 
@@ -62,7 +62,9 @@ async def set_service_price(message: Message, price, state: FSMContext, **kwargs
 
 @service_router.message(ServiceForm.durations)
 @val_srvc_durations
-async def set_service_duration(message: Message, durations:timedelta, state: FSMContext, **kwargs):
+async def set_service_duration(
+    message: Message, durations: timedelta, state: FSMContext, **kwargs
+):
     user_data = await state.get_data()
     name = user_data.get("name")
     price = user_data.get("price")

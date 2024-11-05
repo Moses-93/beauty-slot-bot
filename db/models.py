@@ -16,7 +16,7 @@ from datetime import datetime
 
 
 URI = getenv("URI")
-engine = create_async_engine(URI, echo=True)
+engine = create_async_engine(URI)
 Session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 async_session = Session
 Base = declarative_base()
@@ -60,4 +60,3 @@ class Notes(Base):
 
     def __str__(self):
         return f"Послуга: {self.service.name} | Дата: {self.free_date.date} | Час: {self.time}"
-    
