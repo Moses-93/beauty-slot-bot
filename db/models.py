@@ -12,8 +12,6 @@ from sqlalchemy import (
     ForeignKey,
     Date,
 )
-from datetime import datetime
-
 
 URI = getenv("URI")
 engine = create_async_engine(URI)
@@ -52,7 +50,7 @@ class Notes(Base):
     username = Column(String)
     time = Column(Time, nullable=True)
     reminder_hours = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime)
     service_id = Column(Integer, ForeignKey("main_service.id"))
     date_id = Column(Integer, ForeignKey("main_freedate.id"))
     free_date = relationship("FreeDate")

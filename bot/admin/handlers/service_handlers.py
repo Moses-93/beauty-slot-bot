@@ -6,7 +6,7 @@ from bot.admin.states import ServiceForm, UpdateServiceForm
 from datetime import timedelta
 from db.db_reader import GetService
 from ..keyboards.service_keybord import edit_service_keyboard
-from ...keyboards.keyboards import services_keyboard
+from bot.user.keyboards.booking_keyboard import services_keyboard
 import logging
 from utils.formatted_view import format_services
 from decorators.validators.service_validator import (
@@ -21,12 +21,10 @@ logger = logging.getLogger(__name__)
 
 @service_router.callback_query(lambda c: c.data.startswith("show_services"))
 async def show_services(callback: CallbackQuery, *args, **kwargs):
-    services = await GetService().get_all_services()
+    services = await GetService(all_services=True).get()
     formatted_services = format_services(services)
 
-    await callback.message.answer(
-        text=formatted_services, parse_mode="Markdown"
-    )
+    await callback.message.answer(text=formatted_services, parse_mode="Markdown")
     await callback.answer()
 
 
@@ -124,7 +122,9 @@ async def set_new_field_value(message: Message, state: FSMContext):
     service_id = data.get("service_id")
     if field == "durations":
         new_value = timedelta(minutes=int(new_value))
-    logger.info(f"NEW_VALUE: {new_value}")
+    elif field == "price":
+        new_value = int(new_value)
+    logger.info(f"NEW_VALUE: {new_value} | TYPE: {type(new_value)}")
     logger.info(f"FIELD: {field}")
     logger.info(f"service_id: {service_id}")
 

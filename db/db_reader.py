@@ -1,50 +1,40 @@
+from datetime import datetime
 from .repository import (
     NotesRepository,
     ServiceRepository,
     FreeDateRepository,
-    NotesDeleteRepository,
-    UpdateNotesRepository,
+
 )
 
-from utils.format_datetime import NowDatetime
-
-
 class GetService:
-    def __init__(self, service_id=None, name=None):
+    def __init__(self, service_id=None, name=None, all_services=False):
         self.service_id = service_id
         self.name = name
-        self.service = None
+        self.all_services = all_services
+        self.services = None
 
     async def initialize(self):
         if self.service_id:
-            self.service = await ServiceRepository.get_service_by_id(self.service_id)
+            self.services = await ServiceRepository.get_service_by_id(self.service_id)
         elif self.name:
-            self.service = await ServiceRepository.get_service_by_name(self.name)
+            self.services = await ServiceRepository.get_service_by_name(self.name)
+        elif self.all_services:
+            self.services = await ServiceRepository.get_all_services()
 
     async def get(self):
         await self.initialize()
-        return self.service
-
-    async def get_all_services(self):
-        return await ServiceRepository.get_all_services()
-
-    async def get_id(self):
-        return self.service.id if self.service else None
-
+        return self.services
+    
     async def get_name(self):
-        return self.service.name if self.service else None
-
-    async def get_price(self):
-        return self.service.price if self.service else None
-
-    async def get_durations(self):
-        return self.service.durations if self.service else None
+        await self.initialize()
+        return self.services.name if self.services else None
 
 
 class GetFreeDate:
-    def __init__(self, date_id=None, date=None):
+    def __init__(self, date_id=None, date=None, all_dates=False):
         self.date_id = date_id
         self.date = date
+        self.all_dates = all_dates
         self.free_date = None
 
     async def initialize(self):
@@ -54,6 +44,9 @@ class GetFreeDate:
             )
         elif self.date:
             self.free_date = await FreeDateRepository().get_free_date_by_date(self.date)
+        elif self.all_dates:
+            now = datetime.now()
+            self.free_date = await FreeDateRepository().get_all_free_dates(now)
         else:
             self.free_date = None
 
@@ -61,24 +54,10 @@ class GetFreeDate:
         await self.initialize()
         return self.free_date
 
-    async def get_all_free_dates(self):
-        return await FreeDateRepository().get_all_free_dates()
-
     @property
-    def id(self):
-        return self.free_date.id
-
-    @property
-    def get_date(self):
-        return self.free_date.date
-
-    @property
-    def get_free(self):
-        return self.free_date.free
-
-    @property
-    def get_now(self):
-        return self.free_date.now
+    async def get_date(self):
+        await self.initialize()
+        return self.free_date.date if self.free_date else None
 
 
 class GetNotes:
@@ -89,10 +68,11 @@ class GetNotes:
         self.only_active = only_active
 
     async def initialize(self):
+        now = datetime.now()
         if self.user_id:
             if self.only_active:
                 self.notes = await NotesRepository().get_active_notes_by_user_id(
-                    self.user_id
+                    self.user_id, now
                 )
             else:
                 self.notes = await NotesRepository().get_notes_by_user_id(self.user_id)
@@ -100,28 +80,11 @@ class GetNotes:
             self.notes = await NotesRepository().get_notes_by_date_id(self.date_id)
         elif self.note_id:
             self.notes = await NotesRepository().get_active_notes_by_note_id(
-                self.note_id
+                self.note_id, now
             )
         elif self.only_active:
-            self.notes = await NotesRepository().get_all_active_notes()
+            self.notes = await NotesRepository().get_all_active_notes(now)
 
-    async def get_all_notes(self):
+    async def get_notes(self):
         await self.initialize()
         return self.notes
-
-
-class DeleteNotes:
-    def __init__(self, note_id: int):
-        self.note_id = note_id
-
-    async def delete_note(self):
-        await NotesDeleteRepository().delete_notes_by_note_id(self.note_id)
-
-
-class UpdateNotes:
-    def __init__(self, note_id: int, reminder_hours: int) -> None:
-        self.note_id = note_id
-        self.reminder_hours = reminder_hours
-
-    async def update_reminder(self) -> None:
-        await UpdateNotesRepository().update_reminder(self.note_id, self.reminder_hours)

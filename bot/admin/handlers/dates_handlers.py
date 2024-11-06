@@ -2,7 +2,7 @@ from datetime import datetime, time
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from db.db_writer import date_manager
-from ...keyboards.keyboards import free_dates_keyboard
+from bot.user.keyboards.booking_keyboard import free_dates_keyboard
 from db.db_reader import GetFreeDate
 from ..states import FreeDateForm
 from aiogram.fsm.context import FSMContext
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 @date_router.callback_query(lambda c: c.data == "available_dates")
 async def show_dates(callback: CallbackQuery):
-    free_dates = await GetFreeDate().get_all_free_dates()
+    free_dates = await GetFreeDate(all_dates=True).get()
     formatted_date = format_dates(free_dates)
     await callback.message.answer(text=formatted_date, parse_mode="Markdown")
     await callback.answer()
@@ -48,9 +48,9 @@ async def delete_date(callback: CallbackQuery):
 
 @date_router.callback_query(lambda c: c.data.startswith("delete_date_"))
 async def delete_selected_date(callback: CallbackQuery):
-    logger.info(f"CALLBACK DATA: {callback.data}")
+    logger.info(f"CALLBACK DATA(delete_selected_date): {callback.data}")
     date_id = int(callback.data.split("_")[2])
-    logger.info(f"date_id: {date_id}")
-    date = await date_manager.delete(date_id)
+    logger.info(f"date_id: {date_id} | TYPE: {type(date_id)}")
+    await date_manager.delete(date_id)
     await callback.message.answer(text=f"Обрана Вами дата успішно видалена!")
     await callback.answer()

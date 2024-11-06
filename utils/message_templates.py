@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime, time
 from db.models import Notes, Service, FreeDate
 
 
@@ -28,10 +28,10 @@ class TemplateManager:
     def message_to_the_master(username: str, service: Service, date: FreeDate, time):
         message = (
             f"Новий запис:\n"
-            f"Користувач - {username}\n"
-            f"Послуга - {service.name}\n"
-            f"Дата - {date.date}\n"
-            f"Час - {time}\n"
+            f"Користувач: {username}\n"
+            f"Послуга: {service.name}\n"
+            f"Дата: {date.date}\n"
+            f"Час: {time}\n"
         )
 
         return message
@@ -42,8 +42,8 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def elapsed_time_warning(time):
-        message = f"Ви не можете обрати {time}, оскільки він вже пройшов"
+    def elapsed_time_warning(time:datetime):
+        message = f"Ви не можете обрати {time.time()}, оскільки він вже пройшов"
         return message
 
     @staticmethod
@@ -102,9 +102,9 @@ class TemplateManager:
     def recording_reminder(note: Notes):
         message = (
             f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"
-            f"Дата - {note.free_date.date}\n"
-            f"Час - {note.time}\n"
-            "Адреса - вул. Перлинна 3. ЖК 5 Перлина\n"
+            f"Дата: {note.free_date.date}\n"
+            f"Час: {note.time}\n"
+            "Адреса: вул. Перлинна 3. ЖК 5 Перлина\n"
         )
         return message
 
@@ -112,9 +112,9 @@ class TemplateManager:
     def get_booking_cancellation(note: Notes):
         message = (
             f"Користувач {note.username} скасував запис:\n"
-            f"Послуга - {note.service.name} \n"
-            f"Дата - {note.free_date.date} \n"
-            f"Час - {note.time}"
+            f"Послуга: {note.service.name} \n"
+            f"Дата: {note.free_date.date} \n"
+            f"Час: {note.time}"
         )
         return message
 

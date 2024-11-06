@@ -17,7 +17,7 @@ async def get_busy_slots(user_id: int):
     service, date = get_user_data(user_id, "service", "date")
     logger.info(f"SERVICE -- {service}")
     busy_slots = []
-    notes = await GetNotes(date_id=date.id).get_all_notes()
+    notes = await GetNotes(date_id=date.id).get_notes()
     logger.info(f"NOTES -- {notes}")
     for time in notes:
         time = datetime.combine(date.date, time.time)

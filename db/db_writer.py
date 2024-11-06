@@ -1,38 +1,42 @@
 from sqlalchemy import select
 from .models import FreeDate, Notes, Service, async_session
-from utils.format_datetime import NowDatetime
 import logging
 from decorators.adding_user_data import set_note_id
 
-now = NowDatetime().now_datetime()
 logger = logging.getLogger(__name__)
 
 
-@set_note_id
-async def add_notes(
-    name: str,
-    username: str,
-    time: str,
-    date: FreeDate,
-    service,
-    user_id: int,
-    created_at=now,
-):
-    note = Notes(
-        name=name,
-        username=username,
-        time=time,
-        created_at=created_at,
-        service_id=service.id,
-        date_id=date.id,
-        user_id=user_id,
-    )
-    async with async_session() as session:
-        session.add(note)
-        await session.commit()
-        await session.refresh(note)
-        logger.info(f"NOTE ID(in add_notes): {note.id}")
-        return note
+class NotesManager:
+    
+    def __init__(self, async_session) -> None:
+        self.async_session = async_session
+
+    @set_note_id
+    async def create(self, **kwargs):
+        note = Notes(**kwargs)
+        async with self.async_session() as session:
+            session.add(note)
+            await session.commit()
+            await session.refresh(note)
+            logger.info(f"NOTE ID(in create): {note.id}")
+            return note
+    
+    async def update_reminder(self, note_id:int, reminder_hours: int):
+        logging.info(
+            f"UPDATING REMINDER: {reminder_hours} | type: {type(reminder_hours)}"
+        )
+        async with async_session() as session:
+            result = await session.get(Notes, note_id)
+            if result:
+                result.reminder_hours = reminder_hours
+                await session.commit()
+        
+    async def delete(self, note_id: int):
+        async with async_session() as session:
+            note = await session.get(Notes, note_id)
+            if note:
+                await session.delete(note)
+                await session.commit()
 
 
 class ServiceManager:
@@ -86,3 +90,4 @@ class FreeDatesManager:
 
 service_manager = ServiceManager(async_session)
 date_manager = FreeDatesManager(async_session)
+notes_manager = NotesManager(async_session)

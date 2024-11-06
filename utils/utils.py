@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
-from db.db_writer import add_notes
-from bot.keyboards.keyboards import confirm_time_keyboard
+from db.db_writer import notes_manager
+from bot.user.keyboards.booking_keyboard import confirm_time_keyboard
 from user_data import get_user_data
 from .time_processing import check_slot, time_check, format_time
 from .message_sender import manager
@@ -17,13 +17,17 @@ logger = logging.getLogger(__name__)
 
 
 async def promote_booking(
-    name: str, username: str, time, date: FreeDate, service: Service, user_id: int
+    name: str, username: str, time: datetime, date: FreeDate, service: Service, user_id: int
 ):
     """Проміжна функція для запису в БД та відправлення повідомлень користувачу та майстру"""
     logger.info(f"TIME(in promote_booking): {time} | TYPE: {type(time)}")
-    await add_notes(name, username, time.time(), date, service, user_id)
+    current_time = datetime.now()
+    await notes_manager.create(name=name, username=username, time=time.time(), date_id=date.id, service_id=service.id, user_id=user_id, created_at=current_time)
     msg_for_master = template_manager.message_to_the_master(
-        username, service, date, time.time(),
+        username,
+        service,
+        date,
+        time.time(),
     )
     await manager.send_message(USER_ID, msg_for_master)
     msg_for_user = template_manager.get_booking_confirmation(service, date, time.time())
@@ -62,4 +66,3 @@ async def handlers_time(user_id: int, time: str):
         logger.info(f"NEAREST TIME: {nearest_time} type: {type(nearest_time)}")
         msg = template_manager.busy_time_notification(nearest_time.time())
         return (msg, keyboard)
-

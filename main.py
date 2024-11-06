@@ -4,11 +4,12 @@ import sys
 
 from aiogram import Bot, Dispatcher
 import os
-from bot.handlers import router
+from bot.user.handlers import general_handlers, booking_handler, cancellation_handlers, reminder_handlers, show_booking
 from bot.admin.handlers.general_handlers import admin_router
 from bot.admin.handlers.service_handlers import service_router
 from bot.admin.handlers.dates_handlers import date_router
-from bot.middleware import AdminMiddleware, UserIDMiddleware
+from bot.user.middleware import UserIDMiddleware
+from bot.admin.middleware import AdminMiddleware
 from utils.booking_reminders import find_time_for_reminder
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -38,7 +39,11 @@ dp.callback_query.middleware(UserIDMiddleware())
 
 
 async def main():
-    dp.include_router(router)
+    dp.include_router(general_handlers.general_router)
+    dp.include_router(show_booking.show_booking_router)
+    dp.include_router(cancellation_handlers.cancellation_router)
+    dp.include_router(reminder_handlers.reminder_router)
+    dp.include_router(booking_handler.booking_router)
     dp.include_router(admin_router)
     dp.include_router(service_router)
     dp.include_router(date_router)
