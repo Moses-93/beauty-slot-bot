@@ -8,7 +8,7 @@ from ..states import FreeDateForm
 from aiogram.fsm.context import FSMContext
 import logging
 from decorators.validators.date_validator import validator_date
-from utils.formatted_view import format_dates
+from utils.formatted_view import ViewController
 
 date_router = Router()
 logger = logging.getLogger(__name__)
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 @date_router.callback_query(lambda c: c.data == "available_dates")
 async def show_dates(callback: CallbackQuery):
-    free_dates = await GetFreeDate(all_dates=True).get()
-    formatted_date = format_dates(free_dates)
+    free_dates = await GetFreeDate(free_dates=True).get()
+    formatted_date = ViewController(dates=free_dates).get()
     await callback.message.answer(text=formatted_date, parse_mode="Markdown")
     await callback.answer()
 

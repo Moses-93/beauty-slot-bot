@@ -4,5 +4,3 @@ from aiogram.types import (
     KeyboardButton,
     InlineKeyboardButton,
 )
-
-add_keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="")]])

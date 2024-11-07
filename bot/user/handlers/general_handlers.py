@@ -3,7 +3,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 from db.db_reader import GetService
-from utils.formatted_view import format_services
+from utils.formatted_view import ViewController
 from user_data import set_user_data
 from utils.message_templates import template_manager
 
@@ -40,7 +40,7 @@ async def show_notes(message: Message):
 @general_router.message(lambda message: message.text == "Послуги")
 async def show_services(message: Message):
     service = await GetService(all_services=True).get()
-    formatted_service = format_services(service)
+    formatted_service = ViewController(services=service).get()
 
     await message.answer(text=formatted_service, parse_mode="Markdown")
 

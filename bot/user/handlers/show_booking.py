@@ -5,7 +5,7 @@ from bot.user.keyboards.cancellation_keyboard import (
     cancel_booking_button,
 )
 from db.db_reader import GetNotes
-from utils.formatted_view import format_notes
+from utils.formatted_view import ViewController
 from utils.message_templates import template_manager
 
 
@@ -17,8 +17,8 @@ async def show_all_notes(callback: CallbackQuery, user_id):
 
     notes = await GetNotes(user_id=user_id).get_notes()
     if notes:
-        formatted_notes = format_notes(notes)
-        await callback.message.answer(text=f"{formatted_notes}", parse_mode="Markdown")
+        formatted_notes = ViewController(notes=notes, view_type="all").get()
+        await callback.message.answer(text=formatted_notes, parse_mode="Markdown")
         await callback.answer()
 
     else:
@@ -34,7 +34,7 @@ async def show_active_notes(callback: CallbackQuery, user_id):
     cancel = cancel_booking_button(active_notes)
     logger.info(f"Active notes: {active_notes}")
     if active_notes:
-        formatted_notes = format_notes(active_notes, active_notes=True)
+        formatted_notes = ViewController(notes=active_notes, view_type="active").get()
         await callback.message.answer(
             text=f"{formatted_notes}", reply_markup=cancel, parse_mode="Markdown"
         )

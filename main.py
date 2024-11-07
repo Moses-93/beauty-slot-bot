@@ -5,9 +5,7 @@ import sys
 from aiogram import Bot, Dispatcher
 import os
 from bot.user.handlers import general_handlers, booking_handler, cancellation_handlers, reminder_handlers, show_booking
-from bot.admin.handlers.general_handlers import admin_router
-from bot.admin.handlers.service_handlers import service_router
-from bot.admin.handlers.dates_handlers import date_router
+from bot.admin.handlers import general_handlers as admin_hndlrs, service_handlers, dates_handlers, show_bookings
 from bot.user.middleware import UserIDMiddleware
 from bot.admin.middleware import AdminMiddleware
 from utils.booking_reminders import find_time_for_reminder
@@ -44,9 +42,10 @@ async def main():
     dp.include_router(cancellation_handlers.cancellation_router)
     dp.include_router(reminder_handlers.reminder_router)
     dp.include_router(booking_handler.booking_router)
-    dp.include_router(admin_router)
-    dp.include_router(service_router)
-    dp.include_router(date_router)
+    dp.include_router(admin_hndlrs.admin_router)
+    dp.include_router(service_handlers.service_router)
+    dp.include_router(dates_handlers.date_router)
+    dp.include_router(show_bookings.show_booking_router)
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(find_time_for_reminder, "interval", minutes=2)

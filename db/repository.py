@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import and_, or_, select
 from .models import Service, FreeDate, Notes, async_session
 import logging
@@ -37,14 +37,18 @@ class ServiceRepository:
 
 class FreeDateRepository:
 
-    async def get_filtered_dates(session, date_id:int=None, date=None):
+    @staticmethod
+    async def get_filtered_dates(session, **filters:int|datetime|str|bool):
         query = select(FreeDate)
-        if date_id:
-            query = query.filter(FreeDate.id == date_id)
-        if date:
-            query = query.filter(FreeDate.date == date)
+        if filters.get("date_id"):
+            query = query.filter(FreeDate.id == filters.get("date_id"))
+        if filters.get("date"):
+            query = query.filter(FreeDate.date == filters.get("date"))
+        if filters.get("free"):
+            now = filters.get("now")
+            query = query.filter(FreeDate.free.is_(True), FreeDate.now > now)
         result = await session.execute(query)
-        return result.scalar()
+        return result.scalars().all() if filters.get("free") else result.scalar()
     
     @staticmethod
     async def get_free_dates_by_date_id(date_id):
@@ -52,21 +56,26 @@ class FreeDateRepository:
             return await FreeDateRepository.get_filtered_dates(session, date_id=date_id)
 
     @staticmethod
-    async def get_free_date_by_date(date):
+    async def get_free_date_by_date(date:datetime):
         async with async_session() as session:
             return await FreeDateRepository.get_filtered_dates(session, date=date)
 
     @staticmethod
     async def get_all_free_dates(now: datetime):
         async with async_session() as session:
-            result = await session.execute(
-                select(FreeDate).filter(FreeDate.free.is_(True), FreeDate.now > now)
-            )
+            return await FreeDateRepository.get_filtered_dates(session, free=True, now=now)
+    
+    @staticmethod
+    async def get_dates_last_30_days(now:datetime):
+        async with async_session() as session:
+            query = (select(FreeDate).filter(FreeDate.date >= now - timedelta(days=30)))
+            result = await session.execute(query)
             return result.scalars().all()
 
 
 class NotesRepository:
 
+    @staticmethod
     async def get_filtered_notes(session, user_id=None, date_id=None):
         query = select(Notes).options(
             selectinload(Notes.service), selectinload(Notes.free_date)
@@ -126,6 +135,22 @@ class NotesRepository:
         # Виконуємо запит і повертаємо результат
         result = await session.execute(query)
         return result.scalars().all()
+    
+    @staticmethod
+    async def get_notes_by_days(day: int):
+        async with async_session() as session:
+            # Визначаємо стартову дату фільтрації
+            start_time = datetime.now() - timedelta(days=day)
+            # Створюємо запит з жадним завантаженням
+            query = (
+                select(Notes)
+                .join(FreeDate, FreeDate.id == Notes.date_id)
+                .options(joinedload(Notes.free_date), joinedload(Notes.service))  # Жадне завантаження
+                .filter(FreeDate.date >= start_time.date())
+            )
+            result = await session.execute(query)
+            return result.scalars().all()
+
 
     @staticmethod
     async def get_all_active_notes(now: datetime):

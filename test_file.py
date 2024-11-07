@@ -14,10 +14,11 @@ from db.db_reader import GetService, GetFreeDate, GetNotes
 
 # date = GetFreeDate(date="2024-10-31").date
 # print(date)
-async def main():
-    dates = await GetFreeDate(date_id=30).get()
-    print(dates) 
-    # print(related_data)
+# async def main():
+#     dates = await GetNotes(only_active=True).get_notes()
+#     for date in dates:
+#         print(date) 
+#     # print(related_data)
 
 
-asyncio.run(main())
+# asyncio.run(main())

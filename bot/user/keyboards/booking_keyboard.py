@@ -11,7 +11,7 @@ async def services_keyboard(act):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=service.name, callback_data=f"{act}_service_{service.id}"
+                    text=service.name, callback_data=f"{act}_service_{int(service.id)}"
                 )
             ]
             for service in await GetService(all_services=True).get()
@@ -27,7 +27,7 @@ async def free_dates_keyboard(act):
                     text=str(free_date.date), callback_data=f"{act}_date_{int(free_date.id)}"
                 )
             ]
-            for free_date in await GetFreeDate(all_dates=True).get()
+            for free_date in await GetFreeDate(free_dates=True).get()
         ]
     )
 

@@ -39,9 +39,10 @@ manage_service_keyboard = InlineKeyboardMarkup(
     ],
 )
 
-show_bookings_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Всі записи", callback_data="all_notes")],
-        [InlineKeyboardButton(text="Активні записи", callback_data="active_booking")],
-    ]
+show_bookings_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Фільтрувати записи")],
+        [KeyboardButton(text="Всі активні записи")],
+        [KeyboardButton(text="Назад")],
+    ], resize_keyboard=True
 )

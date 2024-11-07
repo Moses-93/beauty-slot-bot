@@ -8,7 +8,7 @@ from db.db_reader import GetService
 from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
 import logging
-from utils.formatted_view import format_services
+from utils.formatted_view import ViewController
 from decorators.validators.service_validator import (
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @service_router.callback_query(lambda c: c.data.startswith("show_services"))
 async def show_services(callback: CallbackQuery, *args, **kwargs):
     services = await GetService(all_services=True).get()
-    formatted_services = format_services(services)
+    formatted_services = ViewController(services=services).get()
 
     await callback.message.answer(text=formatted_services, parse_mode="Markdown")
     await callback.answer()
