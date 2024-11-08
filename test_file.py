@@ -17,7 +17,7 @@ from db.db_reader import GetService, GetFreeDate, GetNotes
 # async def main():
 #     dates = await GetNotes(only_active=True).get_notes()
 #     for date in dates:
-#         print(date) 
+#         print(date)
 #     # print(related_data)
 
 

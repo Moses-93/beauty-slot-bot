@@ -12,6 +12,7 @@ from utils.message_templates import template_manager
 logger = logging.getLogger(__name__)
 show_booking_router = Router()
 
+
 @show_booking_router.callback_query(lambda c: c.data == "all_notes")
 async def show_all_notes(callback: CallbackQuery, user_id):
 

@@ -1,7 +1,6 @@
-
 def escape_md(text: str) -> str:
-    escape_chars = r'\_*[]()~`>#+-=|{}.!'
-    return ''.join(f'\\{char}' if char in escape_chars else char for char in text)
+    escape_chars = r"\_*[]()~`>#+-=|{}.!"
+    return "".join(f"\\{char}" if char in escape_chars else char for char in text)
 
 
 class ViewController:
@@ -9,7 +8,9 @@ class ViewController:
         self.notes = notes
         self.services = services
         self.dates = dates
-        self.view_type = view_type  # Тип виду, який хочемо відобразити: 'active', 'master', 'all'
+        self.view_type = (
+            view_type  # Тип виду, який хочемо відобразити: 'active', 'master', 'all'
+        )
 
     def get(self):
         if self.notes:
@@ -25,7 +26,10 @@ class FormattingView:
     @staticmethod
     def format_services(services):
         header = "*Послуги:*\n\n*ID* | *Послуга* | *Ціна* | *Тривалість*\n-------------------------------------\n"
-        body = "\n".join(f"{service.id} | {service.name} | {service.price} грн. | {service.durations} хв." for service in services)
+        body = "\n".join(
+            f"{service.id} | {service.name} | {service.price} грн. | {service.durations} хв."
+            for service in services
+        )
         return header + body
 
     @staticmethod
@@ -33,15 +37,24 @@ class FormattingView:
         headers = {
             "active": "*Активні записи:*\n\n*ID* | *Послуга* | *Дата* | *Час*\n-------------------------------------\n",
             "master": "*Всі записи для майстра:*\n\n*Ім'я користувача* | *Послуга* | *Дата* | *Час*\n-------------------------------------\n",
-            "all": "*Всі записи:*\n\n*Послуга* | *Дата* | *Час*\n-------------------------------------\n"
+            "all": "*Всі записи:*\n\n*Послуга* | *Дата* | *Час*\n-------------------------------------\n",
         }
 
         if view_type == "active":
-            body = "\n".join(f"{note.id} | {note.service.name} | {note.free_date.date} | {note.time}" for note in notes)
+            body = "\n".join(
+                f"{note.id} | {note.service.name} | {note.free_date.date} | {note.time}"
+                for note in notes
+            )
         elif view_type == "master":
-            body = "\n".join(f"{escape_md(note.username)} | {note.service.name} | {note.free_date.date} | {note.time}" for note in notes)
+            body = "\n".join(
+                f"{escape_md(note.username)} | {note.service.name} | {note.free_date.date} | {note.time}"
+                for note in notes
+            )
         else:
-            body = "\n".join(f"{note.service.name} | {note.free_date.date} | {note.time}" for note in notes)
+            body = "\n".join(
+                f"{note.service.name} | {note.free_date.date} | {note.time}"
+                for note in notes
+            )
 
         return headers.get(view_type, headers["all"]) + body
 

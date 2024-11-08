@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class NotesManager:
-    
+
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
@@ -20,8 +20,8 @@ class NotesManager:
             await session.refresh(note)
             logger.info(f"NOTE ID(in create): {note.id}")
             return note
-    
-    async def update_reminder(self, note_id:int, reminder_hours: int):
+
+    async def update_reminder(self, note_id: int, reminder_hours: int):
         logging.info(
             f"UPDATING REMINDER: {reminder_hours} | type: {type(reminder_hours)}"
         )
@@ -30,7 +30,7 @@ class NotesManager:
             if result:
                 result.reminder_hours = reminder_hours
                 await session.commit()
-        
+
     async def delete(self, note_id: int):
         async with async_session() as session:
             note = await session.get(Notes, note_id)

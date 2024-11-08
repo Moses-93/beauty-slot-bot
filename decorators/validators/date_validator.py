@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 def validator_date(fucn):
     async def wrapper(message: Message, *args, **kwargs):
-        logger.info(f"DATE(in validator_date 1): {message.text} | type: {type(message.text)}")
+        logger.info(
+            f"DATE(in validator_date 1): {message.text} | type: {type(message.text)}"
+        )
         date = message.text
         if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", date):
             await message.answer(
@@ -25,7 +27,7 @@ def validator_date(fucn):
                 "Дата повинна бути більшою або дорівнювати поточній даті. \nСпробуйте ще раз."
             )
             return
-        
+
         existing_date = await GetFreeDate(date=date).get_date
         if existing_date:
             await message.answer(text=f"Дата - {date} вже є в списку")

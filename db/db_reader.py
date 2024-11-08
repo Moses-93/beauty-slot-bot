@@ -4,9 +4,10 @@ from .repository import (
     NotesRepository,
     ServiceRepository,
     FreeDateRepository,
-
 )
+
 logger = logging.getLogger(__name__)
+
 
 class GetService:
     def __init__(self, service_id=None, name=None, all_services=False):
@@ -26,7 +27,7 @@ class GetService:
     async def get(self):
         await self.initialize()
         return self.services
-    
+
     async def get_name(self):
         await self.initialize()
         return self.services.name if self.services else None
@@ -67,7 +68,14 @@ class GetFreeDate:
 
 
 class GetNotes:
-    def __init__(self, user_id:int=None, date_id:int=None, note_id:int=None, day_filter:int=None, only_active=False):
+    def __init__(
+        self,
+        user_id: int = None,
+        date_id: int = None,
+        note_id: int = None,
+        day_filter: int = None,
+        only_active=False,
+    ):
         self.user_id = user_id
         self.date_id = date_id
         self.note_id = note_id
@@ -93,7 +101,6 @@ class GetNotes:
             self.notes = await NotesRepository().get_all_active_notes(now)
         elif self.day_filter:
             self.notes = await NotesRepository().get_notes_by_days(self.day_filter)
-
 
     async def get_notes(self):
         await self.initialize()

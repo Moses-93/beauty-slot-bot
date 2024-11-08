@@ -19,12 +19,13 @@ async def services_keyboard(act):
     )
 
 
-async def free_dates_keyboard(act):
+async def free_dates_keyboard(act: str):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=str(free_date.date), callback_data=f"{act}_date_{int(free_date.id)}"
+                    text=str(free_date.date),
+                    callback_data=f"{act}_date_{int(free_date.id)}",
                 )
             ]
             for free_date in await GetFreeDate(free_dates=True).get()

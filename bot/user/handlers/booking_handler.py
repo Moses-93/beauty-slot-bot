@@ -15,6 +15,7 @@ time_pattern = r"^(1[0-7]:[0-5]\d|18:00)$"
 logger = logging.getLogger(__name__)
 booking_router = Router()
 
+
 @booking_router.callback_query(lambda c: c.data.startswith("service_"))
 @set_username
 async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):

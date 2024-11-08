@@ -9,6 +9,7 @@ from utils.message_templates import template_manager
 logger = logging.getLogger(__name__)
 reminder_router = Router()
 
+
 @reminder_router.callback_query(lambda c: c.data.startswith("show_reminder_button"))
 async def offers_reminders(callback: CallbackQuery, user_id):
     (note_id,) = get_user_data(user_id, "note_id")

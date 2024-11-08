@@ -42,7 +42,7 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def elapsed_time_warning(time:datetime):
+    def elapsed_time_warning(time: datetime):
         message = f"Ви не можете обрати {time.time()}, оскільки він вже пройшов"
         return message
 

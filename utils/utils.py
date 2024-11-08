@@ -17,12 +17,25 @@ logger = logging.getLogger(__name__)
 
 
 async def promote_booking(
-    name: str, username: str, time: datetime, date: FreeDate, service: Service, user_id: int
+    name: str,
+    username: str,
+    time: datetime,
+    date: FreeDate,
+    service: Service,
+    user_id: int,
 ):
     """Проміжна функція для запису в БД та відправлення повідомлень користувачу та майстру"""
     logger.info(f"TIME(in promote_booking): {time} | TYPE: {type(time)}")
     current_time = datetime.now()
-    await notes_manager.create(name=name, username=username, time=time.time(), date_id=date.id, service_id=service.id, user_id=user_id, created_at=current_time)
+    await notes_manager.create(
+        name=name,
+        username=username,
+        time=time.time(),
+        date_id=date.id,
+        service_id=service.id,
+        user_id=user_id,
+        created_at=current_time,
+    )
     msg_for_master = template_manager.message_to_the_master(
         username,
         service,
