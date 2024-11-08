@@ -1,4 +1,5 @@
-from aiogram import Router
+import logging
+from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from db.db_writer import service_manager
@@ -7,8 +8,9 @@ from datetime import timedelta
 from db.db_reader import GetService
 from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
-import logging
+from bot.admin.keyboards.admin_keyboards import main_keyboard
 from utils.formatted_view import ViewController
+from decorators.check_user import only_admin
 from decorators.validators.service_validator import (
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,
@@ -19,22 +21,27 @@ service_router = Router()
 logger = logging.getLogger(__name__)
 
 
-@service_router.callback_query(lambda c: c.data.startswith("show_services"))
-async def show_services(callback: CallbackQuery, *args, **kwargs):
+@service_router.message(F.text == "Показати послуги")
+@only_admin
+async def show_services(message: Message, *args, **kwargs):
     services = await GetService(all_services=True).get()
+    if not services:
+        await message.answer(text="Немає доступних послуг.")
+        return
     formatted_services = ViewController(services=services).get()
 
-    await callback.message.answer(text=formatted_services, parse_mode="Markdown")
-    await callback.answer()
+    await message.answer(text=formatted_services, parse_mode="Markdown")
+    return
 
 
-@service_router.callback_query(lambda c: c.data.startswith("add_service"))
-async def add_service(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(
+@service_router.message(F.text == "Додати послугу")
+@only_admin
+async def add_service(message: Message, state: FSMContext, *args, **kwargs):
+    await message.answer(
         text="Для того, щоб додати послугу - заповніть всі запропоновані поля.\nВведіть назву послуги:"
     )
     await state.set_state(ServiceForm.name)
-    await callback.answer()
+    return
 
 
 @service_router.message(ServiceForm.name)
@@ -71,15 +78,14 @@ async def set_service_duration(
     await message.answer(text=f"Послуга - {name} успішно додана!")
 
 
-@service_router.callback_query(lambda c: c.data == "edit_services")
-async def choosing_service(callback: CallbackQuery, state: FSMContext):
-    logger.info(f"CALLBACK DATA: {callback.data}")
+@service_router.message(F.text == "Редагувати послугу")
+@only_admin
+async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
     await state.set_state("editing_service")
     edit = await services_keyboard("edit")
-    await callback.message.answer(
-        text="Оберіть, яку послугу Ви хочете редагувати", reply_markup=edit
-    )
-    await callback.answer()
+    msg = "Оберіть, яку послугу Ви хочете редагувати"
+    await message.answer(text=msg, reply_markup=edit)
+    return
 
 
 @service_router.callback_query(lambda c: c.data.startswith("edit_service_"))
@@ -90,10 +96,8 @@ async def choosing_field(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(service_id=service_id)
     logger.info(f"service_id: {service_id}")
-    await callback.message.answer(
-        text="Оберіть, яке поле Ви хочете редагувати",
-        reply_markup=edit_service_keyboard,
-    )
+    msg = "Оберіть, яке поле Ви хочете редагувати"
+    await callback.message.answer(text=msg, reply_markup=edit_service_keyboard)
     await callback.answer()
 
 
@@ -133,14 +137,13 @@ async def set_new_field_value(message: Message, state: FSMContext):
     await state.clear()
 
 
-@service_router.callback_query(lambda c: c.data == "delete_service")
-async def delete_service(callback: CallbackQuery):
-    logger.info(f"CALLBACK DATA: {callback.data}")
+@service_router.message(F.text == "Видалити послугу")
+@only_admin
+async def delete_service(message: Message, *args, **kwargs):
     delete = await services_keyboard("delete")
-    await callback.message.answer(
-        text="Оберіть, яку послугу Ви хочете видалити", reply_markup=delete
-    )
-    await callback.answer()
+    msg = "Оберіть, яку послугу Ви хочете видалити"
+    await message.answer(text=msg, reply_markup=delete)
+    return
 
 
 @service_router.callback_query(lambda c: c.data.startswith("delete_service_"))
@@ -149,3 +152,10 @@ async def delete_selected_service(callback: CallbackQuery):
     await service_manager.delete(service_id)
     await callback.message.answer(text="Послуга успішно видалена!")
     await callback.answer()
+
+
+@service_router.message(F.text == "Назад")
+@only_admin
+async def back_to_main(message: Message, *args, **kwargs):
+    msg = "Ви повернулися до головного меню"
+    await message.answer(text=msg, reply_markup=main_keyboard)

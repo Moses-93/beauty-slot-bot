@@ -1,10 +1,10 @@
 from aiogram import F, Router
 from aiogram.types import Message
-from ..keyboards.admin_keyboards import (
-    main_keyboard,
-    manage_service_keyboard,
-    manage_dates_keyboard,
-    show_bookings_keyboard,
+from ..keyboards import (
+    date_keyboard,
+    service_keybord,
+    admin_keyboards,
+    show_booking_keyboards,
 )
 import logging
 from decorators.check_user import only_admin
@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 async def show_admin_panel(message: Message, is_admin: bool, *args, **kwargs):
     logger.info(f"USER ID(show_admin_panel): {is_admin}")
     if is_admin:
-        await message.answer(
-            text="Ви перейшли в панель адміністратора", reply_markup=main_keyboard
-        )
+        msg = "Ви перейшли в панель адміністратора"
+        keyboard = admin_keyboards.main_keyboard
+        await message.answer(text=msg, reply_markup=keyboard)
         return
     else:
         await message.answer(text="У Вас немає доступу до адмін панелі.")
@@ -31,7 +31,8 @@ async def show_admin_panel(message: Message, is_admin: bool, *args, **kwargs):
 @only_admin
 async def manage_services(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
-    await message.answer(text=msg, reply_markup=manage_service_keyboard)
+    keyboard = service_keybord.manage_service_keyboard
+    await message.answer(text=msg, reply_markup=keyboard)
     return
 
 
@@ -39,11 +40,13 @@ async def manage_services(message: Message, *args, **kwargs):
 @only_admin
 async def manage_dates(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
-    await message.answer(text=msg, reply_markup=manage_dates_keyboard)
+    keyboard = date_keyboard.manage_dates_keyboard
+    await message.answer(text=msg, reply_markup=keyboard)
 
 
 @admin_router.message(F.text == "Записи")
 @only_admin
 async def show_all_bookings(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
-    await message.answer(text=msg, reply_markup=show_bookings_keyboard)
+    keyboard = show_booking_keyboards.show_bookings_keyboard
+    await message.answer(text=msg, reply_markup=keyboard)
