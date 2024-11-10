@@ -44,6 +44,7 @@ async def promote_booking(
     )
     await manager.send_message(USER_ID, msg_for_master)
     msg_for_user = template_manager.get_booking_confirmation(service, date, time.time())
+    logger.info(f"USER ID: {user_id}")
     await manager.send_message(user_id, msg_for_user)
 
 
@@ -52,7 +53,7 @@ async def handlers_time(user_id: int, time: str):
         user_id, "name", "username", "date", "service"
     )
     logger.info(
-        f"NAME - {name}, USERNAME - {username}, DATE - {date}, SERVICE - {service}"
+        f"(in handlers_time)NAME - {name}, USERNAME - {username}, DATE - {date}, SERVICE - {service}"
     )
     time = format_time.formats_time_str_to_datetime(time).time()
     time = datetime.combine(date.date, time)
@@ -74,8 +75,7 @@ async def handlers_time(user_id: int, time: str):
     else:
         keyboard = confirm_time_keyboard(nearest_time)
         logger.info(
-            "handlers_time Час, який обрав користувач - зайнятий, повернулась пропозиція з часом"
+            f"Час, який обрав користувач - зайнятий, повернулась пропозиція з часом: {nearest_time}"
         )
-        logger.info(f"NEAREST TIME: {nearest_time} type: {type(nearest_time)}")
         msg = template_manager.busy_time_notification(nearest_time.time())
         return (msg, keyboard)

@@ -22,9 +22,7 @@ class NotesManager:
             return note
 
     async def update_reminder(self, note_id: int, reminder_hours: int):
-        logging.info(
-            f"UPDATING REMINDER: {reminder_hours} | type: {type(reminder_hours)}"
-        )
+        logger.info("Запуск методу для оновлення поля нагадування")
         async with async_session() as session:
             result = await session.get(Notes, note_id)
             if result:
