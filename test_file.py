@@ -2,7 +2,8 @@ from db.db_writer import service_manager, date_manager
 import asyncio
 from datetime import timedelta, datetime, time
 from db.db_reader import GetService, GetFreeDate, GetNotes
-
+from utils.message_templates import template_manager
+from utils.message_sender import manager
 
 # async def main(date):
 #     date_time = datetime.combine(datetime.strptime(date, "%Y-%m-%d"), time(18, 0))
@@ -13,12 +14,14 @@ from db.db_reader import GetService, GetFreeDate, GetNotes
 
 
 # date = GetFreeDate(date="2024-10-31").date
-# print(date)
+# # # print(date)
 # async def main():
-#     dates = await GetNotes(only_active=True).get_notes()
-#     for date in dates:
-#         print(date)
+#     await manager.send_message(chat_id=1763711362, message="TEST")
 #     # print(related_data)
 
 
 # asyncio.run(main())
+
+
+# mas = template_manager.get_delete_notification()
+# print(mas)

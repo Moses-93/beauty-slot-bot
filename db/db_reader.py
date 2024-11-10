@@ -73,12 +73,14 @@ class GetNotes:
         user_id: int = None,
         date_id: int = None,
         note_id: int = None,
+        service_id: int = None,
         day_filter: int = None,
         only_active=False,
     ):
         self.user_id = user_id
         self.date_id = date_id
         self.note_id = note_id
+        self.service_id = service_id
         self.day_filter = day_filter
         self.only_active = only_active
 
@@ -96,6 +98,10 @@ class GetNotes:
         elif self.note_id:
             self.notes = await NotesRepository().get_active_notes_by_note_id(
                 self.note_id, now
+            )
+        elif self.service_id:
+            self.notes = await NotesRepository().get_notes_by_service_id(
+                self.service_id
             )
         elif self.only_active:
             self.notes = await NotesRepository().get_all_active_notes(now)

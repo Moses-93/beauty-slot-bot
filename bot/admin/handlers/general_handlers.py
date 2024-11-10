@@ -7,7 +7,7 @@ from ..keyboards import (
     show_booking_keyboards,
 )
 import logging
-from decorators.check_user import only_admin
+from decorators.check.check_user import only_admin
 
 admin_router = Router()
 

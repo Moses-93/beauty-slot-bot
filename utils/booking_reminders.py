@@ -21,5 +21,7 @@ async def find_time_for_reminder():
 
         if abs((now - reminder_time).total_seconds()) <= 600:  # 10 хвилин в секундах
             msg = template_manager.recording_reminder(note)
-            logger.info(f"Нагадування відправлено користувачу: {note.username if note.username else note.name}")
+            logger.info(
+                f"Нагадування відправлено користувачу: {note.username if note.username else note.name}"
+            )
             await manager.send_message(chat_id=note.user_id, message=msg)

@@ -2,7 +2,7 @@ from datetime import datetime
 from aiogram.types import Message, CallbackQuery
 import logging
 from bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from decorators.data_validation_in_user_data import check_user_data
+from decorators.validators.data_validation_in_user_data import check_user_data
 from user_data import get_user_data, set_user_data
 from db.db_reader import GetFreeDate, GetService
 from decorators.adding_user_data import set_username

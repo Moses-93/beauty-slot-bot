@@ -51,8 +51,8 @@ class Notes(Base):
     time = Column(Time, nullable=True)
     reminder_hours = Column(Integer, nullable=True)
     created_at = Column(DateTime)
-    service_id = Column(Integer, ForeignKey("main_service.id"))
-    date_id = Column(Integer, ForeignKey("main_freedate.id"))
+    service_id = Column(Integer, ForeignKey("main_service.id", ondelete="CASCADE"))
+    date_id = Column(Integer, ForeignKey("main_freedate.id", ondelete="CASCADE"))
     free_date = relationship("FreeDate")
     service = relationship("Service")
 

@@ -1,3 +1,4 @@
+import ast
 import logging
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
@@ -10,7 +11,9 @@ from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
 from bot.admin.keyboards.admin_keyboards import main_keyboard
 from utils.formatted_view import ViewController
-from decorators.check_user import only_admin
+from utils.message_sender import manager
+from utils.message_templates import template_manager
+from decorators.check import check_user, deletion_checks
 from decorators.validators.service_validator import (
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,
@@ -22,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @service_router.message(F.text == "Показати послуги")
-@only_admin
+@check_user.only_admin
 async def show_services(message: Message, *args, **kwargs):
     services = await GetService(all_services=True).get()
     if not services:
@@ -35,12 +38,31 @@ async def show_services(message: Message, *args, **kwargs):
 
 
 @service_router.message(F.text == "Додати послугу")
-@only_admin
+@check_user.only_admin
 async def add_service(message: Message, state: FSMContext, *args, **kwargs):
     await message.answer(
         text="Для того, щоб додати послугу - заповніть всі запропоновані поля.\nВведіть назву послуги:"
     )
     await state.set_state(ServiceForm.name)
+    return
+
+
+@service_router.message(F.text == "Видалити послугу")
+@check_user.only_admin
+async def delete_service(message: Message, *args, **kwargs):
+    delete = await services_keyboard("delete")
+    msg = "Оберіть, яку послугу Ви хочете видалити"
+    await message.answer(text=msg, reply_markup=delete)
+    return
+
+
+@service_router.message(F.text == "Редагувати послугу")
+@check_user.only_admin
+async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
+    await state.set_state("editing_service")
+    edit = await services_keyboard("edit")
+    msg = "Оберіть, яку послугу Ви хочете редагувати"
+    await message.answer(text=msg, reply_markup=edit)
     return
 
 
@@ -76,16 +98,6 @@ async def set_service_duration(
     await service_manager.create(name=name, price=price, durations=durations)
     await state.clear()
     await message.answer(text=f"Послуга - {name} успішно додана!")
-
-
-@service_router.message(F.text == "Редагувати послугу")
-@only_admin
-async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
-    await state.set_state("editing_service")
-    edit = await services_keyboard("edit")
-    msg = "Оберіть, яку послугу Ви хочете редагувати"
-    await message.answer(text=msg, reply_markup=edit)
-    return
 
 
 @service_router.callback_query(lambda c: c.data.startswith("edit_service_"))
@@ -137,25 +149,32 @@ async def set_new_field_value(message: Message, state: FSMContext):
     await state.clear()
 
 
-@service_router.message(F.text == "Видалити послугу")
-@only_admin
-async def delete_service(message: Message, *args, **kwargs):
-    delete = await services_keyboard("delete")
-    msg = "Оберіть, яку послугу Ви хочете видалити"
-    await message.answer(text=msg, reply_markup=delete)
-    return
-
-
 @service_router.callback_query(lambda c: c.data.startswith("delete_service_"))
-async def delete_selected_service(callback: CallbackQuery):
+@deletion_checks.prevent_deletion_if_related(service=True)
+async def delete_selected_service(callback: CallbackQuery, *args, **kwargs):
     service_id = int(callback.data.split("_")[2])
     await service_manager.delete(service_id)
     await callback.message.answer(text="Послуга успішно видалена!")
     await callback.answer()
 
 
+@service_router.callback_query(lambda c: c.data.startswith("del_service_"))
+async def delete_booking(callback: CallbackQuery):
+    logger.info(f"CALLBACK: {callback.data}")
+    _, _, user_ids, service_id = callback.data.split("_")
+    user_ids = ast.literal_eval(user_ids)
+    await service_manager.delete(service_id=int(service_id))
+    msg = template_manager.get_delete_notification()
+    for user_id in user_ids:
+        await manager.send_message(chat_id=user_id, message=msg)
+        await callback.message.answer(
+            text="Послуга успішно видалена.\nСповіщення відправленно клієнтам"
+        )
+    await callback.answer()
+
+
 @service_router.message(F.text == "Назад")
-@only_admin
+@check_user.only_admin
 async def back_to_main(message: Message, *args, **kwargs):
     msg = "Ви повернулися до головного меню"
     await message.answer(text=msg, reply_markup=main_keyboard)

@@ -37,6 +37,24 @@ class TemplateManager:
         return message
 
     @staticmethod
+    def get_delete_notification(date=False):
+        message = (
+            f"Шановний клієнте, нажаль, {"дата," if date else "послуга"} на яку ви були записані більше недоступна\n"
+            f"Приносимо щирі вибачення та пропонуємо записатись на іншу {"дату" if date else "послугу"}"
+        )
+        return message
+
+    @staticmethod
+    def get_warning_del_date_or_service(date=False):
+        message = (
+            "ПОПЕРЕДЖЕННЯ!\n"
+            f"На цю {"дату" if date else "послугу"} записані клієнти.\n"
+            f"Видаливши цю {"дату" if date else "послугу"} ви скасуєте всі активні записи пов'язані з нею. \n"
+            f"Клієнтам буде відправлено повідомлення про скасування запису."
+        )
+        return message
+
+    @staticmethod
     def get_cancel_notification():
         message = f"Запис скасовано"
         return message

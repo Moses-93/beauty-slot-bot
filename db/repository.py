@@ -83,7 +83,7 @@ class FreeDateRepository:
 class NotesRepository:
 
     @staticmethod
-    async def get_filtered_notes(session, user_id=None, date_id=None):
+    async def get_filtered_notes(session, user_id=None, date_id=None, service_id=None):
         query = select(Notes).options(
             selectinload(Notes.service), selectinload(Notes.free_date)
         )
@@ -92,6 +92,8 @@ class NotesRepository:
             query = query.filter(Notes.user_id == user_id)
         if date_id:
             query = query.filter(Notes.date_id == date_id)
+        if service_id:
+            query = query.filter(Notes.service_id == service_id)
 
         result = await session.execute(query)
         return result.scalars().all()
@@ -105,6 +107,13 @@ class NotesRepository:
     async def get_notes_by_date_id(date_id: int):
         async with async_session() as session:
             return await NotesRepository.get_filtered_notes(session, date_id=date_id)
+
+    @staticmethod
+    async def get_notes_by_service_id(service_id: int):
+        async with async_session() as session:
+            return await NotesRepository.get_filtered_notes(
+                session, service_id=service_id
+            )
 
     @staticmethod
     async def get_filtered_active_notes(

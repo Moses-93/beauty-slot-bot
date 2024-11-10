@@ -4,7 +4,7 @@ from db.db_reader import GetNotes
 from utils.formatted_view import ViewController
 from ..keyboards.show_booking_keyboards import show_periods
 from ..keyboards.admin_keyboards import main_keyboard
-from decorators.check_user import only_admin
+from decorators.check.check_user import only_admin
 
 
 show_booking_router = Router()
