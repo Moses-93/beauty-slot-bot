@@ -1,6 +1,8 @@
-import asyncio
+import logging
 from aiogram import Bot
 from os import getenv
+
+logger = logging.getLogger(__name__)
 
 
 class MessageSendingManager:
@@ -8,17 +10,15 @@ class MessageSendingManager:
         self.bot = Bot(token=token)
 
     async def send_message(self, chat_id: int, message: str):
-        await self.bot.send_message(chat_id=chat_id, text=message)
-
-    # def send(self, chat_id: int, message: str):
-    #     """Зручний метод для асинхронного виклику у синхронному коді."""
-    #     loop = asyncio.get_event_loop()
-    #     if loop.is_running():
-    #         # Якщо цикл вже працює, використовуємо інший підхід
-    #         asyncio.create_task(self.send_message(chat_id, message))
-    #     else:
-    #         # Якщо цикл не запущений, запускаємо асинхронно
-    #         loop.run_until_complete(self.send_message(chat_id, message))
+        """
+        Використовується aiogram для відправки повідомлення в чат
+        """
+        try:
+            await self.bot.send_message(chat_id=chat_id, text=message)
+        except Exception:
+            logger.error(
+                f"Помилка відправлення повідомлення для користувача: {chat_id}"
+            )
 
 
 # Ініціалізація менеджера
