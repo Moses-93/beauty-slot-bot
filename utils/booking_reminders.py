@@ -20,7 +20,7 @@ async def find_time_for_reminder():
         reminder_time = note_time - timedelta(hours=reminder_hours)
 
         if abs((now - reminder_time).total_seconds()) <= 600:  # 10 хвилин в секундах
-            msg = template_manager.recording_reminder(note)
+            msg = template_manager.get_reminder(note=note)
             logger.info(
                 f"Нагадування відправлено користувачу: {note.username if note.username else note.name}"
             )

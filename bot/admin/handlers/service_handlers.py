@@ -40,9 +40,9 @@ async def show_services(message: Message, *args, **kwargs):
 @service_router.message(F.text == "Додати послугу")
 @check_user.only_admin
 async def add_service(message: Message, state: FSMContext, *args, **kwargs):
-    await message.answer(
-        text="Для того, щоб додати послугу - заповніть всі запропоновані поля.\nВведіть назву послуги:"
-    )
+    msg = template_manager.get_add_new_service(name=True)
+    logger.info(f"TYPE MSG: {type(msg)}")
+    await message.answer(text=msg)
     await state.set_state(ServiceForm.name)
     return
 
@@ -51,7 +51,7 @@ async def add_service(message: Message, state: FSMContext, *args, **kwargs):
 @check_user.only_admin
 async def delete_service(message: Message, *args, **kwargs):
     delete = await services_keyboard("delete")
-    msg = "Оберіть, яку послугу Ви хочете видалити"
+    msg = template_manager.get_select_service_del()
     await message.answer(text=msg, reply_markup=delete)
     return
 
@@ -61,8 +61,16 @@ async def delete_service(message: Message, *args, **kwargs):
 async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
     await state.set_state("editing_service")
     edit = await services_keyboard("edit")
-    msg = "Оберіть, яку послугу Ви хочете редагувати"
+    msg = template_manager.get_edit_service()
     await message.answer(text=msg, reply_markup=edit)
+    return
+
+
+@service_router.message(F.text == "Назад")
+@check_user.only_admin
+async def back_to_main(message: Message, *args, **kwargs):
+    msg = "Ви повернулися до головного меню"
+    await message.answer(text=msg, reply_markup=main_keyboard)
     return
 
 
@@ -73,8 +81,8 @@ async def set_service_name(
 ):
 
     await state.update_data(name=service_name)
-
-    await message.answer(text="Вкажіть ціну послуги:")
+    msg = template_manager.get_add_new_service(price=True)
+    await message.answer(text=msg)
     await state.set_state(ServiceForm.price)
 
 
@@ -83,7 +91,8 @@ async def set_service_name(
 async def set_service_price(message: Message, price, state: FSMContext, **kwargs):
 
     await state.update_data(price=price)
-    await message.answer(text="Вкажіть тривалість послуги у хвилинах: ")
+    msg = template_manager.get_add_new_service(durations=True)
+    await message.answer(text=msg)
     await state.set_state(ServiceForm.durations)
 
 
@@ -97,7 +106,8 @@ async def set_service_duration(
     price = user_data.get("price")
     await service_manager.create(name=name, price=price, durations=durations)
     await state.clear()
-    await message.answer(text=f"Послуга - {name} успішно додана!")
+    msg = template_manager.get_add_new_service(success=True, service=name)
+    await message.answer(text=msg)
 
 
 @service_router.callback_query(lambda c: c.data.startswith("edit_service_"))
@@ -108,7 +118,7 @@ async def choosing_field(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(service_id=service_id)
     logger.info(f"service_id: {service_id}")
-    msg = "Оберіть, яке поле Ви хочете редагувати"
+    msg = template_manager.get_edit_service(choice=True)
     await callback.message.answer(text=msg, reply_markup=edit_service_keyboard)
     await callback.answer()
 
@@ -120,14 +130,9 @@ async def set_field_value(callback: CallbackQuery, state: FSMContext):
     await state.update_data(field=field)
 
     await state.set_state(UpdateServiceForm.field)
-    if field == "durations":
-        await callback.message.answer(
-            f"Введіть нове значення поля {field} в хвилинах: "
-        )
-        await callback.answer()
-    else:
-        await callback.message.answer(f"Введіть нове значення поля {field}: ")
-        await callback.answer()
+    msg = template_manager.get_edit_service(field=field)
+    await callback.message.answer(text=msg)
+    await callback.answer()
 
 
 @service_router.message(UpdateServiceForm.field)
@@ -136,16 +141,16 @@ async def set_new_field_value(message: Message, state: FSMContext):
     data = await state.get_data()
     field = data.get("field")
     service_id = data.get("service_id")
-    if field == "durations":
-        new_value = timedelta(minutes=int(new_value))
-    elif field == "price":
-        new_value = int(new_value)
+    new_value = (
+        int(new_value) if field == "price" else timedelta(minutes=int(new_value))
+    )
     logger.info(f"NEW_VALUE: {new_value} | TYPE: {type(new_value)}")
     logger.info(f"FIELD: {field}")
     logger.info(f"service_id: {service_id}")
-
+    msg = template_manager.get_edit_service(field=field, new_value=new_value)
     await service_manager.update(service_id, **{field: new_value})
-    await message.answer(f"Значення поля {field} успішно змінено на {new_value}!")
+    logger.info(f"Поле {field} послуги з ID: {service_id} оновлено на {new_value}")
+    await message.answer(text=msg)
     await state.clear()
 
 
@@ -154,7 +159,8 @@ async def set_new_field_value(message: Message, state: FSMContext):
 async def delete_selected_service(callback: CallbackQuery, *args, **kwargs):
     service_id = int(callback.data.split("_")[2])
     await service_manager.delete(service_id)
-    await callback.message.answer(text="Послуга успішно видалена!")
+    msg = template_manager.get_select_service_del(id=service_id, success=True)
+    await callback.message.answer(text=msg)
     await callback.answer()
 
 
@@ -164,17 +170,9 @@ async def delete_booking(callback: CallbackQuery):
     _, _, user_ids, service_id = callback.data.split("_")
     user_ids = ast.literal_eval(user_ids)
     await service_manager.delete(service_id=int(service_id))
-    msg = template_manager.get_delete_notification()
+    msg_fo_user = template_manager.get_delete_notification()
     for user_id in user_ids:
-        await manager.send_message(chat_id=user_id, message=msg)
-        await callback.message.answer(
-            text="Послуга успішно видалена.\nСповіщення відправленно клієнтам"
-        )
+        await manager.send_message(chat_id=user_id, message=msg_fo_user)
+        msg = template_manager.get_select_service_del(active=True)
+        await callback.message.answer(text=msg)
     await callback.answer()
-
-
-@service_router.message(F.text == "Назад")
-@check_user.only_admin
-async def back_to_main(message: Message, *args, **kwargs):
-    msg = "Ви повернулися до головного меню"
-    await message.answer(text=msg, reply_markup=main_keyboard)

@@ -5,7 +5,7 @@ from utils.formatted_view import ViewController
 from ..keyboards.show_booking_keyboards import show_periods
 from ..keyboards.admin_keyboards import main_keyboard
 from decorators.check.check_user import only_admin
-
+from utils.message_templates import template_manager
 
 show_booking_router = Router()
 
@@ -22,7 +22,7 @@ async def filtered_bookings(message: Message, *args, **kwargs):
 async def show_active_notes(message: Message, *args, **kwargs):
     active_notes = await GetNotes(only_active=True).get_notes()
     if not active_notes:
-        msg = "Не знайдено жодного активного запису"
+        msg = template_manager.booking_not_found()
         await message.answer(text=msg)
         return
     formatted_notes = ViewController(notes=active_notes, view_type="master").get()
@@ -34,7 +34,7 @@ async def show_bookings_for_1_day(callback: CallbackQuery):
     date = int(callback.data.split("_")[1])
     all_notes = await GetNotes(day_filter=date).get_notes()
     if not all_notes:
-        msg = "Не знайдено жодного запису"
+        msg = template_manager.booking_not_found()
         await callback.message.answer(text=msg)
         return
     formatted_notes = ViewController(notes=all_notes, view_type="master").get()

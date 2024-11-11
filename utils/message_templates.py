@@ -25,15 +25,17 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def message_to_the_master(username: str, service: Service, date: FreeDate, time):
+    def message_to_the_master(
+        username: str, service: Service, date: FreeDate, time, booking_cancel=False
+    ):
+
         message = (
-            f"Новий запис:\n"
+            f"{"Скасований запис:\n" if booking_cancel else "Новий запис:\n"}"
             f"Користувач: {username}\n"
             f"Послуга: {service.name}\n"
             f"Дата: {date.date}\n"
             f"Час: {time}\n"
         )
-
         return message
 
     @staticmethod
@@ -53,6 +55,70 @@ class TemplateManager:
             f"Клієнтам буде відправлено повідомлення про скасування запису."
         )
         return message
+
+    @staticmethod
+    def get_add_new_service(
+        name=False, price=False, durations=False, success=False, service=None
+    ):
+        if name:
+            message = (
+                "Для того, щоб додати послугу - заповніть всі запропоновані поля.\n"
+                "Введіть назву послуги:"
+            )
+            return message
+        elif price:
+            message = "Введіть ціну послуги:"
+            return message
+        elif durations:
+            message = "Вкажіть тривалість послуги у хвилинах:"
+            return message
+        elif success:
+            message = f"Послуга - {service} успішно додана!"
+            return message
+
+    @staticmethod
+    def get_add_new_date(add=False, date=None):
+        if add:
+            message = "Введіть дату в форматі YYYY-MM-DD:"
+            return message
+        if date:
+            message = f"Дата - {date} успішно додана!"
+            return message
+
+    @staticmethod
+    def get_edit_service(choice=False, field=None, new_value=None):
+        if field and new_value:
+            message = f"Значення поля {field} успішно змінено на {new_value}!"
+            return message
+        elif choice:
+            message = "Оберіть, яке поле Ви хочете редагувати"
+            return message
+        elif field:
+            message = f"Введіть нове значення поля {field} {"в хвилинах:" if field == "durations" else":"}"
+            return message
+        else:
+            message = "Оберіть, яку послугу Ви хочете редагувати"
+            return message
+
+    @staticmethod
+    def get_select_service_or_date_del(
+        id=None, success=False, active=False, date=False
+    ):
+        if success:
+            message = f"{"Дата" if date else "Послуга"} з ID: {id} успішно видалена!"
+            return message
+        elif active:
+            message = (
+                f"{"Дата" if date else "Послуга"} успішно видалена.\n"
+                f"Записи клієнтів на цю {"дату" if date else "послугу"} скасовано.\n"
+                "Клієнтам надіслано сповіщення."
+            )
+            return message
+        else:
+            message = (
+                f"Оберіть, яку {"дату" if date else "послугу"} Ви хочете видалити:"
+            )
+            return message
 
     @staticmethod
     def get_cancel_notification():
@@ -92,7 +158,7 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def no_entries_found():
+    def booking_not_found():
         message = "На жаль, я не зміг знайти жодних записів у обраній категорії("
         return message
 
@@ -107,39 +173,22 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_reminder():
-        message = "Оберіть за скільки годин бажаєте отримати нагадування:"
-        return message
+    def get_reminder(choice=False, hour=None, note: Notes = None):
+        if choice:
+            message = "Оберіть за скільки годин бажаєте отримати нагадування:"
+            return message
+        if note:
+            message = (
+                f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"
+                f"Дата: {note.free_date.date}\n"
+                f"Час: {note.time}\n"
+                "Адреса: вул. Перлинна 3. ЖК 5 Перлина\n"
+            )
+            return message
 
-    @staticmethod
-    def get_reminder_notification(hour: int):
-        message = f"Нагадування буде надіслано за {hour} год. до запису."
-        return message
-
-    @staticmethod
-    def recording_reminder(note: Notes):
-        message = (
-            f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"
-            f"Дата: {note.free_date.date}\n"
-            f"Час: {note.time}\n"
-            "Адреса: вул. Перлинна 3. ЖК 5 Перлина\n"
-        )
-        return message
-
-    @staticmethod
-    def get_booking_cancellation(note: Notes):
-        message = (
-            f"Користувач {note.username} скасував запис:\n"
-            f"Послуга: {note.service.name} \n"
-            f"Дата: {note.free_date.date} \n"
-            f"Час: {note.time}"
-        )
-        return message
-
-    @staticmethod
-    def booking_not_found():
-        message = "На жаль, такого запису не знайдено"
-        return message
+        else:
+            message = f"Нагадування буде надіслано за {hour} год. до запису."
+            return message
 
 
 template_manager = TemplateManager()

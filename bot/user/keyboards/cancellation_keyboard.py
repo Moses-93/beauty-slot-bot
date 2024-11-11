@@ -10,7 +10,7 @@ def cancel_booking_button(active_notes):
             [
                 InlineKeyboardButton(
                     text=f"Скасувати запис - {note.id}",
-                    callback_data=f"note_{int(note.id)}",
+                    callback_data=f"note_{note.id}",
                 )
             ]
             for note in active_notes

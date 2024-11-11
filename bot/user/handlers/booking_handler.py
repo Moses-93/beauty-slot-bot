@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 import logging
 from bot.user.keyboards.booking_keyboard import free_dates_keyboard
 from decorators.validators.data_validation_in_user_data import check_user_data
-from user_data import get_user_data, set_user_data
+from user_data import get_user_data, set_user_data, clean_user_data
 from db.db_reader import GetFreeDate, GetService
 from decorators.adding_user_data import set_username
 from utils.message_templates import template_manager
@@ -22,9 +22,7 @@ async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):
     logger.info("Запуск обробника послуг")
     service_id = int(callback.data.split("_")[2])
     service = await GetService(service_id=service_id).get()
-    logger.info(f"Selected service: {service}. Type:{type(service)}")
-
-    logger.info(f"Selected service: {service.name}. Type:{type(service.name)}")
+    logger.info(f"Selected service: {service.name}")
     msg = template_manager.service_selection_info(service)
     free_date = await free_dates_keyboard("date")
     await callback.message.answer(
@@ -32,7 +30,6 @@ async def processes_services(callback: CallbackQuery, user_id, *args, **kwargs):
         reply_markup=free_date,
     )
     set_user_data(user_id, service=service)
-    logger.info(f"USER_DATA(handle_services) --- {get_user_data(user_id)}")
     await callback.answer()
 
 
@@ -79,14 +76,21 @@ async def confirm_the_entry(callback: CallbackQuery, user_id):
         name, username, date, service = get_user_data(
             user_id, "name", "username", "date", "service"
         )
+        await promote_booking(name, username, time, date, service, user_id)
     except TypeError:
         logger.error("Помилка під час підтвердження запропонованого часу")
         await callback.message.answer(
             text="Виникла помилка під час запису.\nСпробуйте записатись ще раз"
         )
+        await callback.answer()
         return
-    await promote_booking(name, username, time, date, service, user_id)
-    logger.info(f"SERVICE(in confirm_the_entry - {service})")
+    except AttributeError:
+        logger.error(f"Користувач натиснув на кнопку підтвердження ще раз")
+        await callback.message.answer(
+            text="Запис вже було підтверджено")
+        await callback.answer()
+        return
+    clean_user_data(user_id, note_id="note_id")
     msg = template_manager.successful_booking_notification(service, date, time.time())
     await callback.message.answer(text=msg, reply_markup=reminder_button)
     await callback.answer()

@@ -34,14 +34,15 @@ async def show_dates(message: CallbackQuery, *args, **kwargs):
 @check_user.only_admin
 async def add_date(message: CallbackQuery, state: FSMContext, *args, **kwargs):
     await state.set_state(FreeDateForm.date)
-    await message.answer(text="Введіть дату в форматі YYYY-MM-DD:")
+    msg = template_manager.get_add_new_date(add=True)
+    await message.answer(text=msg)
     return
 
 
 @date_router.message(F.text == "Видалити дату")
 @check_user.only_admin
 async def delete_date(message: CallbackQuery, *args, **kwargs):
-    msg = "Виберіть дату, яку Ви хочете видалити:"
+    msg = template_manager.get_select_service_or_date_del(date=True)
     delete = await free_dates_keyboard("delete")
     await message.answer(text=msg, reply_markup=delete)
     return
@@ -62,18 +63,21 @@ async def set_date(message: Message, full_date, state: FSMContext, **kwargs):
     logger.info(f"FULL DATE: {full_date}")
     await date_manager.create(date=full_date.date(), free=True, now=full_date)
     await state.clear()
-    await message.answer(text=f"Дата - {full_date.date()} успішно додана!")
+    msg = template_manager.get_add_new_date(date=full_date.date())
+    await message.answer(text=msg)
     return
 
 
 @date_router.callback_query(lambda c: c.data.startswith("delete_date_"))
 @deletion_checks.prevent_deletion_if_related(date=True)
 async def delete_selected_date(callback: CallbackQuery, *args, **kwargs):
-    logger.info(f"CALLBACK DATA(delete_selected_date): {callback.data}")
     date_id = int(callback.data.split("_")[2])
     logger.info(f"date_id: {date_id} | TYPE: {type(date_id)}")
     await date_manager.delete(date_id)
-    await callback.message.answer(text=f"Обрана Вами дата успішно видалена!")
+    msg = template_manager.get_select_service_or_date_del(
+        id=date_id, success=True, date=True
+    )
+    await callback.message.answer(text=msg)
     await callback.answer()
 
 
@@ -82,11 +86,10 @@ async def delete_booking(callback: CallbackQuery):
     _, _, date_id, user_ids = callback.data.split("_")
     user_ids = ast.literal_eval(user_ids)
     await date_manager.delete(date_id=int(date_id))
-    msg = template_manager.get_delete_notification(date=True)
+    msg_for_user = template_manager.get_delete_notification(date=True)
     for user_id in user_ids:
         logger.info(f"user_id: {user_id} | type: {type(user_id)}")
-        await manager.send_message(chat_id=user_id, message=msg)
-        await callback.message.answer(
-            text=f"Запис для користувача з ID: {user_id} успішно видалено!"
-        )
+        await manager.send_message(chat_id=user_id, message=msg_for_user)
+    msg = template_manager.get_select_service_or_date_del(active=True, date=True)
+    await callback.message.answer(text=msg)
     await callback.answer()
