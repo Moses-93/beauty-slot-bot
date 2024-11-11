@@ -23,3 +23,13 @@ def set_user_data(user_id, **kwargs):
 
     for key, value in kwargs.items():
         user_data[user_id][key] = value
+
+
+def clean_user_data(user_id, **kwargs):
+    user_data = get_user_data(user_id)  # Зміна назви на `user_data`
+
+    keys_to_keep = set(kwargs.values())  # Створимо набір ключів, які залишаємо
+    keys_to_remove = [key for key in user_data if key not in keys_to_keep]
+
+    for key in keys_to_remove:
+        user_data.pop(key)
