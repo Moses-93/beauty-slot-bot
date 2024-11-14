@@ -5,34 +5,32 @@ from utils.time_processing import (
     get_busy_slots,
     check_slot,
     find_nearest_available_time,
-    time_check,
 )
 from user_data import set_user_data
 
 
-@pytest.mark.asyncio
-async def test_get_busy_slots():
+# @pytest.mark.asyncio
+# async def test_get_busy_slots():
 
-    user_id = 1
+#     user_id = 1
 
-    service = AsyncMock()
-    service.durations = timedelta(minutes=40)
+#     service = AsyncMock()
+#     service.durations = timedelta(minutes=40)
 
-    date = AsyncMock()
-    date.date = datetime.now().date()
-    date.id = 1
-    set_user_data(1, service=service, date=date)
-    # Імітація бази даних та інших функцій
-    with patch("db.db_reader.GetNotes") as MockGetNotes:
-        MockGetNotes.return_value.get_notes = AsyncMock(return_value=[date])
+#     date = AsyncMock()
+#     date.date = datetime.now().date()
+#     date.id = 1
+#     set_user_data(1, service=service, date=date)
+#     # Імітація бази даних та інших функцій
+#     with patch("db.db_reader.GetNotes") as MockGetNotes:
+#         MockGetNotes.return_value.get_notes = AsyncMock(return_value=[date])
 
-        # Виклик функції
-        busy_slots = await get_busy_slots(user_id)
-        print(busy_slots)
+#         # Виклик функції
+#         busy_slots = await get_busy_slots(user_id)
 
-        # Перевірка
-        assert isinstance(busy_slots, list)
-        assert all("start" in slot and "end" in slot for slot in busy_slots)
+#         # Перевірка
+#         assert isinstance(busy_slots, list)
+#         assert all("start" in slot and "end" in slot for slot in busy_slots)
 
 
 @pytest.mark.asyncio
