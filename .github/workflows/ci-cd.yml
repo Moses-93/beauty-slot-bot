@@ -44,3 +44,39 @@ jobs:
       - name: Run tests
         run: |
           pytest
+    
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t moses93/telegram-bot:latest .
+      
+      - name: Log in to Dockerhub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      
+      - name: Push Docker image
+        run: |
+          docker push moses93/telegram-bot:latest
+      
+      - name: Deploy to Digital Ocean
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME }}
+          key: ${{secrets.SSH_KEY}}
+          script:
+            chmod +x /root/chashurina-brows-bot/deploy.sh
+            /root/chashurina-brows-bot/deploy.sh
+
+
+          
