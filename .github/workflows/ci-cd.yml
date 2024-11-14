@@ -75,8 +75,8 @@ jobs:
           username: ${{secrets.USERNAME }}
           key: ${{secrets.SSH_KEY}}
           script:
-            chmod +x /root/chashurina-brows-bot/deploy.sh
-            /root/chashurina-brows-bot/deploy.sh
+            chmod +x /app/chashurina-brows-bot/deploy.sh
+            /app/chashurina-brows-bot/deploy.sh
 
 
           
