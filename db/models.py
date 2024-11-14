@@ -1,6 +1,5 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import declarative_base, relationship
-from os import getenv
+from .config import Base
+from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Boolean,
     Interval,
@@ -12,13 +11,6 @@ from sqlalchemy import (
     ForeignKey,
     Date,
 )
-
-URI = getenv("URI")
-engine = create_async_engine(URI)
-Session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-async_session = Session
-Base = declarative_base()
-
 
 class FreeDate(Base):
     __tablename__ = "main_freedate"

@@ -1,6 +1,7 @@
-from sqlalchemy import select
-from .models import FreeDate, Notes, Service, async_session
 import logging
+from sqlalchemy import select
+from .models import FreeDate, Notes, Service
+from .config import async_session
 from decorators.adding_user_data import set_note_id
 
 logger = logging.getLogger(__name__)

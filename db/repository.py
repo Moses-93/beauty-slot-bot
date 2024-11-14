@@ -1,7 +1,8 @@
+import logging
 from datetime import datetime, timedelta
 from sqlalchemy import and_, or_, select
-from .models import Service, FreeDate, Notes, async_session
-import logging
+from .models import Service, FreeDate, Notes
+from .config import async_session
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import joinedload
 
