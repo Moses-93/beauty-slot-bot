@@ -59,7 +59,7 @@ async def main():
     dp.include_router(show_bookings.show_booking_router)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(find_time_for_reminder, "interval", minutes=2)
+    scheduler.add_job(find_time_for_reminder, "interval", minutes=10)
     scheduler.start()
 
     await dp.start_polling(bot)
