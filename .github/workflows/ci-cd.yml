@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - dev
   pull_request:
 
 jobs:
@@ -18,9 +17,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: postgres
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -75,8 +74,8 @@ jobs:
           username: ${{secrets.USERNAME }}
           key: ${{secrets.SSH_KEY}}
           script:
-            chmod +x /root/chashurina-brows-bot/deploy.sh
-            /root/chashurina-brows-bot/deploy.sh
+            chmod +x app/chashurina-brows-bot/deploy.sh
+            app/chashurina-brows-bot/deploy.sh
 
 
           
