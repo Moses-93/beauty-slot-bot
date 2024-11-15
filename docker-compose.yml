@@ -12,6 +12,8 @@ services:
       - 5432:5432
   bot:
     image: moses93/telegram-bot:latest
+    env_file:
+      - .env
     depends_on:
       - db
     
