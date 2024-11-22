@@ -66,10 +66,7 @@ async def confirm_the_entry(callback: CallbackQuery, user_id):
     time = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     logger.info(f"Time selected(in confirm_the_entry): {time} | type: {type(time)}")
     try:
-        name, username, date, service = await user_cache.get_user_cache(
-            user_id, "name", "username", "date", "service"
-        )
-        await promote_booking(name, username, time, date, service, user_id)
+        await promote_booking(user_id=user_id, time=time)
     except TypeError:
         logger.error("Помилка під час підтвердження запропонованого часу")
         await callback.message.answer(
