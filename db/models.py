@@ -12,6 +12,7 @@ from sqlalchemy import (
     Date,
 )
 
+
 class FreeDate(Base):
     __tablename__ = "main_freedate"
     id = Column(Integer, primary_key=True, index=True)

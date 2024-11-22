@@ -10,7 +10,7 @@ class UserCache:
         if not await self.cache.get(user_id):
             await self.cache.set(user_id, {})
 
-    async def get_user_cache(self, user_id:int, *keys):
+    async def get_user_cache(self, user_id: int, *keys):
         user_data = await self.cache.get(key=user_id)
         if not keys:
             return user_data
@@ -22,7 +22,7 @@ class UserCache:
         user_data.update(kwargs)
         await self.cache.set(user_id, user_data)
 
-    async def clear_user_cache(self, user_id: int, *save_keys:str):
+    async def clear_user_cache(self, user_id: int, *save_keys: str):
         if save_keys:
             user_data = await self.cache.get(key=user_id)
             user_data = {

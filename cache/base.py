@@ -17,17 +17,17 @@ caches.set_config(
 
 
 class ICache(ABC):
-    
+
     @abstractmethod
-    async def get(self, key:str):
+    async def get(self, key: str):
         pass
 
     @abstractmethod
-    async def set(self, key:str, value):
+    async def set(self, key: str, value):
         pass
 
     @abstractmethod
-    async def delete(self, key:str):
+    async def delete(self, key: str):
         pass
 
 
