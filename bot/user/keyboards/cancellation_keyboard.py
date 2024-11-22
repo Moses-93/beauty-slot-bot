@@ -1,16 +1,13 @@
-from user_data import set_user_data
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-def cancel_booking_button(active_notes):
-    for note in active_notes:
-        set_user_data(note.user_id, note=note)
+async def cancel_booking_button(active_notes):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text=f"Скасувати запис - {note.id}",
-                    callback_data=f"note_{note.id}",
+                    callback_data=f"note_{note.id}_{note.name}_{note.free_date}_{note.time}",
                 )
             ]
             for note in active_notes

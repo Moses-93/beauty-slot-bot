@@ -1,36 +1,39 @@
+import logging
 from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
 
-from db.db_reader import GetFreeDate, GetService
+logger = logging.getLogger(__name__)
 
 
-async def services_keyboard(act):
-    return InlineKeyboardMarkup(
+async def services_keyboard(act: str, services):
+    message = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=service.name, callback_data=f"{act}_service_{int(service.id)}"
+                    text=service.name, callback_data=f"{act}_service_{service.id}"
                 )
             ]
-            for service in await GetService(all_services=True).get()
+            for service in services
         ]
     )
+    return message
 
 
-async def free_dates_keyboard(act: str):
-    return InlineKeyboardMarkup(
+async def free_dates_keyboard(act: str, free_dates):
+    message = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text=str(free_date.date),
-                    callback_data=f"{act}_date_{int(free_date.id)}",
+                    callback_data=f"{act}_date_{free_date.id}",
                 )
             ]
-            for free_date in await GetFreeDate(free_dates=True).get()
+            for free_date in free_dates
         ]
     )
+    return message
 
 
 def confirm_time_keyboard(time):

@@ -25,13 +25,13 @@ edit_service_keyboard = InlineKeyboardMarkup(
 )
 
 
-def delete_service_keyboard(user_ids: list[int], service_id: int):
+def delete_service_keyboard(service_id: int):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="Продовжити видалення",
-                    callback_data=f"del_service_{user_ids}_{service_id}",
+                    callback_data=f"del_service_{service_id}",
                 )
             ],
         ]

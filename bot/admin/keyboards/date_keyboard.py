@@ -16,13 +16,13 @@ manage_dates_keyboard = ReplyKeyboardMarkup(
 )
 
 
-def delete_date_keyboard(date_id: int, user_ids: list[int]):
+def delete_date_keyboard(date_id: int):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="Продовжити видалення",
-                    callback_data=f"del_date_{date_id}_{user_ids}",
+                    callback_data=f"del_date_{date_id}",
                 )
             ],
         ],
