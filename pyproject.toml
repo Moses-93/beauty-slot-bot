@@ -22,6 +22,7 @@ apscheduler = "^3.10.4"
 cachetools = "^5.5.0"
 asyncpg = "^0.30.0"
 pytest-asyncio = "^0.24.0"
+aiocache = "^0.12.3"
 
 
 [build-system]
