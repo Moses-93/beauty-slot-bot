@@ -13,23 +13,23 @@ from sqlalchemy import (
 )
 
 
-class FreeDate(Base):
-    __tablename__ = "main_freedate"
+class Dates(Base):
+    __tablename__ = "main_dates"
     id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date)
-    free = Column(Boolean, default=True)
-    now = Column(DateTime)
+    date = Column(Date, nullable=False)
+    free = Column(Boolean, default=True, index=True)
+    del_time = Column(DateTime, nullable=False)
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d %H:%M:%S")
 
 
-class Service(Base):
-    __tablename__ = "main_service"
+class Services(Base):
+    __tablename__ = "main_services"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    price = Column(Integer)
-    durations = Column(Interval)
+    name = Column(String, nullable=False)
+    price = Column(Integer, nullable=False)
+    durations = Column(Interval, nullable=False)
 
     def __str__(self):
         return f"{self.name}: - {self.price} грн."
@@ -38,16 +38,19 @@ class Service(Base):
 class Notes(Base):
     __tablename__ = "main_notes"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, index=True)
-    name = Column(String)
+    active = Column(Boolean, default=True, index=True)
+    user_id = Column(Integer, index=True, nullable=False)
+    name = Column(String, nullable=False)
     username = Column(String)
-    time = Column(Time, nullable=True)
+    time = Column(Time, nullable=False)
+    service_id = Column(Integer, ForeignKey("main_services.id", ondelete="CASCADE"))
+    date_id = Column(Integer, ForeignKey("main_dates.id", ondelete="CASCADE"))
     reminder_hours = Column(Integer, nullable=True)
     created_at = Column(DateTime)
-    service_id = Column(Integer, ForeignKey("main_service.id", ondelete="CASCADE"))
-    date_id = Column(Integer, ForeignKey("main_freedate.id", ondelete="CASCADE"))
-    free_date = relationship("FreeDate")
-    service = relationship("Service")
+    date = relationship("Dates")
+    service = relationship("Services")
 
     def __str__(self):
-        return f"Послуга: {self.service.name} | Дата: {self.free_date.date} | Час: {self.time}"
+        return (
+            f"Послуга: {self.service.name} | Дата: {self.date.date} | Час: {self.time}"
+        )
