@@ -2,8 +2,7 @@ import logging
 import re
 from aiogram.types import Message
 from datetime import timedelta
-
-from db.db_reader import GetService
+from db.db_reader import get_service
 
 logger = logging.getLogger(__name__)
 
@@ -11,12 +10,6 @@ logger = logging.getLogger(__name__)
 def validate_service_name(func):
     async def wrapper(message: Message, *args, **kwargs):
         service_name = message.text
-        existing_service = await GetService(name=service_name).get_name()
-        if existing_service:
-            await message.answer(
-                text="Така назва послуги вже існує.\nСпробуйте Ще раз."
-            )
-            return
         if not (4 <= len(service_name) <= 30):
             await message.answer(
                 text="Назва послуги повинна бути від 3 до 30 символів.\nСпробуйте ще раз."
@@ -26,6 +19,12 @@ def validate_service_name(func):
         if not re.match(r"^[A-Za-zА-Яа-яЁёЇїІіЄєҐґ+\- ]+$", service_name):
             await message.answer(
                 "Назва послуги може містити тільки букви, пробіли, плюс та дефіс.\nСпробуйте ще раз."
+            )
+            return
+        existing_service = await get_service.get_service(name=service_name)
+        if existing_service:
+            await message.answer(
+                text=f"Послуга - {service_name} вже існує.\nСпробуйте Ще раз."
             )
             return
 
@@ -58,8 +57,7 @@ def validate_service_price(func):
 def validate_service_durations(func):
     async def wrapper(message: Message, *args, **kwargs):
         try:
-            durations = int(message.text)
-            durations = timedelta(minutes=durations)
+            durations = timedelta(minutes=int(message.text))
         except ValueError:
             await message.answer(
                 text="Тривалість повинна бути числом.\nСпробуйте ще раз."
@@ -73,5 +71,6 @@ def validate_service_durations(func):
             return
 
         await func(message, durations, *args, **kwargs)
+        return True
 
     return wrapper

@@ -3,7 +3,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 from bot.user.keyboards.reminder_keyboard import create_reminder_keyboards
 from db.db_writer import notes_manager
-from user_data import get_user_data, user_data
+from cache.cache import user_cache
 from utils.message_templates import template_manager
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ reminder_router = Router()
 @reminder_router.callback_query(lambda c: c.data.startswith("show_reminder_button"))
 async def offers_reminders(callback: CallbackQuery, user_id):
     logger.info("Запуск обробника пропозиції нагадувань")
-    (note_id,) = get_user_data(user_id, "note_id")
+    (note_id,) = await user_cache.get_user_cache(user_id, "note_id")
     msg = template_manager.get_reminder(choice=True)
     keyboard = create_reminder_keyboards(note_id)
     await callback.message.answer(text=msg, reply_markup=keyboard)
@@ -28,4 +28,4 @@ async def process_reminder_callback(callback: CallbackQuery, user_id):
     msg = template_manager.get_reminder(hour=hour)
     await callback.message.answer(text=msg)
     await callback.answer()
-    user_data.pop(user_id)
+    await user_cache.clear_user_cache(user_id)

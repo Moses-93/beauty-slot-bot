@@ -1,5 +1,5 @@
 import logging
-from db.db_reader import GetNotes
+from db.db_reader import get_notes
 from datetime import datetime, timedelta
 from utils.message_templates import template_manager
 from utils.message_sender import manager
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 async def find_time_for_reminder():
     now = datetime.now()
-    active_notes = await GetNotes(only_active=True).get_notes()
+    active_notes = await get_notes.get_notes(active=True)
 
     for note in active_notes:
         if not note.reminder_hours:

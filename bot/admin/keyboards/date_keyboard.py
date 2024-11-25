@@ -1,8 +1,6 @@
 from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
 )
 
 manage_dates_keyboard = ReplyKeyboardMarkup(
@@ -14,16 +12,3 @@ manage_dates_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True,
 )
-
-
-def delete_date_keyboard(date_id: int, user_ids: list[int]):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Продовжити видалення",
-                    callback_data=f"del_date_{date_id}_{user_ids}",
-                )
-            ],
-        ],
-    )
