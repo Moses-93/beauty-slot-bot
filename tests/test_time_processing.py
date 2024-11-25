@@ -6,7 +6,7 @@ from utils.time_processing import (
     check_slot,
     find_nearest_available_time,
 )
-from user_data import set_user_data
+from cache.cache import user_cache
 
 
 @pytest.mark.asyncio
@@ -20,7 +20,7 @@ async def test_get_busy_slots():
     date = AsyncMock()
     date.date = datetime.now().date()
     date.id = 1
-    set_user_data(1, service=service, date=date)
+    user_cache.set_user_cache(1, service=service, date=date)
     # Імітація бази даних та інших функцій
     with patch("db.db_reader.GetNotes") as MockGetNotes:
         MockGetNotes.return_value.get_notes = AsyncMock(return_value=[date])
@@ -42,7 +42,7 @@ async def test_find_nearest_available_time():
     busy_slots = [
         {"start": current_time, "end": current_time + service_durations.durations}
     ]
-    set_user_data(user_id, service=service_durations)
+    user_cache.set_user_cache(user_id, service=service_durations)
     nearest_time = await find_nearest_available_time(user_id, current_time, busy_slots)
     assert nearest_time == current_time + timedelta(hours=1)
 
