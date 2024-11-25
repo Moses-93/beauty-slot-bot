@@ -3,7 +3,7 @@ from datetime import datetime
 from .models import Services, Dates, Notes
 from .config import async_session, AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, update
+from sqlalchemy import and_, select, update
 from .interfaces import GetNotesInterface, GetDatesInterface, GetServicesInterface
 
 
@@ -15,7 +15,7 @@ class BaseGetNotes(GetNotesInterface):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def deactivate_old_notes(self, session: AsyncSession):
+    async def _deactivate_old_notes(self, session: AsyncSession):
         logger.info("Запуск методу для деактивації старих записів")
         now = datetime.now()
         stmt = (
@@ -23,21 +23,23 @@ class BaseGetNotes(GetNotesInterface):
             .where(
                 Notes.active == True,
                 Notes.time < now.time(),
-                Notes.free_date.has(Dates.date <= now.date()),
+                Notes.date.has(Dates.date <= now.date()),
             )
             .values(active=False)
         )
         await session.execute(stmt)
         await session.commit()
 
-    async def get_notes(self, **filters):
+    async def get_notes(self, *expressions, **filters):
         logger.info("Запуск методу для отримання записів")
         async with self.session() as session:
             if filters.get("active"):
-                await self.deactivate_old_notes(session)
+                await self._deactivate_old_notes(session)
             query = select(Notes).options(
-                selectinload(Notes.service), selectinload(Notes.free_date)
+                selectinload(Notes.service), selectinload(Notes.date)
             )
+            if expressions:
+                query = query.filter(Notes.date.has(and_(*expressions)))
             if filters:
                 query = query.filter_by(**filters)
             result = await session.execute(query)
@@ -70,7 +72,7 @@ class BaseGetDates(GetDatesInterface):
             update(Dates)
             .where(
                 Dates.free == True,
-                Dates.now < now,
+                Dates.del_time < now,
             )
             .values(free=False)
         )
@@ -78,7 +80,7 @@ class BaseGetDates(GetDatesInterface):
         await session.commit()
 
     async def get_date(self, **filters):
-        logger.info("Запуск методу для отримання дат")
+        logger.info("Запит для отримання дат")
         async with self.session() as session:
             if filters.get("free"):
                 await self.deactivate_old_date(session)

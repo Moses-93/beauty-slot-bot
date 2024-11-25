@@ -1,8 +1,8 @@
 import logging
 from sqlalchemy import select
-from .models import FreeDate, Notes, Service
+from .models import Dates, Notes, Services
 from .config import async_session
-from decorators.adding_user_data import set_note_id
+from decorators.caching.user_cache import cache_note_id
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ class NotesManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
-    @set_note_id
+    @cache_note_id
     async def create(self, **kwargs):
         note = Notes(**kwargs)
         async with self.async_session() as session:
@@ -43,7 +43,7 @@ class ServiceManager:
         self.async_session = async_session
 
     async def create(self, **kwargs):
-        new_service = Service(**kwargs)
+        new_service = Services(**kwargs)
         async with self.async_session() as session:
             session.add(new_service)
             await session.commit()
@@ -52,7 +52,7 @@ class ServiceManager:
     async def update(self, service_id, **kwargs):
         async with self.async_session() as session:
             updated_service = await session.execute(
-                select(Service).filter_by(id=service_id)
+                select(Services).filter_by(id=service_id)
             )
             service = updated_service.scalars().first()
             if service:
@@ -62,18 +62,18 @@ class ServiceManager:
 
     async def delete(self, service_id):
         async with self.async_session() as session:
-            service = await session.get(Service, service_id)
+            service = await session.get(Services, service_id)
             if service:
                 await session.delete(service)
                 await session.commit()
 
 
-class FreeDatesManager:
+class DatesManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
     async def create(self, **kwargs):
-        new_date = FreeDate(**kwargs)
+        new_date = Dates(**kwargs)
         async with self.async_session() as session:
             session.add(new_date)
             await session.commit()
@@ -81,12 +81,12 @@ class FreeDatesManager:
 
     async def delete(self, date_id):
         async with self.async_session() as session:
-            date = await session.get(FreeDate, date_id)
+            date = await session.get(Dates, date_id)
             if date:
                 await session.delete(date)
                 await session.commit()
 
 
 service_manager = ServiceManager(async_session)
-date_manager = FreeDatesManager(async_session)
+date_manager = DatesManager(async_session)
 notes_manager = NotesManager(async_session)

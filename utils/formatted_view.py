@@ -43,21 +43,21 @@ class FormattingView:
             "all": "*Всі записи:*\n\n*Послуга* | *Дата* | *Час*\n-------------------------------------\n",
         }
 
-        sorted_notes = sorted(notes, key=attrgetter("free_date.date", "time"))
+        sorted_notes = sorted(notes, key=attrgetter("date.date", "time"))
 
         if view_type == "active":
             body = "\n".join(
-                f"{note.id} | {note.service.name} | {note.free_date.date} | {note.time}"
+                f"{note.id} | {note.service.name} | {note.date.date} | {note.time}"
                 for note in sorted_notes
             )
         elif view_type == "master":
             body = "\n".join(
-                f"{escape_md(note.username if note.username else note.name)} | {note.service.name} | {note.free_date.date} | {note.time}"
+                f"{escape_md(note.username if note.username else note.name)} | {note.service.name} | {note.date.date} | {note.time}"
                 for note in sorted_notes
             )
         else:
             body = "\n".join(
-                f"{note.service.name} | {note.free_date.date} | {note.time}"
+                f"{note.service.name} | {note.date.date} | {note.time}"
                 for note in sorted_notes
             )
 

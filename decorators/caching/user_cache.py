@@ -24,7 +24,7 @@ def cache_date(func):
         user_id = callback.from_user.id
         date_id = int(callback.data.split("_")[2])
 
-        dates = await request_cache.get_request(key="free_dates")
+        dates = await request_cache.get_request(key="dates")
         if dates is None:
             return await func(callback, *args, **kwargs)
         for date in dates:

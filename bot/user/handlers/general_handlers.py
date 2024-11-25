@@ -2,7 +2,7 @@ import logging
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
-from decorators.caching.request_cache import get_service
+from decorators.caching.request_cache import get_all_service
 from utils.formatted_view import ViewController
 from utils.message_templates import template_manager
 
@@ -21,7 +21,7 @@ async def start(message: Message, user_id):
 
 
 @general_router.message(lambda message: message.text == "Записатись")
-@get_service
+@get_all_service
 async def make_an_appointment(message: Message, services, *args, **kwargs):
     msg = template_manager.get_service_options()
     service = await booking_keyboard.services_keyboard(act="service", services=services)
@@ -37,7 +37,7 @@ async def show_notes(message: Message):
 
 
 @general_router.message(lambda message: message.text == "Послуги")
-@get_service
+@get_all_service
 async def show_services(message: Message, services, *args, **kwargs):
     formatted_service = ViewController(services=services).get()
 

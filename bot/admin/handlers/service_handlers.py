@@ -6,7 +6,7 @@ from db.db_writer import service_manager
 from bot.admin.states import ServiceForm, UpdateServiceForm
 from datetime import timedelta
 from cache.cache import request_cache
-from decorators.caching.request_cache import clear_cache, update_cache, get_service
+from decorators.caching.request_cache import clear_cache, update_cache, get_all_service
 from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
 from bot.admin.keyboards.admin_keyboards import main_keyboard
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 @service_router.message(F.text == "Показати послуги")
-@get_service
+@get_all_service
 @check_user.only_admin
 async def show_services(message: Message, services, *args, **kwargs):
     if not services:
@@ -49,7 +49,7 @@ async def add_service(message: Message, state: FSMContext, *args, **kwargs):
 
 
 @service_router.message(F.text == "Видалити послугу")
-@get_service
+@get_all_service
 @check_user.only_admin
 async def delete_service(message: Message, services, *args, **kwargs):
     delete = await services_keyboard(act="delete", services=services)
@@ -59,7 +59,7 @@ async def delete_service(message: Message, services, *args, **kwargs):
 
 
 @service_router.message(F.text == "Редагувати послугу")
-@get_service
+@get_all_service
 @check_user.only_admin
 async def choosing_service(
     message: Message, services, state: FSMContext, *args, **kwargs
@@ -103,7 +103,7 @@ async def set_service_price(message: Message, price, state: FSMContext, **kwargs
 
 
 @service_router.message(ServiceForm.durations)
-@update_cache(service=True)
+@update_cache(key="services")
 @val_srvc_durations
 async def set_service_duration(
     message: Message, durations: timedelta, state: FSMContext, **kwargs
@@ -121,7 +121,6 @@ async def set_service_duration(
 async def choosing_field(callback: CallbackQuery, state: FSMContext):
     logger.info(f"CALLBACK DATA(in choosing_field): {callback.data}")
     service_id = int(callback.data.split("_")[2])
-    logger.info(f"service_id: {service_id}")
     await state.update_data(service_id=service_id)
     msg = template_manager.get_edit_service(choice=True)
     await callback.message.answer(text=msg, reply_markup=edit_service_keyboard)
@@ -141,28 +140,27 @@ async def set_field_value(callback: CallbackQuery, state: FSMContext):
 
 
 @service_router.message(UpdateServiceForm.field)
-@update_cache(service=True)
+@update_cache(key="services")
 async def set_new_field_value(message: Message, state: FSMContext, *args, **kwargs):
     new_value = message.text
     data = await state.get_data()
     field = data.get("field")
     service_id = data.get("service_id")
-    new_value = (
-        int(new_value) if field == "price" else timedelta(minutes=int(new_value))
-    )
-    logger.info(f"NEW_VALUE: {new_value} | TYPE: {type(new_value)}")
-    logger.info(f"FIELD: {field}")
-    logger.info(f"service_id: {service_id}")
+    if field == "price":
+        new_value = int(new_value)
+    elif field == "durations":
+        new_value = timedelta(minutes=int(new_value))
     msg = template_manager.get_edit_service(field=field, new_value=new_value)
     await service_manager.update(service_id, **{field: new_value})
     logger.info(f"Поле {field} послуги з ID: {service_id} оновлено на {new_value}")
     await message.answer(text=msg)
     await state.clear()
+    return True
 
 
 @service_router.callback_query(lambda c: c.data.startswith("delete_service_"))
-@clear_cache(service=True)
-@deletion_checks.check_booking(service=True)
+@clear_cache(key="services")
+@deletion_checks.check_booking("service_id")
 async def delete_selected_service(callback: CallbackQuery, service_id, *args, **kwargs):
     await service_manager.delete(service_id)
     msg = template_manager.get_select_service_or_date_del(id=service_id, success=True)
@@ -170,16 +168,16 @@ async def delete_selected_service(callback: CallbackQuery, service_id, *args, **
     await callback.answer()
 
 
-@service_router.callback_query(lambda c: c.data.startswith("del_service_"))
-@clear_cache(service=True)
+@service_router.callback_query(lambda c: c.data.startswith("del_service_id_"))
+@clear_cache(key="services")
 async def delete_booking(callback: CallbackQuery, *args, **kwargs):
     logger.info(f"CALLBACK: {callback.data}")
-    service_id = int(callback.data.split("_")[2])
+    service_id = int(callback.data.split("_")[3])
     user_ids = await request_cache.get_request("user_ids")
     await service_manager.delete(service_id=int(service_id))
     msg_fo_user = template_manager.get_delete_notification()
     for user_id in user_ids:
         await manager.send_message(chat_id=user_id, message=msg_fo_user)
-        msg = template_manager.get_select_service_or_date_del(active=True)
-        await callback.message.answer(text=msg)
+    msg = template_manager.get_select_service_or_date_del(active=True)
+    await callback.message.answer(text=msg)
     await callback.answer()

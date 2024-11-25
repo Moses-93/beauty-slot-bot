@@ -7,7 +7,7 @@ async def cancel_booking_button(active_notes):
             [
                 InlineKeyboardButton(
                     text=f"Скасувати запис - {note.id}",
-                    callback_data=f"note_{note.id}_{note.name}_{note.free_date}_{note.time}",
+                    callback_data=f"note_{note.id}_{note.name}_{note.date}_{note.time}",
                 )
             ]
             for note in active_notes

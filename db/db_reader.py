@@ -13,10 +13,8 @@ class GetNotes:
     def __init__(self, notes: BaseGetNotes):
         self.notes = notes
 
-    async def get_notes(self, first=False, **filters):
-        result = await self.notes.get_notes(**filters)
-        if first:
-            return result[0]
+    async def get_notes(self, *expressions, **filters):
+        result = await self.notes.get_notes(*expressions, **filters)
         return result
 
 
@@ -27,7 +25,7 @@ class GetServices:
 
     async def get_service(self, first=False, **filters):
         result = await self.services.get_service(**filters)
-        if first:
+        if first and result:
             return result[0]
         return result
 
@@ -39,7 +37,7 @@ class GetDates:
 
     async def get_date(self, first=False, **filters):
         result = await self.dates.get_date(**filters)
-        if first:
+        if first and result:
             return result[0]
         return result
 

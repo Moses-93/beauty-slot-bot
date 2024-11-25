@@ -1,7 +1,7 @@
 import logging
 from utils.format_datetime import FormatDate, FormatTime
 from cache.cache import user_cache
-from db.db_reader import GetNotes
+from db.db_reader import get_notes
 from datetime import datetime
 
 
@@ -16,7 +16,7 @@ async def get_busy_slots(user_id: int):
     logger.info("Запуск функції для пошуку зайнятих слотів")
     service, date = await user_cache.get_user_cache(user_id, "service", "date")
     busy_slots = []
-    notes = await GetNotes(date_id=date.id).get_notes()
+    notes = await get_notes.get_notes(date_id=date.id)
     for time in notes:
         time = datetime.combine(date.date, time.time)
         end_time = time + service.durations
