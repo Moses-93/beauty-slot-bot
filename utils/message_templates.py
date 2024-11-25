@@ -1,5 +1,6 @@
 from datetime import datetime, time
-from db.models import Notes, Service, FreeDate
+from db.models import Notes
+from cache.cache import request_cache, user_cache
 
 
 class TemplateManager:
@@ -15,7 +16,8 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_booking_confirmation(service: Service, date: FreeDate, time: time):
+    async def get_booking_confirmation(user_id: int, time: time):
+        service, date = await user_cache.get_user_cache(user_id, "service", "date")
         message = (
             f"Ви щойно здійснили запис на послугу - {service.name}\n"
             f"Чекаю Вас {date.date} o {time}.\n"
@@ -25,15 +27,14 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def message_to_the_master(
-        username: str, service: Service, date: FreeDate, time, booking_cancel=False
+    async def message_to_the_master(
+        username: str, service: str, date: datetime, time, booking_cancel=False
     ):
-
         message = (
             f"{"Скасований запис:\n" if booking_cancel else "Новий запис:\n"}"
             f"Користувач: {username}\n"
-            f"Послуга: {service.name}\n"
-            f"Дата: {date.date}\n"
+            f"Послуга: {service if service else None}\n"
+            f"Дата: {date}\n"
             f"Час: {time}\n"
         )
         return message
@@ -41,7 +42,7 @@ class TemplateManager:
     @staticmethod
     def get_delete_notification(date=False):
         message = (
-            f"Шановний клієнте, нажаль, {"дата," if date else "послуга"} на яку ви були записані більше недоступна\n"
+            f"Шановний клієнте, на жаль, {"дата," if date else "послуга"} на яку ви були записані більше недоступна\n"
             f"Приносимо щирі вибачення та пропонуємо записатись на іншу {"дату" if date else "послугу"}"
         )
         return message
@@ -131,9 +132,8 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def service_selection_info(service: Service):
-        message = f"Ви обрали '{service.name}'. Вартість: {service.price} грн.\
-            \nОберіть дату, на яку бажаєте записатись"
+    def service_selection_info():
+        message = "Оберіть дату, на яку бажаєте записатись"
         return message
 
     @staticmethod
@@ -163,12 +163,13 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def date_selection_prompt(date: FreeDate):
-        message = f"Ви обрали {date.date}. Напишіть час до 18:00 у форматі 'ГГ:ХХ'"
+    def date_selection_prompt():
+        message = f"Напишіть час до 18:00 у форматі 'ГГ:ХХ'"
         return message
 
     @staticmethod
-    def successful_booking_notification(service: Service, date: FreeDate, time):
+    async def successful_booking_notification(user_id: int, time: time):
+        service, date = await user_cache.get_user_cache(user_id, "service", "date")
         message = f"Ви успішно записались на послугу - {service.name}. \nЧекаю на Вас {date.date} о {time}"
         return message
 
