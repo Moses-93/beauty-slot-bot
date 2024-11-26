@@ -10,23 +10,25 @@ from utils.time_processing import (
 
 @pytest.mark.asyncio
 async def test_get_busy_slots():
-
+    date_time = datetime.now()
     user_id = 1
 
     service = AsyncMock()
     service.durations = timedelta(minutes=40)
 
     date = AsyncMock()
-    date.date = datetime.now().date()
+    date.date = date_time.date()
     date.id = 1
-    # Імітація бази даних та інших функцій
-    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service, date))):
-        # Виклик функції
-        busy_slots = await get_busy_slots(user_id)
+    date.time = date_time.time()
 
-        # Перевірка
-        assert isinstance(busy_slots, list)
-        assert all("start" in slot and "end" in slot for slot in busy_slots)
+    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service, date))):
+        with patch("db.db_reader.get_notes.get_notes", AsyncMock(return_value=[date])):
+        # Виклик функції
+            busy_slots = await get_busy_slots(user_id)
+
+            # Перевірка
+            assert isinstance(busy_slots, list)
+            assert all("start" in slot and "end" in slot for slot in busy_slots)
 
 
 @pytest.mark.asyncio
