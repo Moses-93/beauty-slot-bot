@@ -6,7 +6,6 @@ from utils.time_processing import (
     check_slot,
     find_nearest_available_time,
 )
-from cache.cache import user_cache
 
 
 @pytest.mark.asyncio
@@ -20,11 +19,8 @@ async def test_get_busy_slots():
     date = AsyncMock()
     date.date = datetime.now().date()
     date.id = 1
-    user_cache.set_user_cache(1, service=service, date=date)
     # Імітація бази даних та інших функцій
-    with patch("db.db_reader.GetNotes") as MockGetNotes:
-        MockGetNotes.return_value.get_notes = AsyncMock(return_value=[date])
-
+    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service, date))):
         # Виклик функції
         busy_slots = await get_busy_slots(user_id)
 
@@ -42,9 +38,9 @@ async def test_find_nearest_available_time():
     busy_slots = [
         {"start": current_time, "end": current_time + service_durations.durations}
     ]
-    user_cache.set_user_cache(user_id, service=service_durations)
-    nearest_time = await find_nearest_available_time(user_id, current_time, busy_slots)
-    assert nearest_time == current_time + timedelta(hours=1)
+    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service_durations,))):
+        nearest_time = await find_nearest_available_time(user_id, current_time, busy_slots)
+        assert nearest_time == current_time + timedelta(hours=1)
 
 
 @pytest.mark.asyncio
@@ -52,9 +48,24 @@ async def test_check_slot_available():
     user_id = 1
     current_time = datetime(2024, 10, 1, 12, 0)
     busy_slots = [{"start": current_time, "end": current_time + timedelta(hours=1)}]
-    with patch("utils.time_processing.get_busy_slots", return_value=busy_slots):
-        slot = await check_slot(user_id, current_time)
-        assert slot == current_time + timedelta(hours=1)
+
+    # Мокаємо залежності
+    service = AsyncMock()
+    service.durations = timedelta(hours=1)
+
+    date = AsyncMock()
+    date.date = current_time.date()
+    date.id = 1
+
+    # Мокаємо кеш
+    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service,))):
+        # Мокаємо функцію get_busy_slots
+        with patch("utils.time_processing.get_busy_slots", AsyncMock(return_value=busy_slots)):
+            # Викликаємо функцію
+            slot = await check_slot(user_id, current_time)
+
+            # Перевірка
+            assert slot == current_time + timedelta(hours=1)
 
 
 @pytest.mark.asyncio
