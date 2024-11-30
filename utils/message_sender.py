@@ -14,7 +14,6 @@ class MessageSendingManager:
         """
         Використовується aiogram для відправки повідомлення в чат
         """
-        logger.info(f"MESSAGE: {message} | TYPE: {type(message)}")
         try:
             await self.bot.send_message(chat_id=chat_id, text=message)
             logger.info(f"Повідомлення відправлено для користувача: {chat_id}")

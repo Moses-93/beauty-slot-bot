@@ -16,7 +16,7 @@ async def find_time_for_reminder():
             continue  # Повідомлення не повинно бути відправлене
 
         reminder_hours = note.reminder_hours
-        note_time = datetime.combine(note.free_date.date, note.time)
+        note_time = datetime.combine(note.date.date, note.time)
         reminder_time = note_time - timedelta(hours=reminder_hours)
 
         if abs((now - reminder_time).total_seconds()) <= 600:  # 10 хвилин в секундах
