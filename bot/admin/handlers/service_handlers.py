@@ -10,7 +10,6 @@ from decorators.caching.request_cache import clear_cache, update_cache, get_all_
 from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
 from bot.admin.keyboards.admin_keyboards import main_keyboard
-from utils.formatted_view import ViewController
 from utils.message_sender import manager
 from utils.message_templates import template_manager
 from decorators.check import check_user, deletion_checks
@@ -23,19 +22,6 @@ from decorators.validators.service_validator import (
 
 service_router = Router()
 logger = logging.getLogger(__name__)
-
-
-@service_router.message(F.text == "Показати послуги")
-@get_all_service
-@check_user.only_admin
-async def show_services(message: Message, services, *args, **kwargs):
-    if not services:
-        await message.answer(text="Немає доступних послуг.")
-        return
-    formatted_services = ViewController(services=services).get()
-
-    await message.answer(text=formatted_services, parse_mode="Markdown")
-    return
 
 
 @service_router.message(F.text == "Додати послугу")

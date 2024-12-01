@@ -10,7 +10,6 @@ from aiogram.fsm.context import FSMContext
 import logging
 from decorators.validators.date_validator import validator_date
 from decorators.check import check_user, deletion_checks
-from utils.formatted_view import ViewController
 from utils.message_sender import manager
 from utils.message_templates import template_manager
 from cache.cache import request_cache
@@ -18,18 +17,6 @@ from cache.cache import request_cache
 
 date_router = Router()
 logger = logging.getLogger(__name__)
-
-
-@date_router.message(F.text == "Доступні дати")
-@get_free_dates
-@check_user.only_admin
-async def show_dates(message: CallbackQuery, free_dates, *args, **kwargs):
-    if not free_dates:
-        await message.answer(text="Немає доступних дат.")
-        return
-    formatted_date = ViewController(dates=free_dates).get()
-    await message.answer(text=formatted_date, parse_mode="Markdown")
-    return
 
 
 @date_router.message(F.text == "Додати дату")
