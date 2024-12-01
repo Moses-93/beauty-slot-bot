@@ -9,10 +9,23 @@ from aiogram.types import (
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Управління послугами"),
-            KeyboardButton(text="Управління датами"),
-            KeyboardButton(text="Записи"),
-        ]
+            KeyboardButton(text="Керування послугами"),
+            KeyboardButton(text="Керування датами"),
+        ],
+        [KeyboardButton(text="Керування адміністраторами")],
+        [KeyboardButton(text="Записи")],
+    ],
+    resize_keyboard=True,
+)
+
+manage_admins_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Додати адміністратора"),
+            KeyboardButton(text="Видалити адміністратора"),
+        ],
+        [KeyboardButton(text="Список адміністраторів")],
+        [KeyboardButton(text="Назад")],
     ],
     resize_keyboard=True,
 )

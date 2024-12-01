@@ -27,7 +27,7 @@ async def show_admin_panel(message: Message, is_admin: bool, *args, **kwargs):
         return
 
 
-@admin_router.message(F.text == "Управління послугами")
+@admin_router.message(F.text == "Керування послугами")
 @only_admin
 async def manage_services(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
@@ -36,12 +36,21 @@ async def manage_services(message: Message, *args, **kwargs):
     return
 
 
-@admin_router.message(F.text == "Управління датами")
+@admin_router.message(F.text == "Керування датами")
 @only_admin
 async def manage_dates(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
     keyboard = date_keyboard.manage_dates_keyboard
     await message.answer(text=msg, reply_markup=keyboard)
+
+
+@admin_router.message(F.text == "Керування адміністраторами")
+@only_admin
+async def manage_admins(message: Message, *args, **kwargs):
+    msg = "Оберіть дію:"
+    keyboard = admin_keyboards.manage_admins_keyboard
+    await message.answer(text=msg, reply_markup=keyboard)
+    return
 
 
 @admin_router.message(F.text == "Записи")

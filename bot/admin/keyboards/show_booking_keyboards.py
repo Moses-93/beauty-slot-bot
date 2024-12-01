@@ -15,8 +15,10 @@ show_periods = InlineKeyboardMarkup(
 
 show_bookings_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Фільтрувати записи")],
-        [KeyboardButton(text="Всі активні записи")],
+        [
+            KeyboardButton(text="Активні записи"),
+            KeyboardButton(text="Фільтрувати записи"),
+        ],
         [KeyboardButton(text="Назад")],
     ],
     resize_keyboard=True,
