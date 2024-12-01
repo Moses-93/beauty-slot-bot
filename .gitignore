@@ -150,6 +150,7 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
+.flake8
 
 # Cython debug symbols
 cython_debug/

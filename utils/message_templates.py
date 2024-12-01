@@ -181,7 +181,7 @@ class TemplateManager:
         if note:
             message = (
                 f"Нагадуємо, Ви записані на послугу - {note.service.name}\n"
-                f"Дата: {note.free_date.date}\n"
+                f"Дата: {note.date.date}\n"
                 f"Час: {note.time}\n"
                 "Адреса: вул. Перлинна 3. ЖК 5 Перлина\n"
             )
