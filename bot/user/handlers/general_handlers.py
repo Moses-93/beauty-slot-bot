@@ -2,7 +2,7 @@ import logging
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
-from decorators.caching.request_cache import get_all_service
+from decorators.caching.request_cache import get_all_service, get_free_dates
 from utils.formatted_view import ViewController
 from utils.message_templates import template_manager
 
@@ -36,12 +36,26 @@ async def show_notes(message: Message):
     return
 
 
-@general_router.message(lambda message: message.text == "Послуги")
+@general_router.message(lambda message: message.text == "Доступні послуги")
 @get_all_service
 async def show_services(message: Message, services, *args, **kwargs):
+    if not services:
+        await message.answer(text="Немає доступних послуг.")
+        return
     formatted_service = ViewController(services=services).get()
 
     await message.answer(text=formatted_service, parse_mode="Markdown")
+
+
+@general_router.message(lambda message: message.text == "Доступні дати")
+@get_free_dates
+async def show_dates(message: Message, free_dates, *args, **kwargs):
+    if not free_dates:
+        await message.answer(text="Немає доступних дат.")
+        return
+    formatted_date = ViewController(dates=free_dates).get()
+    await message.answer(text=formatted_date, parse_mode="Markdown")
+    return
 
 
 @general_router.message(lambda message: message.text == "Контакти")
