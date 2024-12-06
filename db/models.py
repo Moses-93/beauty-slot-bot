@@ -54,3 +54,10 @@ class Notes(Base):
         return (
             f"Послуга: {self.service.name} | Дата: {self.date.date} | Час: {self.time}"
         )
+
+
+class Admins(Base):
+    __tablename__ = "main_admins"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    chat_id = Column(Integer, nullable=False, unique=True)
