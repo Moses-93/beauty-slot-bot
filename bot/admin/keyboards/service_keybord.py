@@ -13,7 +13,7 @@ manage_service_keyboard = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text="Редагувати послугу"),
-            KeyboardButton(text="Показати послуги"),
+            KeyboardButton(text="Доступні послуги"),
         ],
         [KeyboardButton(text="Назад")],
     ],
