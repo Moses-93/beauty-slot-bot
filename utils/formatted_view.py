@@ -4,10 +4,13 @@ def escape_md(text: str) -> str:
 
 
 class ViewController:
-    def __init__(self, notes=None, services=None, dates=None, view_type=None) -> None:
+    def __init__(
+        self, notes=None, services=None, dates=None, admins=None, view_type=None
+    ) -> None:
         self.notes = notes
         self.services = services
         self.dates = dates
+        self.admins = admins
         self.view_type = (
             view_type  # Тип виду, який хочемо відобразити: 'active', 'master', 'all'
         )
@@ -19,6 +22,8 @@ class ViewController:
             return FormattingView.format_services(self.services)
         elif self.dates:
             return FormattingView.format_dates(self.dates)
+        elif self.admins:
+            return FormattingView.format_admins(self.admins)
         return None
 
 
@@ -28,7 +33,7 @@ from operator import attrgetter
 class FormattingView:
     @staticmethod
     def format_services(services):
-        header = "*Послуги:*\n\n*ID* | *Послуга* | *Ціна* | *Тривалість*\n-------------------------------------\n"
+        header = f"*Послуги:*\n\n*ID* | *Послуга* | *Ціна* | *Тривалість*\n{"-" * 40}\n"
         body = "\n".join(
             f"{service.id} | {service.name} | {service.price} грн. | {service.durations} хв."
             for service in services
@@ -67,4 +72,11 @@ class FormattingView:
     def format_dates(dates):
         header = "*Доступні дати: *\n\n*ID* | *Дата*\n-------------------------------------\n"
         body = "\n".join(f"{date.id} | {date.date}" for date in dates)
+        return header + body
+
+    def format_admins(admins):
+        header = f"*Адміністратори:*\n\n*ID* | *Ім'я* | *ChatID* \n{"-" * 40}\n"
+        body = "\n".join(
+            f"{admin.id} | {admin.name} | {admin.chat_id}" for admin in admins
+        )
         return header + body
