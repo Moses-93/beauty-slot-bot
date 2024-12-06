@@ -13,3 +13,8 @@ class UpdateServiceForm(StatesGroup):
 
 class FreeDateForm(StatesGroup):
     date = State()
+
+
+class AdminsForm(StatesGroup):
+    name = State()
+    chat_id = State()
