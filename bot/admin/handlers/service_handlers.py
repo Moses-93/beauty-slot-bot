@@ -9,7 +9,7 @@ from cache.cache import request_cache
 from decorators.caching.request_cache import clear_cache, update_cache, get_all_service
 from ..keyboards.service_keybord import edit_service_keyboard
 from bot.user.keyboards.booking_keyboard import services_keyboard
-from bot.admin.keyboards.admin_keyboards import main_keyboard
+from bot.admin.keyboards.general_keyboards import main_keyboard
 from utils.message_sender import manager
 from utils.message_templates import template_manager
 from decorators.check import check_user, deletion_checks

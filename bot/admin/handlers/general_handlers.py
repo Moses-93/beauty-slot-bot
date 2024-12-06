@@ -2,8 +2,8 @@ from aiogram import F, Router
 from aiogram.types import Message
 from ..keyboards import (
     date_keyboard,
+    general_keyboards,
     service_keybord,
-    admin_keyboards,
     show_booking_keyboards,
 )
 import logging
@@ -19,7 +19,7 @@ async def show_admin_panel(message: Message, is_admin: bool, *args, **kwargs):
     logger.info(f"USER ID(show_admin_panel): {is_admin}")
     if is_admin:
         msg = "Ви перейшли в панель адміністратора"
-        keyboard = admin_keyboards.main_keyboard
+        keyboard = general_keyboards.main_keyboard
         await message.answer(text=msg, reply_markup=keyboard)
         return
     else:
@@ -48,7 +48,7 @@ async def manage_dates(message: Message, *args, **kwargs):
 @only_admin
 async def manage_admins(message: Message, *args, **kwargs):
     msg = "Оберіть дію:"
-    keyboard = admin_keyboards.manage_admins_keyboard
+    keyboard = general_keyboards.manage_admins_keyboard
     await message.answer(text=msg, reply_markup=keyboard)
     return
 

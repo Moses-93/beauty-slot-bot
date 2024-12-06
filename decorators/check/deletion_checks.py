@@ -1,7 +1,7 @@
 import logging
 from aiogram.types import CallbackQuery
 from db.db_reader import get_notes
-from bot.admin.keyboards.admin_keyboards import delete_booking_keyboard
+from bot.admin.keyboards.general_keyboards import delete_booking_keyboard
 from utils.message_templates import template_manager
 from cache.cache import request_cache
 

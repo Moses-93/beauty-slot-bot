@@ -3,7 +3,7 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from db.db_writer import date_manager
 from bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from bot.admin.keyboards.admin_keyboards import main_keyboard
+from bot.admin.keyboards.general_keyboards import main_keyboard
 from decorators.caching.request_cache import clear_cache, get_free_dates, update_cache
 from ..states import FreeDateForm
 from aiogram.fsm.context import FSMContext

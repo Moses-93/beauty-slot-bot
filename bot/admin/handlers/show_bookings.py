@@ -6,7 +6,7 @@ from db.db_reader import get_notes
 from db.models import Dates
 from utils.formatted_view import ViewController
 from ..keyboards.show_booking_keyboards import show_periods
-from ..keyboards.admin_keyboards import main_keyboard
+from ..keyboards.general_keyboards import main_keyboard
 from decorators.check.check_user import only_admin
 from utils.message_templates import template_manager
 
