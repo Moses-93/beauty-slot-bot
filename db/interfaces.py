@@ -20,3 +20,10 @@ class GetDatesInterface(ABC):
     @abstractmethod
     async def get_date(self, **filters):
         pass
+
+
+class GetAdminsInterface(ABC):
+
+    @abstractmethod
+    async def get_admins(self, **filters):
+        pass

@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy import select
-from .models import Dates, Notes, Services
+from .models import Admins, Dates, Notes, Services
 from .config import async_session
 from decorators.caching.user_cache import cache_note_id
 
@@ -87,6 +87,27 @@ class DatesManager:
                 await session.commit()
 
 
+class AdminsManager:
+
+    def __init__(self, async_session) -> None:
+        self.async_session = async_session
+
+    async def create(self, **kwargs):
+        async with self.async_session() as session:
+            admin = Admins(**kwargs)
+            session.add(admin)
+            await session.commit()
+            await session.refresh(admin)
+
+    async def delete(self, admin_id):
+        async with self.async_session() as session:
+            admin = await session.get(Admins, admin_id)
+            if admin:
+                await session.delete(admin)
+                await session.commit()
+
+
+admins_manager = AdminsManager(async_session)
 service_manager = ServiceManager(async_session)
 date_manager = DatesManager(async_session)
 notes_manager = NotesManager(async_session)

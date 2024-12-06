@@ -1,10 +1,15 @@
 import logging
 from datetime import datetime
-from .models import Services, Dates, Notes
+from .models import Services, Dates, Notes, Admins
 from .config import async_session, AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import and_, select, update
-from .interfaces import GetNotesInterface, GetDatesInterface, GetServicesInterface
+from .interfaces import (
+    GetNotesInterface,
+    GetDatesInterface,
+    GetServicesInterface,
+    GetAdminsInterface,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -91,6 +96,21 @@ class BaseGetDates(GetDatesInterface):
             return result.scalars().all()
 
 
+class BaseGetAdmins(GetAdminsInterface):
+
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def get_admins(self, **filters):
+        async with self.session() as session:
+            query = select(Admins)
+            if filters:
+                query = query.filter_by(**filters)
+            result = await session.execute(query)
+            return result.scalars().all()
+
+
+base_get_admins = BaseGetAdmins(async_session)
 base_get_free_date = BaseGetDates(async_session)
 base_get_service = BaseGetServices(async_session)
 base_get_notes = BaseGetNotes(async_session)
