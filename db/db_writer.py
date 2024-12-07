@@ -1,8 +1,12 @@
 import logging
+import cache.config
+
+from decorators.caching import user_cache, request_cache
 from sqlalchemy import select
+
 from .models import Admins, Dates, Notes, Services
 from .config import async_session
-from decorators.caching.user_cache import cache_note_id
+
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +16,7 @@ class NotesManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
-    @cache_note_id
+    @user_cache.cache_note_id
     async def create(self, **kwargs):
         note = Notes(**kwargs)
         async with self.async_session() as session:
@@ -42,13 +46,16 @@ class ServiceManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
+    @request_cache.clear_cache
     async def create(self, **kwargs):
         new_service = Services(**kwargs)
         async with self.async_session() as session:
             session.add(new_service)
             await session.commit()
             await session.refresh(new_service)
+            return True
 
+    @request_cache.clear_cache
     async def update(self, service_id, **kwargs):
         async with self.async_session() as session:
             updated_service = await session.execute(
@@ -59,32 +66,39 @@ class ServiceManager:
                 for key, value in kwargs.items():
                     setattr(service, key, value)
                 await session.commit()
+                return True
 
+    @request_cache.clear_cache
     async def delete(self, service_id):
         async with self.async_session() as session:
             service = await session.get(Services, service_id)
             if service:
                 await session.delete(service)
                 await session.commit()
+                return True
 
 
 class DatesManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
+    @request_cache.clear_cache
     async def create(self, **kwargs):
         new_date = Dates(**kwargs)
         async with self.async_session() as session:
             session.add(new_date)
             await session.commit()
             await session.refresh(new_date)
+            return True
 
+    @request_cache.clear_cache
     async def delete(self, date_id):
         async with self.async_session() as session:
             date = await session.get(Dates, date_id)
             if date:
                 await session.delete(date)
                 await session.commit()
+                return True
 
 
 class AdminsManager:
@@ -92,19 +106,24 @@ class AdminsManager:
     def __init__(self, async_session) -> None:
         self.async_session = async_session
 
+    @request_cache.clear_cache
     async def create(self, **kwargs):
         async with self.async_session() as session:
             admin = Admins(**kwargs)
             session.add(admin)
             await session.commit()
             await session.refresh(admin)
+            return True
 
+    @request_cache.clear_cache
     async def delete(self, admin_id):
+        print("Запит в базу")
         async with self.async_session() as session:
             admin = await session.get(Admins, admin_id)
             if admin:
                 await session.delete(admin)
                 await session.commit()
+                return True
 
 
 admins_manager = AdminsManager(async_session)
