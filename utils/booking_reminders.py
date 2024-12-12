@@ -1,15 +1,27 @@
 import logging
-from db.db_reader import get_notes
+
 from datetime import datetime, timedelta
+
+from db.crud import notes_manager
+
+from db.models import Notes
+
 from utils.message_templates import template_manager
 from utils.message_sender import manager
+
 
 logger = logging.getLogger(__name__)
 
 
 async def find_time_for_reminder():
     now = datetime.now()
-    active_notes = await get_notes.get_notes(active=True)
+    active_notes = await notes_manager.read(
+        relations=(
+            Notes.date,
+            Notes.service,
+        ),
+        active=True,
+    )
 
     for note in active_notes:
         if not note.reminder_hours:
