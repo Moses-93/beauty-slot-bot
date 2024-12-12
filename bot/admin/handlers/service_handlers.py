@@ -1,31 +1,43 @@
+import ast
 import logging
+
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
-from db.db_writer import service_manager
-from bot.admin.states import ServiceForm, UpdateServiceForm
+
 from datetime import timedelta
-from cache.cache import request_cache
-from decorators.caching.request_cache import clear_cache, update_cache, get_all_service
+
 from ..keyboards.service_keybord import edit_service_keyboard
+from ..middleware import AdminMiddleware
+
+from db.crud import services_manager
+from db.models import Services
+
+from bot.admin.states import ServiceForm, UpdateServiceForm
 from bot.user.keyboards.booking_keyboard import services_keyboard
 from bot.admin.keyboards.general_keyboards import main_keyboard
+
 from utils.message_sender import manager
 from utils.message_templates import template_manager
-from decorators.check import check_user, deletion_checks
-from decorators.validators.service_validator import (
+
+from decorators.permissions import admin_only
+from decorators.validation import (
+    block_if_booked,
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,
-    validate_service_durations as val_srvc_durations,
+    validate_service_duration as val_srvc_durations,
 )
 
 
-service_router = Router()
 logger = logging.getLogger(__name__)
 
+router = Router()
+router.message.middleware(AdminMiddleware())
+router.callback_query.middleware(AdminMiddleware())
 
-@service_router.message(F.text == "Додати послугу")
-@check_user.only_admin
+
+@router.message(F.text == "Додати послугу")
+@admin_only
 async def add_service(message: Message, state: FSMContext, *args, **kwargs):
     msg = template_manager.get_add_new_service(name=True)
     logger.info(f"TYPE MSG: {type(msg)}")
@@ -34,22 +46,28 @@ async def add_service(message: Message, state: FSMContext, *args, **kwargs):
     return
 
 
-@service_router.message(F.text == "Видалити послугу")
-@get_all_service
-@check_user.only_admin
-async def delete_service(message: Message, services, *args, **kwargs):
+@router.message(F.text == "Видалити послугу")
+@admin_only
+async def delete_service(message: Message, *args, **kwargs):
+    services = await services_manager.read()
+    if not services:
+        msg = "Список послуг пустий"
+        await message.answer(text=msg)
+        return
     delete = await services_keyboard(act="delete", services=services)
     msg = template_manager.get_select_service_or_date_del()
     await message.answer(text=msg, reply_markup=delete)
     return
 
 
-@service_router.message(F.text == "Редагувати послугу")
-@get_all_service
-@check_user.only_admin
-async def choosing_service(
-    message: Message, services, state: FSMContext, *args, **kwargs
-):
+@router.message(F.text == "Редагувати послугу")
+@admin_only
+async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
+    services = await services_manager.read()
+    if not services:
+        msg = template_manager.booking_not_found
+        await message.answer(text=msg)
+        return
     await state.set_state("editing_service")
     edit = await services_keyboard(act="edit", services=services)
     msg = template_manager.get_edit_service()
@@ -57,8 +75,8 @@ async def choosing_service(
     return
 
 
-@service_router.message(F.text == "Назад")
-@check_user.only_admin
+@router.message(F.text == "Назад")
+@admin_only
 async def back_to_main(message: Message, state: FSMContext, *args, **kwargs):
     await state.clear()
     msg = "Ви повернулися до головного меню"
@@ -66,7 +84,7 @@ async def back_to_main(message: Message, state: FSMContext, *args, **kwargs):
     return
 
 
-@service_router.message(ServiceForm.name)
+@router.message(ServiceForm.name)
 @val_srvc_name
 async def set_service_name(
     message: Message, service_name: str, state: FSMContext, **kwargs
@@ -78,7 +96,7 @@ async def set_service_name(
     await state.set_state(ServiceForm.price)
 
 
-@service_router.message(ServiceForm.price)
+@router.message(ServiceForm.price)
 @val_srvc_price
 async def set_service_price(message: Message, price, state: FSMContext, **kwargs):
 
@@ -88,8 +106,7 @@ async def set_service_price(message: Message, price, state: FSMContext, **kwargs
     await state.set_state(ServiceForm.durations)
 
 
-@service_router.message(ServiceForm.durations)
-@update_cache(key="services")
+@router.message(ServiceForm.durations)
 @val_srvc_durations
 async def set_service_duration(
     message: Message, durations: timedelta, state: FSMContext, **kwargs
@@ -97,13 +114,13 @@ async def set_service_duration(
     user_data = await state.get_data()
     name = user_data.get("name")
     price = user_data.get("price")
-    await service_manager.create(name=name, price=price, durations=durations)
+    await services_manager.create(name=name, price=price, durations=durations)
     await state.clear()
     msg = template_manager.get_add_new_service(success=True, service=name)
     await message.answer(text=msg)
 
 
-@service_router.callback_query(lambda c: c.data.startswith("edit_service_"))
+@router.callback_query(lambda c: c.data.startswith("edit_service_"))
 async def choosing_field(callback: CallbackQuery, state: FSMContext):
     logger.info(f"CALLBACK DATA(in choosing_field): {callback.data}")
     service_id = int(callback.data.split("_")[2])
@@ -113,7 +130,7 @@ async def choosing_field(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@service_router.callback_query(lambda c: c.data.startswith("field_"))
+@router.callback_query(lambda c: c.data.startswith("field_"))
 async def set_field_value(callback: CallbackQuery, state: FSMContext):
     field = callback.data.split("_")[1]
     logger.info(f"FIELD: {field}")
@@ -125,9 +142,8 @@ async def set_field_value(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@service_router.message(UpdateServiceForm.field)
-@update_cache(key="services")
-async def set_new_field_value(message: Message, state: FSMContext, *args, **kwargs):
+@router.message(UpdateServiceForm.field)
+async def set_new_field_value(message: Message, state: FSMContext):
     new_value = message.text
     data = await state.get_data()
     field = data.get("field")
@@ -137,30 +153,28 @@ async def set_new_field_value(message: Message, state: FSMContext, *args, **kwar
     elif field == "durations":
         new_value = timedelta(minutes=int(new_value))
     msg = template_manager.get_edit_service(field=field, new_value=new_value)
-    await service_manager.update(service_id, **{field: new_value})
+    await services_manager.update(Services.id == service_id, **{field: new_value})
     logger.info(f"Поле {field} послуги з ID: {service_id} оновлено на {new_value}")
     await message.answer(text=msg)
     await state.clear()
     return True
 
 
-@service_router.callback_query(lambda c: c.data.startswith("delete_service_"))
-@clear_cache(key="services")
-@deletion_checks.check_booking("service_id")
+@router.callback_query(lambda c: c.data.startswith("delete_service_"))
+@block_if_booked("service_id")
 async def delete_selected_service(callback: CallbackQuery, service_id, *args, **kwargs):
-    await service_manager.delete(service_id)
+    await services_manager.delete(id=service_id)
     msg = template_manager.get_select_service_or_date_del(id=service_id, success=True)
     await callback.message.answer(text=msg)
     await callback.answer()
 
 
-@service_router.callback_query(lambda c: c.data.startswith("del_service_id_"))
-@clear_cache(key="services")
-async def delete_booking(callback: CallbackQuery, *args, **kwargs):
+@router.callback_query(lambda c: c.data.startswith("del_service_id_"))
+async def delete_booking(callback: CallbackQuery):
     logger.info(f"CALLBACK: {callback.data}")
     service_id = int(callback.data.split("_")[3])
-    user_ids = await request_cache.get_request("user_ids")
-    await service_manager.delete(service_id=int(service_id))
+    user_ids = ast.literal_eval(callback.data.split("_")[4])
+    await services_manager.delete(id=service_id)
     msg_fo_user = template_manager.get_delete_notification()
     for user_id in user_ids:
         await manager.send_message(chat_id=user_id, message=msg_fo_user)

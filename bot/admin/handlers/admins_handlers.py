@@ -1,27 +1,29 @@
 import logging
+
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from ..middleware import AdminMiddleware
 from ..states import AdminsForm
-
 from ..keyboards.admin_keyboards import del_admin_button
 
-from decorators.check.check_user import only_admin
+from db.crud import admins_manager
 
-from db.db_writer import admins_manager
-from db.db_reader import get_admins
+from decorators.permissions import admin_only
 
 from utils.formatted_view import ViewController
+
 
 logger = logging.getLogger(__name__)
 
 router = Router()
+router.message.middleware(AdminMiddleware())
+router.callback_query.middleware(AdminMiddleware())
 
 
 @router.message(F.text == "Додати адміністратора")
-@only_admin
+@admin_only
 async def start_command(message: Message, state: FSMContext, *args, **kwargs):
     await state.set_state(AdminsForm.name)
     msg = "Введіть ім'я адміністратора"
@@ -30,9 +32,9 @@ async def start_command(message: Message, state: FSMContext, *args, **kwargs):
 
 
 @router.message(F.text == "Видалити адміністратора")
-@only_admin
+@admin_only
 async def delete_admin(message: Message, *args, **kwargs):
-    admins = await get_admins.get_admins()
+    admins = await admins_manager.read()
     if not admins:
         await message.answer(text="Список адміністраторів порожній.")
         return
@@ -43,10 +45,10 @@ async def delete_admin(message: Message, *args, **kwargs):
 
 
 @router.message(F.text == "Список адміністраторів")
-@only_admin
+@admin_only
 async def show_admins(message: Message, *args, **kwargs):
     logger.info(f"Запуск обробника для показу списку адміністраторів")
-    admins = await get_admins.get_admins()
+    admins = await admins_manager.read()
     if not admins:
         await message.answer(text="Список адміністраторів порожній.")
         return
@@ -79,7 +81,7 @@ async def set_chat_id(message: Message, state: FSMContext):
 @router.callback_query(lambda c: c.data.startswith("del_admin_"))
 async def del_admin(callback: CallbackQuery):
     id = int(callback.data.split("_")[2])
-    await admins_manager.delete(admin_id=id)
+    await admins_manager.delete(id=id)
     msg = f"Адміністратор з ID: {id} був успішно видалений"
     await callback.message.answer(text=msg)
     await callback.answer()
