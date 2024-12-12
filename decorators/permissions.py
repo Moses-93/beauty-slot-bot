@@ -1,8 +1,8 @@
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 
 
-def only_admin(func):
-    async def wrapper(event: Message | CallbackQuery, *args, **kwargs):
+def admin_only(func):
+    async def wrapper(event: Message, *args, **kwargs):
         if kwargs.get("is_admin"):
             return await func(event, *args, **kwargs)
         else:
