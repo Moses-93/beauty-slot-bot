@@ -31,13 +31,13 @@ manage_admins_keyboard = ReplyKeyboardMarkup(
 )
 
 
-async def delete_booking_keyboard(field: str, id_value: int):
+async def delete_booking_keyboard(field: str, id_value: int, user_ids: tuple):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="Продовжити видалення",
-                    callback_data=f"del_{field}_{id_value}",
+                    callback_data=f"del_{field}_{id_value}_{user_ids}",
                 )
             ],
         ],
