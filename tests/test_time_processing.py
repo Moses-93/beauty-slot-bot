@@ -20,7 +20,9 @@ async def test_get_busy_slots():
     date.date = datetime.now().date()
     date.id = 1
     # Імітація бази даних та інших функцій
-    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service, date))):
+    with patch(
+        "cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service, date))
+    ):
         # Виклик функції
         busy_slots = await get_busy_slots(user_id)
 
@@ -38,8 +40,13 @@ async def test_find_nearest_available_time():
     busy_slots = [
         {"start": current_time, "end": current_time + service_durations.durations}
     ]
-    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service_durations,))):
-        nearest_time = await find_nearest_available_time(user_id, current_time, busy_slots)
+    with patch(
+        "cache.cache.user_cache.get_user_cache",
+        AsyncMock(return_value=(service_durations,)),
+    ):
+        nearest_time = await find_nearest_available_time(
+            user_id, current_time, busy_slots
+        )
         assert nearest_time == current_time + timedelta(hours=1)
 
 
@@ -58,9 +65,13 @@ async def test_check_slot_available():
     date.id = 1
 
     # Мокаємо кеш
-    with patch("cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service,))):
+    with patch(
+        "cache.cache.user_cache.get_user_cache", AsyncMock(return_value=(service,))
+    ):
         # Мокаємо функцію get_busy_slots
-        with patch("utils.time_processing.get_busy_slots", AsyncMock(return_value=busy_slots)):
+        with patch(
+            "utils.time_processing.get_busy_slots", AsyncMock(return_value=busy_slots)
+        ):
             # Викликаємо функцію
             slot = await check_slot(user_id, current_time)
 
