@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 
 from ..keyboards.reminder_keyboard import create_reminder_keyboards
 
-from db.models import Services
+from db.models import Notes
 from db.crud import notes_manager
 
 from cache.cache import user_cache
@@ -34,7 +34,7 @@ async def process_reminder_callback(callback: CallbackQuery, user_id):
     logger.info(f"Запуск обробника нагадування")
     _, hour, note_id = callback.data.split("_")
     logger.info(f"hour: {hour} | note_id: {note_id}")
-    await notes_manager.update(Services.id == int(note_id), reminder_hours=int(hour))
+    await notes_manager.update(Notes.id == int(note_id), reminder_hours=int(hour))
     msg = template_manager.get_reminder(hour=hour)
     await callback.message.answer(text=msg)
     await callback.answer()
