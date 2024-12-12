@@ -1,12 +1,12 @@
 import logging
+from os import getenv
 from datetime import datetime
-from db.db_writer import notes_manager
+from db.crud import notes_manager
 from bot.user.keyboards.booking_keyboard import confirm_time_keyboard
 from cache.cache import user_cache
 from .time_processing import check_slot, time_check, format_time
 from .message_sender import manager
 from .message_templates import template_manager
-from os import getenv
 
 
 USER_ID = getenv("USER_ID_ADMIN")
