@@ -1,5 +1,5 @@
-from .config import Base
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     Boolean,
     Interval,
@@ -11,6 +11,8 @@ from sqlalchemy import (
     ForeignKey,
     Date,
 )
+
+Base = declarative_base()
 
 
 class Dates(Base):
@@ -51,9 +53,7 @@ class Notes(Base):
     service = relationship("Services")
 
     def __str__(self):
-        return (
-            f"Послуга: {self.service.name} | Дата: {self.date.date} | Час: {self.time}"
-        )
+        return f"Ім'я: {self.name} | Час: {self.time} | Створено в: {self.created_at}"
 
 
 class Admins(Base):
@@ -61,3 +61,6 @@ class Admins(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     chat_id = Column(Integer, nullable=False, unique=True)
+
+    def __str__(self):
+        return f"Ім'я: {self.name} | Чат ID: {self.chat_id}"

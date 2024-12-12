@@ -1,116 +1,77 @@
 import logging
-from datetime import datetime
-from .models import Services, Dates, Notes, Admins
-from .config import async_session, AsyncSession
+from aiocache import cached
+from decorators.cache_tools import clear_cache
+from typing import Type
+from .config import AsyncSession, async_sessionmaker
+from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import selectinload
-from sqlalchemy import and_, select, update
-from .interfaces import (
-    GetNotesInterface,
-    GetDatesInterface,
-    GetServicesInterface,
-    GetAdminsInterface,
-)
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from .interfaces import BaseCRUD
 
 
 logger = logging.getLogger(__name__)
 
 
-class BaseGetNotes(GetNotesInterface):
+class ImplementationCRUD(BaseCRUD):
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: async_sessionmaker[AsyncSession]) -> None:
         self.session = session
 
-    async def _deactivate_old_notes(self, session: AsyncSession):
-        logger.info("Запуск методу для деактивації старих записів")
-        now = datetime.now()
-        stmt = (
-            update(Notes)
-            .where(
-                Notes.active == True,
-                Notes.time < now.time(),
-                Notes.date.has(Dates.date <= now.date()),
-            )
-            .values(active=False)
+    @clear_cache
+    async def create(self, model: Type[DeclarativeMeta], **kwargs: dict):
+        logger.info(f"Запис даних в модель {model.__name__}, аргументи: {kwargs}")
+        async with self.session() as session:
+            new_item = model(**kwargs)
+            session.add(new_item)
+            await session.commit()
+            await session.refresh(new_item)
+            return new_item
+
+    async def read(
+        self,
+        model: Type[DeclarativeMeta],
+        relations: tuple = None,
+        expressions: tuple = None,
+        **filters,
+    ):
+        logger.info(
+            f"Читання даних з моделі {model.__name__}, фільтри: {filters}, зв’язки: {relations}"
         )
-        await session.execute(stmt)
-        await session.commit()
-
-    async def get_notes(self, *expressions, **filters):
-        logger.info("Запуск методу для отримання записів")
+        print("запит в базу")
         async with self.session() as session:
-            if filters.get("active"):
-                await self._deactivate_old_notes(session)
-            query = select(Notes).options(
-                selectinload(Notes.service), selectinload(Notes.date)
-            )
-            if expressions:
-                query = query.filter(Notes.date.has(and_(*expressions)))
+            query = select(model)
+            if relations:
+                query = query.options(*[selectinload(rel) for rel in relations])
+            if expressions is not None:
+                print(expressions)
+                query = query.filter(and_(*expressions))
             if filters:
                 query = query.filter_by(**filters)
-            result = await session.execute(query)
+            try:
+                result = await session.execute(query)
+            except Exception as e:
+                logger.error(f"Помилка під час читання з моделі {model.__name__}: {e}")
+                return []
             return result.scalars().all()
 
-
-class BaseGetServices(GetServicesInterface):
-
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def get_service(self, **filters):
-        logger.info("Запуск методу для отримання послуг")
+    @clear_cache
+    async def update(self, model: Type[DeclarativeMeta], *expressions, **kwargs):
+        logger.info(f"Оновлення даних в моделі: {model.__name__}, аргументи: {kwargs}")
         async with self.session() as session:
-            query = select(Services)
-            if filters:
-                query = query.filter_by(**filters)
-            result = await session.execute(query)
-            return result.scalars().all()
+            stmt = update(model).where(*expressions).values(**kwargs)
+            await session.execute(stmt)
+            await session.commit()
+            return True
 
-
-class BaseGetDates(GetDatesInterface):
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def deactivate_old_date(self, session: AsyncSession):
-        logger.info("Запуск методу для деактивації старих дат")
-        now = datetime.now()
-        stmt = (
-            update(Dates)
-            .where(
-                Dates.free == True,
-                Dates.del_time < now,
-            )
-            .values(free=False)
-        )
-        await session.execute(stmt)
-        await session.commit()
-
-    async def get_date(self, **filters):
-        logger.info("Запит для отримання дат")
+    @clear_cache
+    async def delete(self, model: Type[DeclarativeMeta], **kwargs):
+        logger.info(f"Видалення даних з моделі: {model.__name__}, аргументи: {kwargs}.")
         async with self.session() as session:
-            if filters.get("free"):
-                await self.deactivate_old_date(session)
-            query = select(Dates)
-            if filters:
-                query = query.filter_by(**filters)
-            result = await session.execute(query)
-            return result.scalars().all()
+            stmt = delete(model).filter_by(**kwargs)
+            await session.execute(stmt)
+            await session.commit()
+            return True
 
-
-class BaseGetAdmins(GetAdminsInterface):
-
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def get_admins(self, **filters):
-        async with self.session() as session:
-            query = select(Admins)
-            if filters:
-                query = query.filter_by(**filters)
-            result = await session.execute(query)
-            return result.scalars().all()
-
-
-base_get_admins = BaseGetAdmins(async_session)
-base_get_free_date = BaseGetDates(async_session)
-base_get_service = BaseGetServices(async_session)
-base_get_notes = BaseGetNotes(async_session)
+    # async def deactivate(self, model: Type[DeclarativeMeta], expressions, **kwargs):
+    #     async with self.session() as session:
+    #         await self.update(model, )

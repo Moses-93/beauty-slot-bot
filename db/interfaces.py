@@ -1,29 +1,20 @@
 from abc import ABC, abstractmethod
 
 
-class GetNotesInterface(ABC):
+class BaseCRUD(ABC):
 
     @abstractmethod
-    async def get_notes(self, **filters):
+    async def create(self, **kwargs):
         pass
 
-
-class GetServicesInterface(ABC):
-
     @abstractmethod
-    async def get_service(self, **filters):
+    async def read(self, **filters):
         pass
 
-
-class GetDatesInterface(ABC):
-
     @abstractmethod
-    async def get_date(self, **filters):
+    async def update(self, **filters):
         pass
 
-
-class GetAdminsInterface(ABC):
-
     @abstractmethod
-    async def get_admins(self, **filters):
+    async def delete(self, **kwargs):
         pass
