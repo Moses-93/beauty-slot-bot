@@ -57,7 +57,10 @@ async def back_to_general(message: Message, *args, **kwargs):
 async def show_bookings_by_days(callback: CallbackQuery):
     day = int(callback.data.split("_")[1])
     date = datetime.now() - timedelta(days=day)
-    notes = await notes_manager.read(expressions=(Notes.date.has(Dates.date >= date),))
+    notes = await notes_manager.read(
+        relations=(Notes.service, Notes.date),
+        expressions=(Notes.date.has(Dates.date >= date),),
+    )
     if not notes:
         msg = template_manager.booking_not_found()
         await callback.message.answer(text=msg)
