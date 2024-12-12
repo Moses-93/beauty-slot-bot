@@ -1,9 +1,10 @@
+import os
+import sys
 import asyncio
 import logging
-import sys
 
 from aiogram import Bot, Dispatcher
-import os
+
 from bot.user.handlers import (
     general_handlers,
     booking_handler,
@@ -16,9 +17,10 @@ from bot.admin.handlers import (
     service_handlers,
     dates_handlers,
     show_bookings,
+    admins_handlers,
 )
 from bot.user.middleware import UserIDMiddleware
-from bot.admin.middleware import AdminMiddleware
+
 from utils.booking_reminders import find_time_for_reminder
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -37,26 +39,23 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 TOKEN = os.getenv("TOKEN")
-USER_ID_ADMIN = os.getenv("USER_ID_ADMIN")
-user_ids = [1763711362, 826928022]
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-dp.message.middleware(AdminMiddleware(user_ids))
-dp.callback_query.middleware(AdminMiddleware(user_ids))
 dp.message.middleware(UserIDMiddleware())
 dp.callback_query.middleware(UserIDMiddleware())
 
 
 async def main():
-    dp.include_router(general_handlers.general_router)
-    dp.include_router(show_booking.show_booking_router)
-    dp.include_router(cancellation_handlers.cancellation_router)
-    dp.include_router(reminder_handlers.reminder_router)
-    dp.include_router(booking_handler.booking_router)
-    dp.include_router(admin_hndlrs.admin_router)
-    dp.include_router(service_handlers.service_router)
-    dp.include_router(dates_handlers.date_router)
-    dp.include_router(show_bookings.show_booking_router)
+    dp.include_router(admins_handlers.router)
+    dp.include_router(general_handlers.router)
+    dp.include_router(show_booking.router)
+    dp.include_router(cancellation_handlers.router)
+    dp.include_router(reminder_handlers.router)
+    dp.include_router(booking_handler.router)
+    dp.include_router(admin_hndlrs.router)
+    dp.include_router(service_handlers.router)
+    dp.include_router(dates_handlers.router)
+    dp.include_router(show_bookings.router)
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(find_time_for_reminder, "interval", minutes=10)
