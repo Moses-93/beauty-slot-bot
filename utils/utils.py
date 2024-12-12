@@ -1,16 +1,17 @@
 import logging
 from os import getenv
 from datetime import datetime
-from db.crud import notes_manager
-from bot.user.keyboards.booking_keyboard import confirm_time_keyboard
-from cache.cache import user_cache
-from .time_processing import check_slot, time_check, format_time
+
+from .time_processing import check_slot, time_check
 from .message_sender import manager
 from .message_templates import template_manager
 
+from bot.user.keyboards.booking_keyboard import confirm_time_keyboard
+from db.crud import notes_manager
+from cache.cache import user_cache
+
 
 USER_ID = getenv("USER_ID_ADMIN")
-
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ async def promote_booking(user_id: int, time: datetime):
 async def handlers_time(user_id: int, time: str):
 
     (date,) = await user_cache.get_user_cache(user_id, "date")
-    time = format_time.formats_time_str_to_datetime(time).time()
+    time = datetime.strptime(time, "%H:%M").time()
     time = datetime.combine(date.date, time)
     if await time_check(time) == False:
         message = template_manager.elapsed_time_warning(time)
