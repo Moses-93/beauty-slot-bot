@@ -1,12 +1,15 @@
 import logging
-from aiocache import cached
-from decorators.cache_tools import clear_cache
+
 from typing import Type
-from .config import AsyncSession, async_sessionmaker
+
 from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.declarative import DeclarativeMeta
+
+from .config import AsyncSession, async_sessionmaker
 from .interfaces import BaseCRUD
+
+from decorators.cache_tools import clear_cache
 
 
 logger = logging.getLogger(__name__)
@@ -34,10 +37,7 @@ class ImplementationCRUD(BaseCRUD):
         expressions: tuple = None,
         **filters,
     ):
-        logger.info(
-            f"Читання даних з моделі {model.__name__}, фільтри: {filters}, зв’язки: {relations}"
-        )
-        print("запит в базу")
+        logger.info(f"Читання даних з моделі {model.__name__}, фільтри: {filters}")
         async with self.session() as session:
             query = select(model)
             if relations:
@@ -71,7 +71,3 @@ class ImplementationCRUD(BaseCRUD):
             await session.execute(stmt)
             await session.commit()
             return True
-
-    # async def deactivate(self, model: Type[DeclarativeMeta], expressions, **kwargs):
-    #     async with self.session() as session:
-    #         await self.update(model, )
