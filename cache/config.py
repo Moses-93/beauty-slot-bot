@@ -9,11 +9,11 @@ caches.set_config(
         },
         "queries_cache": {  # Кеш для запитів
             "cache": "aiocache.SimpleMemoryCache",
-            "serializer": {"class": "aiocache.serializers.StringSerializer"},
+            "serializer": {"class": "aiocache.serializers.PickleSerializer"},
         },
         "users_cache": {  # Кеш для даних користувачів
             "cache": "aiocache.SimpleMemoryCache",
-            "serializer": {"class": "aiocache.serializers.JsonSerializer"},
+            "serializer": {"class": "aiocache.serializers.PickleSerializer"},
         },
     }
 )

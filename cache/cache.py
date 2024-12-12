@@ -1,3 +1,4 @@
+from . import config
 import asyncio
 from .base import AioCacheAdapter, ICache
 

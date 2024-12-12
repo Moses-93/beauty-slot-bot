@@ -1,19 +1,9 @@
 import logging
-from aiocache import caches, Cache
+from aiocache import caches
 from abc import ABC, abstractmethod
 
 
 logger = logging.getLogger(__name__)
-
-caches.set_config(
-    {
-        "default": {
-            "cache": "aiocache.SimpleMemoryCache",  # Простий кеш
-            "ttl": 1800,
-            "plugins": [{"class": "aiocache.plugins.HitMissRatioPlugin"}],
-        }
-    }
-)
 
 
 class ICache(ABC):
@@ -33,7 +23,7 @@ class ICache(ABC):
 
 class AioCacheAdapter(ICache):
 
-    def __init__(self, caches_name="default") -> None:
+    def __init__(self, caches_name="users_cache") -> None:
         self._cache = caches.get(caches_name)
 
     async def get(self, key: str):
