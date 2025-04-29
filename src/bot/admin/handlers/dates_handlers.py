@@ -10,17 +10,17 @@ from datetime import datetime
 from ..states import FreeDateForm
 from ..middleware import AdminMiddleware
 
-from db.crud import dates_manager
+from src.db.crud import dates_manager
 
-from bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from bot.admin.keyboards.general_keyboards import main_keyboard
+from src.bot.user.keyboards.booking_keyboard import free_dates_keyboard
+from src.bot.admin.keyboards.general_keyboards import main_keyboard
 
 
-from decorators.validation import validate_date, block_if_booked
-from decorators.permissions import admin_only
+from src.decorators.validation import validate_date, block_if_booked
+from src.decorators.permissions import admin_only
 
-from utils.message_sender import manager
-from utils.message_templates import template_manager
+from src.utils.message_sender import manager
+from src.utils.message_templates import template_manager
 
 
 logger = logging.getLogger(__name__)

@@ -6,9 +6,9 @@ from .time_processing import check_slot, time_check
 from .message_sender import manager
 from .message_templates import template_manager
 
-from bot.user.keyboards.booking_keyboard import confirm_time_keyboard
-from db.crud import notes_manager
-from cache.cache import user_cache
+from src.bot.user.keyboards.booking_keyboard import confirm_time_keyboard
+from src.db.crud import notes_manager
+from src.cache.cache import user_cache
 
 
 USER_ID = getenv("USER_ID_ADMIN")

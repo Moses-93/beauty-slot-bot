@@ -5,13 +5,13 @@ from aiogram.types import Message, CallbackQuery
 
 from datetime import datetime, timedelta, time
 
-from bot.admin.keyboards.general_keyboards import delete_booking_keyboard
+from src.bot.admin.keyboards.general_keyboards import delete_booking_keyboard
 
-from db.crud import services_manager, dates_manager, notes_manager
+from src.db.crud import services_manager, dates_manager, notes_manager
 
-from cache.cache import user_cache
+from src.cache.cache import user_cache
 
-from utils.message_templates import template_manager
+from src.utils.message_templates import template_manager
 
 logger = logging.getLogger(__name__)
 

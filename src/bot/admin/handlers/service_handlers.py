@@ -10,18 +10,18 @@ from datetime import timedelta
 from ..keyboards.service_keybord import edit_service_keyboard
 from ..middleware import AdminMiddleware
 
-from db.crud import services_manager
-from db.models import Services
+from src.db.crud import services_manager
+from src.db.models import Services
 
-from bot.admin.states import ServiceForm, UpdateServiceForm
-from bot.user.keyboards.booking_keyboard import services_keyboard
-from bot.admin.keyboards.general_keyboards import main_keyboard
+from src.bot.admin.states import ServiceForm, UpdateServiceForm
+from src.bot.user.keyboards.booking_keyboard import services_keyboard
+from src.bot.admin.keyboards.general_keyboards import main_keyboard
 
-from utils.message_sender import manager
-from utils.message_templates import template_manager
+from src.utils.message_sender import manager
+from src.utils.message_templates import template_manager
 
-from decorators.permissions import admin_only
-from decorators.validation import (
+from src.decorators.permissions import admin_only
+from src.decorators.validation import (
     block_if_booked,
     validate_service_name as val_srvc_name,
     validate_service_price as val_srvc_price,

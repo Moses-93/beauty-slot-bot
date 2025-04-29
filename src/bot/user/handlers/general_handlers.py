@@ -4,12 +4,12 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 
-from utils.formatted_view import ViewController
-from utils.message_templates import template_manager
+from src.utils.formatted_view import ViewController
+from src.utils.message_templates import template_manager
 
-from bot.user.keyboards import general_keyboards, booking_keyboard
+from src.bot.user.keyboards import general_keyboards, booking_keyboard
 
-from db.crud import dates_manager, services_manager
+from src.db.crud import dates_manager, services_manager
 
 
 logger = logging.getLogger(__name__)

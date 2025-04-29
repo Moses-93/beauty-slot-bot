@@ -3,10 +3,10 @@ import logging
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from utils.message_templates import template_manager
-from utils.message_sender import manager
+from src.utils.message_templates import template_manager
+from src.utils.message_sender import manager
 
-from db.crud import notes_manager
+from src.db.crud import notes_manager
 
 
 logger = logging.getLogger(__name__)

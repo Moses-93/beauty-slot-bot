@@ -2,8 +2,8 @@ import logging
 
 from datetime import datetime
 
-from cache.cache import user_cache
-from db.crud import notes_manager
+from src.cache.cache import user_cache
+from src.db.crud import notes_manager
 
 
 logger = logging.getLogger(__name__)

@@ -2,8 +2,8 @@ import logging
 
 from aiogram.types import CallbackQuery
 
-from cache.config import caches
-from cache.cache import user_cache
+from src.cache.config import caches
+from src.cache.cache import user_cache
 
 
 logger = logging.getLogger(__name__)

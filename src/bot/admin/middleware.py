@@ -1,6 +1,6 @@
 import logging
 from aiogram import BaseMiddleware
-from db.crud import admins_manager
+from src.db.crud import admins_manager
 
 logger = logging.getLogger(__name__)
 

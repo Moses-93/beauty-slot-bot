@@ -9,13 +9,13 @@ from ..keyboards.show_booking_keyboards import show_periods
 from ..keyboards.general_keyboards import main_keyboard
 from ..middleware import AdminMiddleware
 
-from db.crud import notes_manager
-from db.models import Dates, Notes
+from src.db.crud import notes_manager
+from src.db.models import Dates, Notes
 
-from decorators.permissions import admin_only
+from src.decorators.permissions import admin_only
 
-from utils.message_templates import template_manager
-from utils.formatted_view import ViewController
+from src.utils.message_templates import template_manager
+from src.utils.formatted_view import ViewController
 
 logger = logging.getLogger(__name__)
 

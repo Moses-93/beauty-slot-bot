@@ -8,11 +8,11 @@ from ..middleware import AdminMiddleware
 from ..states import AdminsForm
 from ..keyboards.admin_keyboards import del_admin_button
 
-from db.crud import admins_manager
+from src.db.crud import admins_manager
 
-from decorators.permissions import admin_only
+from src.decorators.permissions import admin_only
 
-from utils.formatted_view import ViewController
+from src.utils.formatted_view import ViewController
 
 
 logger = logging.getLogger(__name__)

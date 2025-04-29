@@ -10,7 +10,7 @@ from ..keyboards import (
     service_keybord,
     show_booking_keyboards,
 )
-from decorators.permissions import admin_only
+from src.decorators.permissions import admin_only
 
 logger = logging.getLogger(__name__)
 

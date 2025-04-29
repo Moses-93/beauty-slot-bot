@@ -5,23 +5,23 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from bot.user.handlers import (
+from src.bot.user.handlers import (
     general_handlers,
     booking_handler,
     cancellation_handlers,
     reminder_handlers,
     show_booking,
 )
-from bot.admin.handlers import (
+from src.bot.admin.handlers import (
     general_handlers as admin_hndlrs,
     service_handlers,
     dates_handlers,
     show_bookings,
     admins_handlers,
 )
-from bot.user.middleware import UserIDMiddleware
+from src.bot.user.middleware import UserIDMiddleware
 
-from utils.booking_reminders import find_time_for_reminder
+from src.utils.booking_reminders import find_time_for_reminder
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 

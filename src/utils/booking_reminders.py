@@ -2,12 +2,12 @@ import logging
 
 from datetime import datetime, timedelta
 
-from db.crud import notes_manager
+from src.db.crud import notes_manager
 
-from db.models import Notes
+from src.db.models import Notes
 
-from utils.message_templates import template_manager
-from utils.message_sender import manager
+from src.utils.message_templates import template_manager
+from src.utils.message_sender import manager
 
 
 logger = logging.getLogger(__name__)

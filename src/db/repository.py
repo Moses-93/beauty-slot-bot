@@ -9,7 +9,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 from .config import AsyncSession, async_sessionmaker
 from .interfaces import BaseCRUD
 
-from decorators.cache_tools import clear_cache
+from src.decorators.cache_tools import clear_cache
 
 
 logger = logging.getLogger(__name__)

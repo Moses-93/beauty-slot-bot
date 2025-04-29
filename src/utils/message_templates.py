@@ -1,6 +1,6 @@
 from datetime import datetime, time
-from db.models import Notes
-from cache.cache import request_cache, user_cache
+from src.db.models import Notes
+from src.cache.cache import request_cache, user_cache
 
 
 class TemplateManager:

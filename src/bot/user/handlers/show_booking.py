@@ -3,13 +3,13 @@ import logging
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from db.crud import notes_manager
-from db.models import Notes
+from src.db.crud import notes_manager
+from src.db.models import Notes
 
-from utils.formatted_view import ViewController
-from utils.message_templates import template_manager
+from src.utils.formatted_view import ViewController
+from src.utils.message_templates import template_manager
 
-from bot.user.keyboards.cancellation_keyboard import (
+from src.bot.user.keyboards.cancellation_keyboard import (
     cancel_booking_button,
 )
 

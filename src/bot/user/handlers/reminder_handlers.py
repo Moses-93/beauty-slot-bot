@@ -5,12 +5,12 @@ from aiogram.types import CallbackQuery
 
 from ..keyboards.reminder_keyboard import create_reminder_keyboards
 
-from db.models import Notes
-from db.crud import notes_manager
+from src.db.models import Notes
+from src.db.crud import notes_manager
 
-from cache.cache import user_cache
+from src.cache.cache import user_cache
 
-from utils.message_templates import template_manager
+from src.utils.message_templates import template_manager
 
 
 logger = logging.getLogger(__name__)

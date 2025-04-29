@@ -5,18 +5,18 @@ from aiogram.types import Message, CallbackQuery
 
 from datetime import datetime
 
-from bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from bot.user.keyboards.reminder_keyboard import reminder_button
+from src.bot.user.keyboards.booking_keyboard import free_dates_keyboard
+from src.bot.user.keyboards.reminder_keyboard import reminder_button
 
-from decorators.validation import require_field
-from decorators.cache_tools import user_caching
-from utils.message_templates import template_manager
-from utils.utils import handlers_time, promote_booking
+from src.decorators.validation import require_field
+from src.decorators.cache_tools import user_caching
+from src.utils.message_templates import template_manager
+from src.utils.utils import handlers_time, promote_booking
 
-from db.crud import dates_manager, services_manager
-from db.models import Dates
+from src.db.crud import dates_manager, services_manager
+from src.db.models import Dates
 
-from cache.cache import user_cache
+from src.cache.cache import user_cache
 
 
 time_pattern = r"^(1[0-7]:[0-5]\d|18:00)$"
