@@ -15,8 +15,8 @@ from sqlalchemy import (
 Base = declarative_base()
 
 
-class Dates(Base):
-    __tablename__ = "main_dates"
+class Date(Base):
+    __tablename__ = "dates"
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date, nullable=False)
     free = Column(Boolean, default=True, index=True)
@@ -26,8 +26,8 @@ class Dates(Base):
         return self.date.strftime("%Y-%m-%d %H:%M:%S")
 
 
-class Services(Base):
-    __tablename__ = "main_services"
+class Service(Base):
+    __tablename__ = "services"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
@@ -56,8 +56,8 @@ class Notes(Base):
         return f"Ім'я: {self.name} | Час: {self.time} | Створено в: {self.created_at}"
 
 
-class Admins(Base):
-    __tablename__ = "main_admins"
+class Admin(Base):
+    __tablename__ = "admins"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     chat_id = Column(Integer, nullable=False, unique=True)
