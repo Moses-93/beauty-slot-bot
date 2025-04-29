@@ -1,6 +1,6 @@
 from datetime import datetime
 from aiocache import cached
-from .config import async_session
+from .config import Session
 from .models import Notes, Services, Dates, Admins
 from .repository import ImplementationCRUD
 from decorators.cache_tools import cache_note_id
@@ -99,7 +99,7 @@ class AdminsManager:
         await self.admins.delete(Admins, *expressions)
 
 
-base_crud = ImplementationCRUD(session=async_session)
+base_crud = ImplementationCRUD(session=Session)
 notes_manager = NotesManager(notes=base_crud)
 services_manager = ServicesManager(services=base_crud)
 dates_manager = DatesManager(dates=base_crud)

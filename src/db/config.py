@@ -6,4 +6,3 @@ load_dotenv()
 URI = getenv("URI")
 engine = create_async_engine(URI)
 Session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-async_session = Session
