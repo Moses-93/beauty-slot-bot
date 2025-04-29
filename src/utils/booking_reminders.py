@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from src.db.crud import notes_manager
 
-from src.db.models import Notes
+from src.db.models import Booking
 
 from src.utils.message_templates import template_manager
 from src.utils.message_sender import manager
@@ -17,8 +17,8 @@ async def find_time_for_reminder():
     now = datetime.now()
     active_notes = await notes_manager.read(
         relations=(
-            Notes.date,
-            Notes.service,
+            Booking.date,
+            Booking.service,
         ),
         active=True,
     )

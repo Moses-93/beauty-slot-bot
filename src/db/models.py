@@ -37,8 +37,8 @@ class Service(Base):
         return f"{self.name}: - {self.price} грн."
 
 
-class Notes(Base):
-    __tablename__ = "main_notes"
+class Booking(Base):
+    __tablename__ = "bookings"
     id = Column(Integer, primary_key=True)
     active = Column(Boolean, default=True, index=True)
     user_id = Column(Integer, index=True, nullable=False)
@@ -49,8 +49,8 @@ class Notes(Base):
     date_id = Column(Integer, ForeignKey("main_dates.id", ondelete="CASCADE"))
     reminder_hours = Column(Integer, nullable=True)
     created_at = Column(DateTime)
-    date = relationship("Dates")
-    service = relationship("Services")
+    date = relationship("Date")
+    service = relationship("Service")
 
     def __str__(self):
         return f"Ім'я: {self.name} | Час: {self.time} | Створено в: {self.created_at}"

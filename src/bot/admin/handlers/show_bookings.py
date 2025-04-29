@@ -10,7 +10,7 @@ from ..keyboards.general_keyboards import main_keyboard
 from ..middleware import AdminMiddleware
 
 from src.db.crud import notes_manager
-from src.db.models import Dates, Notes
+from src.db.models import Date, Booking
 
 from src.decorators.permissions import admin_only
 
@@ -58,8 +58,8 @@ async def show_bookings_by_days(callback: CallbackQuery):
     day = int(callback.data.split("_")[1])
     date = datetime.now() - timedelta(days=day)
     notes = await notes_manager.read(
-        relations=(Notes.service, Notes.date),
-        expressions=(Notes.date.has(Dates.date >= date),),
+        relations=(Booking.service, Booking.date),
+        expressions=(Booking.date.has(Date.date >= date),),
     )
     if not notes:
         msg = template_manager.booking_not_found()

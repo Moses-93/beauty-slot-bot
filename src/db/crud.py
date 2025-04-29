@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiocache import cached
 from .config import Session
-from .models import Notes, Services, Dates, Admins
+from .models import Booking, Service, Date, Admin
 from .repository import ImplementationCRUD
 from src.decorators.cache_tools import cache_note_id
 
@@ -13,7 +13,7 @@ class NotesManager:
 
     @cache_note_id
     async def create(self, **kwargs):
-        result = await self.notes.create(Notes, **kwargs)
+        result = await self.notes.create(Booking, **kwargs)
         if result:
             return result
 
@@ -21,19 +21,19 @@ class NotesManager:
         if filters.get("active"):
             now = datetime.now()
             expressions = (
-                Notes.date.has(Dates.date >= now.date()),
-                Notes.time > now.time(),
+                Booking.date.has(Date.date >= now.date()),
+                Booking.time > now.time(),
             )
         result = await self.notes.read(
-            Notes, relations=relations, expressions=expressions, **filters
+            Booking, relations=relations, expressions=expressions, **filters
         )
         return result
 
     async def update(self, *expressions, **filters):
-        await self.notes.update(Notes, *expressions, **filters)
+        await self.notes.update(Booking, *expressions, **filters)
 
     async def delete(self, **kwargs):
-        await self.notes.delete(Notes, **kwargs)
+        await self.notes.delete(Booking, **kwargs)
 
 
 class ServicesManager:
@@ -42,18 +42,18 @@ class ServicesManager:
         self.services = services
 
     async def create(self, **kwargs):
-        await self.services.create(Services, **kwargs)
+        await self.services.create(Service, **kwargs)
 
     @cached(ttl=7200, alias="queries_cache")
     async def read(self, expressions: tuple = None, **filters):
-        result = await self.services.read(Services, expressions=expressions, **filters)
+        result = await self.services.read(Service, expressions=expressions, **filters)
         return result
 
     async def update(self, *expressions, **filters):
-        await self.services.update(Services, *expressions, **filters)
+        await self.services.update(Service, *expressions, **filters)
 
     async def delete(self, **kwargs):
-        await self.services.delete(Services, **kwargs)
+        await self.services.delete(Service, **kwargs)
 
 
 class DatesManager:
@@ -62,21 +62,21 @@ class DatesManager:
         self.dates = dates
 
     async def create(self, **kwargs):
-        await self.dates.create(Dates, **kwargs)
+        await self.dates.create(Date, **kwargs)
 
     @cached(ttl=7200, alias="queries_cache")
     async def read(self, expressions: tuple = None, **filters):
         if filters.get("free"):
             now = datetime.now()
-            expressions = (Dates.del_time > now,)
-        result = await self.dates.read(Dates, expressions=expressions, **filters)
+            expressions = (Date.del_time > now,)
+        result = await self.dates.read(Date, expressions=expressions, **filters)
         return result
 
     async def update(self, *expressions, **filters):
-        await self.dates.update(Dates, *expressions, **filters)
+        await self.dates.update(Date, *expressions, **filters)
 
     async def delete(self, **kwargs):
-        await self.dates.delete(Dates, **kwargs)
+        await self.dates.delete(Date, **kwargs)
 
 
 class AdminsManager:
@@ -85,18 +85,18 @@ class AdminsManager:
         self.admins = admins
 
     async def create(self, **kwargs):
-        await self.admins.create(Admins, **kwargs)
+        await self.admins.create(Admin, **kwargs)
 
     @cached(ttl=1800, alias="queries_cache")
     async def read(self, expressions: list = None, **filters):
-        result = await self.admins.read(Admins, expressions=expressions, **filters)
+        result = await self.admins.read(Admin, expressions=expressions, **filters)
         return result
 
     async def update(self, *expressions, **filters):
-        await self.admins.update(Admins, *expressions, **filters)
+        await self.admins.update(Admin, *expressions, **filters)
 
     async def delete(self, *expressions):
-        await self.admins.delete(Admins, *expressions)
+        await self.admins.delete(Admin, *expressions)
 
 
 base_crud = ImplementationCRUD(session=Session)

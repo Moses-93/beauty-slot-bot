@@ -4,7 +4,7 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 
 from src.db.crud import notes_manager
-from src.db.models import Notes
+from src.db.models import Booking
 
 from src.utils.formatted_view import ViewController
 from src.utils.message_templates import template_manager
@@ -23,8 +23,8 @@ async def show_all_notes(callback: CallbackQuery, user_id):
 
     notes = await notes_manager.read(
         relations=(
-            Notes.service,
-            Notes.date,
+            Booking.service,
+            Booking.date,
         ),
         user_id=user_id,
     )
@@ -43,7 +43,7 @@ async def show_all_notes(callback: CallbackQuery, user_id):
 async def show_active_notes(callback: CallbackQuery, user_id):
     logger.info(f"Користувач з ID: {user_id} переглядає активні записи")
     active_notes = await notes_manager.read(
-        relations=(Notes.date, Notes.service),
+        relations=(Booking.date, Booking.service),
         active=True,
         user_id=user_id,
     )

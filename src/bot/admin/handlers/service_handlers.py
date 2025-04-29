@@ -11,7 +11,7 @@ from ..keyboards.service_keybord import edit_service_keyboard
 from ..middleware import AdminMiddleware
 
 from src.db.crud import services_manager
-from src.db.models import Services
+from src.db.models import Service
 
 from src.bot.admin.states import ServiceForm, UpdateServiceForm
 from src.bot.user.keyboards.booking_keyboard import services_keyboard
@@ -153,7 +153,7 @@ async def set_new_field_value(message: Message, state: FSMContext):
     elif field == "durations":
         new_value = timedelta(minutes=int(new_value))
     msg = template_manager.get_edit_service(field=field, new_value=new_value)
-    await services_manager.update(Services.id == service_id, **{field: new_value})
+    await services_manager.update(Service.id == service_id, **{field: new_value})
     logger.info(f"Поле {field} послуги з ID: {service_id} оновлено на {new_value}")
     await message.answer(text=msg)
     await state.clear()

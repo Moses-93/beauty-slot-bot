@@ -1,5 +1,5 @@
 from datetime import datetime, time
-from src.db.models import Notes
+from src.db.models import Booking
 from src.cache.cache import request_cache, user_cache
 
 
@@ -174,7 +174,7 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_reminder(choice=False, hour=None, note: Notes = None):
+    def get_reminder(choice=False, hour=None, note: Booking = None):
         if choice:
             message = "Оберіть за скільки годин бажаєте отримати нагадування:"
             return message

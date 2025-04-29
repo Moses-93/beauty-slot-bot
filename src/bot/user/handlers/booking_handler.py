@@ -14,7 +14,7 @@ from src.utils.message_templates import template_manager
 from src.utils.utils import handlers_time, promote_booking
 
 from src.db.crud import dates_manager, services_manager
-from src.db.models import Dates
+from src.db.models import Date
 
 from src.cache.cache import user_cache
 
