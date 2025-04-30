@@ -164,3 +164,4 @@ cython_debug/
 .vscode/settings.json
 docker/dev/.env.dev
 docker/prod/.env.prod
+idea.yml
