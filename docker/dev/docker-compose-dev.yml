@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:16.8
     env_file:
-      - .env.dev
+      - ../../.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -16,7 +16,7 @@ services:
       context: ../../
       dockerfile: docker/dev/Dockerfile.dev
     env_file:
-      - .env.dev
+      - ../../.env
     environment:
       POSTGRES_HOST: db
     depends_on:
