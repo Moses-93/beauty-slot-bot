@@ -23,7 +23,7 @@ from src.bot.user.middleware import UserIDMiddleware
 
 from src.utils.booking_reminders import find_time_for_reminder
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
+from src.core.config import get_settings
 
 os.environ["TZ"] = "Europe/Kyiv"
 
@@ -38,8 +38,9 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-TOKEN = os.getenv("TOKEN")
-bot = Bot(token=TOKEN)
+
+settings = get_settings()
+bot = Bot(token=settings.telegram_token)
 dp = Dispatcher()
 dp.message.middleware(UserIDMiddleware())
 dp.callback_query.middleware(UserIDMiddleware())
