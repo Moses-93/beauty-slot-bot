@@ -25,7 +25,7 @@ class Date(Base):
     bookings = relationship("Bookings", back_populates="date")
 
     def __str__(self):
-        return self.date.strftime("%Y-%m-%d %H:%M:%S")
+        return self.date.strftime("%Y-%m-%d")
 
 
 class Service(Base):
