@@ -16,8 +16,8 @@ async def get_busy_slots(user_id: int):
     notes = await notes_manager.read(date_id=date.id)
     for time in notes:
         time = datetime.combine(date.date, time.time)
-        end_time = time + service.durations
-        start_time = time - service.durations
+        end_time = time + service.duration
+        start_time = time - service.duration
         busy_slots.append({"start": start_time, "end": end_time})
         busy_slots = sorted(busy_slots, key=lambda slot: slot["start"])
     logger.info(f"Повернуто: {busy_slots}")
@@ -36,7 +36,7 @@ async def find_nearest_available_time(user_id: int, time: datetime, busy_slots: 
             # Якщо вибраний час зайнятий, переносимо на кінець зайнятого часу
             current_time = busy_slot["end"]
         # Перевіряємо, чи є достатньо часу після поточного часу
-    if current_time + service.durations <= busy_slot["start"]:
+    if current_time + service.duration <= busy_slot["start"]:
         logger.info(f"Повернуто: {current_time}")
         return current_time  # Повертаємо найближчий доступний час
     logger.info(f"Повернуто: {current_time}")

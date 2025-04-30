@@ -4,7 +4,7 @@ from aiogram.fsm.state import State, StatesGroup
 class ServiceForm(StatesGroup):
     name = State()
     price = State()
-    durations = State()
+    duration = State()
 
 
 class UpdateServiceForm(StatesGroup):

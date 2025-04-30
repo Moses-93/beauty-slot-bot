@@ -35,7 +35,7 @@ class FormattingView:
     def format_services(services):
         header = f"*Послуги:*\n\n*ID* | *Послуга* | *Ціна* | *Тривалість*\n{"-" * 40}\n"
         body = "\n".join(
-            f"{service.id} | {service.name} | {service.price} грн. | {service.durations} хв."
+            f"{service.id} | {service.name} | {service.price} грн. | {service.duration} хв."
             for service in services
         )
         return header + body

@@ -14,7 +14,7 @@ async def test_get_busy_slots():
     user_id = 1
 
     service = AsyncMock()
-    service.durations = timedelta(minutes=40)
+    service.duration = timedelta(minutes=40)
 
     date = AsyncMock()
     date.date = datetime.now().date()
@@ -36,7 +36,7 @@ async def test_find_nearest_available_time():
     user_id = 1
     current_time = datetime(2024, 10, 1, 12, 0)
     service_durations = AsyncMock()
-    service_durations.durations = timedelta(hours=1)
+    service_durations.duration = timedelta(hours=1)
     busy_slots = [
         {"start": current_time, "end": current_time + service_durations.durations}
     ]
@@ -58,7 +58,7 @@ async def test_check_slot_available():
 
     # Мокаємо залежності
     service = AsyncMock()
-    service.durations = timedelta(hours=1)
+    service.duration = timedelta(hours=1)
 
     date = AsyncMock()
     date.date = current_time.date()

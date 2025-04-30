@@ -101,20 +101,20 @@ async def set_service_name(
 async def set_service_price(message: Message, price, state: FSMContext, **kwargs):
 
     await state.update_data(price=price)
-    msg = template_manager.get_add_new_service(durations=True)
+    msg = template_manager.get_add_new_service(duration=True)
     await message.answer(text=msg)
-    await state.set_state(ServiceForm.durations)
+    await state.set_state(ServiceForm.duration)
 
 
-@router.message(ServiceForm.durations)
+@router.message(ServiceForm.duration)
 @val_srvc_durations
 async def set_service_duration(
-    message: Message, durations: timedelta, state: FSMContext, **kwargs
+    message: Message, duration: timedelta, state: FSMContext, **kwargs
 ):
     user_data = await state.get_data()
     name = user_data.get("name")
     price = user_data.get("price")
-    await services_manager.create(name=name, price=price, durations=durations)
+    await services_manager.create(name=name, price=price, duration=duration)
     await state.clear()
     msg = template_manager.get_add_new_service(success=True, service=name)
     await message.answer(text=msg)
@@ -150,7 +150,7 @@ async def set_new_field_value(message: Message, state: FSMContext):
     service_id = data.get("service_id")
     if field == "price":
         new_value = int(new_value)
-    elif field == "durations":
+    elif field == "duration":
         new_value = timedelta(minutes=int(new_value))
     msg = template_manager.get_edit_service(field=field, new_value=new_value)
     await services_manager.update(Service.id == service_id, **{field: new_value})

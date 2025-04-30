@@ -94,20 +94,20 @@ def validate_service_price(func):
 def validate_service_duration(func):
     async def wrapper(message: Message, *args, **kwargs):
         try:
-            durations = timedelta(minutes=int(message.text))
+            duration = timedelta(minutes=int(message.text))
         except ValueError:
             await message.answer(
                 text="Тривалість повинна бути числом.\nСпробуйте ще раз."
             )
             return
 
-        if durations <= timedelta(hours=0):
+        if duration <= timedelta(hours=0):
             await message.answer(
                 text="Тривалість повинна бути додатнім числом. \nСпробуйте ще раз."
             )
             return
 
-        await func(message, durations, *args, **kwargs)
+        await func(message, duration, *args, **kwargs)
         return True
 
     return wrapper

@@ -59,7 +59,7 @@ class TemplateManager:
 
     @staticmethod
     def get_add_new_service(
-        name=False, price=False, durations=False, success=False, service=None
+        name=False, price=False, duration=False, success=False, service=None
     ):
         if name:
             message = (
@@ -70,7 +70,7 @@ class TemplateManager:
         elif price:
             message = "Введіть ціну послуги:"
             return message
-        elif durations:
+        elif duration:
             message = "Вкажіть тривалість послуги у хвилинах:"
             return message
         elif success:
@@ -95,7 +95,7 @@ class TemplateManager:
             message = "Оберіть, яке поле Ви хочете редагувати"
             return message
         elif field:
-            message = f"Введіть нове значення поля {field} {"в хвилинах:" if field == "durations" else":"}"
+            message = f"Введіть нове значення поля {field} {"в хвилинах:" if field == "duration" else":"}"
             return message
         else:
             message = "Оберіть, яку послугу Ви хочете редагувати"
