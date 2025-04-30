@@ -1,14 +1,13 @@
 import logging
 from aiogram import Bot
-from os import getenv
+from src.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 
 
 class MessageSendingManager:
-    def __init__(self, token: str, backup_token: str = None):
+    def __init__(self, token: str):
         self.bot = Bot(token=token)
-        self.backup_bot = Bot(token=backup_token) if backup_token else None
 
     async def send_message(self, chat_id: int, message: str):
         """
@@ -21,11 +20,8 @@ class MessageSendingManager:
             logger.error(
                 f"Помилка відправлення повідомлення для користувача: {chat_id}"
             )
-            await self.backup_bot.send_message(chat_id=chat_id, text=message)
-            logger.warning(f"Повідомлення відправленно основним ботом")
 
 
-# Ініціалізація менеджера
-TOKEN = getenv("SENDERS_TOKEN")
-BACKUP_TOKEN = getenv("TOKEN")
-manager = MessageSendingManager(token=TOKEN, backup_token=BACKUP_TOKEN)
+settings = get_settings()
+TOKEN = settings.telegram_token
+manager = MessageSendingManager(token=TOKEN)
