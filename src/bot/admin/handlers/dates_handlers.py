@@ -42,7 +42,7 @@ async def add_date(message: CallbackQuery, state: FSMContext, *args, **kwargs):
 @admin_only
 async def delete_date(message: CallbackQuery, *args, **kwargs):
     now = datetime.now()
-    dates = await dates_manager.read(free=True)
+    dates = await dates_manager.read(is_active=True)
     msg = template_manager.get_select_service_or_date_del(date=True)
     delete = await free_dates_keyboard(act="delete", free_dates=dates)
     await message.answer(text=msg, reply_markup=delete)
@@ -63,7 +63,7 @@ async def back_to_main_menu(message: Message, state: FSMContext, *args, **kwargs
 @validate_date
 async def set_date(message: Message, full_date, state: FSMContext, **kwargs):
     logger.info(f"FULL DATE: {full_date}")
-    await dates_manager.create(date=full_date.date(), del_time=full_date)
+    await dates_manager.create(date=full_date.date(), deactivation_time=full_date)
     await state.clear()
     msg = template_manager.get_add_new_date(date=full_date.date())
     await message.answer(text=msg)

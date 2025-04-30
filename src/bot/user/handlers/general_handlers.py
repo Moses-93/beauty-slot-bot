@@ -53,7 +53,7 @@ async def show_services(message: Message, *args, **kwargs):
 
 @router.message(lambda message: message.text == "Доступні дати")
 async def show_dates(message: Message, *args, **kwargs):
-    free_dates = await dates_manager.read(free=True)
+    free_dates = await dates_manager.read(is_active=True)
     if not free_dates:
         await message.answer(text="Немає доступних дат.")
         return

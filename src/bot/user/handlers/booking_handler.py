@@ -30,7 +30,7 @@ router = Router()
 @user_caching(key="service", fetch_from_db=lambda id: services_manager.read(id=id))
 async def processes_services(callback: CallbackQuery, *args, **kwargs):
     logger.info("Запуск обробника послуг")
-    dates = await dates_manager.read(free=True)
+    dates = await dates_manager.read(is_active=True)
     if not dates:
         msg = "На жаль доступних дат немає"
         await callback.message.answer(text=msg)

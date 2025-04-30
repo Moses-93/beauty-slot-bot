@@ -24,12 +24,12 @@ async def find_time_for_reminder():
     )
 
     for note in active_notes:
-        if not note.reminder_hours:
+        if not note.reminder_time:
             continue  # Повідомлення не повинно бути відправлене
 
-        reminder_hours = note.reminder_hours
+        reminder_time = note.reminder_time
         note_time = datetime.combine(note.date.date, note.time)
-        reminder_time = note_time - timedelta(hours=reminder_hours)
+        reminder_time = note_time - timedelta(hours=reminder_time)
 
         if abs((now - reminder_time).total_seconds()) <= 600:  # 10 хвилин в секундах
             msg = template_manager.get_reminder(note=note)

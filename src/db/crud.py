@@ -66,9 +66,9 @@ class DatesManager:
 
     @cached(ttl=7200, alias="queries_cache")
     async def read(self, expressions: tuple = None, **filters):
-        if filters.get("free"):
+        if filters.get("is_active"):
             now = datetime.now()
-            expressions = (Date.del_time > now,)
+            expressions = (Date.deactivation_time > now,)
         result = await self.dates.read(Date, expressions=expressions, **filters)
         return result
 

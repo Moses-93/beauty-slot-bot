@@ -19,8 +19,10 @@ class Date(Base):
     __tablename__ = "dates"
     id = Column(Integer, primary_key=True, index=True)
     date = Column(Date, nullable=False)
-    free = Column(Boolean, default=True, index=True)
-    del_time = Column(DateTime, nullable=False)
+    is_active = Column(Boolean, default=True, index=True)
+    deactivation_time = Column(DateTime, nullable=False)
+
+    bookings = relationship("Bookings", back_populates="date")
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d %H:%M:%S")
@@ -31,7 +33,7 @@ class Service(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
-    durations = Column(Interval, nullable=False)
+    duration = Column(Interval, nullable=False)
 
     def __str__(self):
         return f"{self.name}: - {self.price} грн."
@@ -45,12 +47,13 @@ class Booking(Base):
     name = Column(String, nullable=False)
     username = Column(String)
     time = Column(Time, nullable=False)
-    service_id = Column(Integer, ForeignKey("main_services.id", ondelete="CASCADE"))
-    date_id = Column(Integer, ForeignKey("main_dates.id", ondelete="CASCADE"))
-    reminder_hours = Column(Integer, nullable=True)
+    service_id = Column(Integer, ForeignKey("services.id", ondelete="CASCADE"))
+    date_id = Column(Integer, ForeignKey("dates.id", ondelete="CASCADE"))
+    reminder_time = Column(Integer, nullable=True)
     created_at = Column(DateTime)
-    date = relationship("Date")
-    service = relationship("Service")
+
+    date = relationship("Date", back_populates="bookings")
+    service = relationship("Service", back_populates="bookings")
 
     def __str__(self):
         return f"Ім'я: {self.name} | Час: {self.time} | Створено в: {self.created_at}"
