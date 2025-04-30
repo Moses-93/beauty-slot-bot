@@ -22,7 +22,7 @@ class Date(Base):
     is_active = Column(Boolean, default=True, index=True)
     deactivation_time = Column(DateTime, nullable=False)
 
-    bookings = relationship("Bookings", back_populates="date")
+    bookings = relationship("Booking", back_populates="date")
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")
@@ -34,6 +34,8 @@ class Service(Base):
     name = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
     duration = Column(Interval, nullable=False)
+
+    bookings = relationship("Booking", back_populates="service")
 
     def __str__(self):
         return f"{self.name}: - {self.price} грн."
