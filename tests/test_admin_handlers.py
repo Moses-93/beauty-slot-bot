@@ -2,13 +2,9 @@ import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from datetime import datetime, timedelta
 from aiogram import types
-from bot.admin.keyboards import general_keyboards
-from bot.admin.handlers import (
-    general_handlers,
-    dates_handlers,
-    service_handlers,
-    show_bookings,
-)
+
+from src.bot.admin.keyboards import general_keyboards
+from src.bot.admin.handlers import general_handlers
 
 
 @pytest.mark.asyncio
