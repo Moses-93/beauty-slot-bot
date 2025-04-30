@@ -1,6 +1,6 @@
 from datetime import datetime
 from aiocache import cached
-from .config import Session
+from src.core.database import Session
 from .models import Booking, Service, Date, Admin
 from .repository import ImplementationCRUD
 from src.decorators.cache_tools import cache_note_id

@@ -5,8 +5,8 @@ from typing import Type
 from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from .config import AsyncSession, async_sessionmaker
 from .interfaces import BaseCRUD
 
 from src.decorators.cache_tools import clear_cache
