@@ -27,12 +27,14 @@ from src.core.config import get_settings
 
 os.environ["TZ"] = "Europe/Kyiv"
 
+os.makedirs("logs", exist_ok=True)
+
 logging.basicConfig(
-    level=logging.INFO,  # Рівень логування (INFO для загальної інформації)
-    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат повідомлень
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("logs/bot.log"),  # Файл для зберігання логів
-        logging.StreamHandler(),  # Виведення логів у консоль
+        logging.FileHandler("logs/bot.log"),
+        logging.StreamHandler(sys.stdout),
     ],
 )
 
@@ -66,5 +68,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
