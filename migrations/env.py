@@ -4,33 +4,25 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-
 from src.db.models import Base
-from os import getenv
+from src.core.config import get_settings
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-url = getenv("SYNC_URL")
-if not url:
-    raise ValueError("URI environment variable is not set")
 
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+url = get_settings().database_url("psycopg2")
+
+print(f"Set URL: {url}")
+if not url:
+    raise ValueError("URL variable not set in environment variable")
+
+config.set_main_option("sqlalchemy.url", url)
+
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 
 def run_migrations_offline() -> None:
