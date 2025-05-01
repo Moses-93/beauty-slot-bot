@@ -165,3 +165,4 @@ cython_debug/
 docker/dev/.env.dev
 docker/prod/.env.prod
 idea.yml
+project_structure.py
