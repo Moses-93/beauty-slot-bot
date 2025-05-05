@@ -28,7 +28,7 @@ class DateModel(Base):
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
 
-    bookings = relationship("Booking", back_populates="date")
+    bookings = relationship("BookingModel", back_populates="date")
 
 
 class ServiceModel(Base):
@@ -43,7 +43,7 @@ class ServiceModel(Base):
     updated_at = Column(
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
-    bookings = relationship("Booking", back_populates="service")
+    bookings = relationship("BookingModel", back_populates="service")
 
 
 class BookingModel(Base):
@@ -60,9 +60,9 @@ class BookingModel(Base):
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
 
-    date = relationship("Date", back_populates="bookings", uselist=False)
-    service = relationship("Service", back_populates="bookings", uselist=False)
-    user = relationship("User", back_populates="bookings", uselist=False)
+    date = relationship("DateModel", back_populates="bookings", uselist=False)
+    service = relationship("ServiceModel", back_populates="bookings", uselist=False)
+    user = relationship("UserModel", back_populates="bookings", uselist=False)
 
 
 class UserModel(Base):
@@ -78,7 +78,7 @@ class UserModel(Base):
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
 
-    bookings = relationship("Booking", back_populates="user")
+    bookings = relationship("BookingModel", back_populates="user")
 
     def __str__(self):
         return f"Ім'я: {self.name}"
