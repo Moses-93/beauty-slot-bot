@@ -12,7 +12,6 @@ config = context.config
 
 url = get_settings().database_url("psycopg2")
 
-print(f"Set URL: {url}")
 if not url:
     raise ValueError("URL variable not set in environment variable")
 
