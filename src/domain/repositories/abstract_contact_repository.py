@@ -8,29 +8,28 @@ class AbstractContactRepository(ABC):
     """
 
     @abstractmethod
-    def get(self) -> Contact:
+    async def get(self) -> Contact:
         """
         Retrieve a contact by its ID.
         """
         pass
 
     @abstractmethod
-    def create(self, contact: Contact) -> Contact:
+    async def create(self, contact: Contact) -> Contact:
         """
         Add a new contact.
         """
         pass
 
     @abstractmethod
-    def update(self, contact: Contact) -> Contact:
+    async def update(self, contact: Contact) -> Contact:
         """
         Update an existing contact.
         """
-
-    pass
+        pass
 
     @abstractmethod
-    def delete(self, contact_id: int) -> None:
+    async def delete(self, contact_id: int) -> None:
         """
         Delete a contact by its ID.
         """
