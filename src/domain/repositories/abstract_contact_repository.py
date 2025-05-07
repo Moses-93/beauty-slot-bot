@@ -8,7 +8,7 @@ class AbstractContactRepository(ABC):
     """
 
     @abstractmethod
-    def get_by_user_id(self, user_id: int) -> Contact:
+    def get(self) -> Contact:
         """
         Retrieve a contact by its ID.
         """
