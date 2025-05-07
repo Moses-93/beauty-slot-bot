@@ -3,6 +3,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     Boolean,
     Interval,
+    Text,
     Time,
     Integer,
     Column,
@@ -12,6 +13,7 @@ from sqlalchemy import (
     Date,
     func,
 )
+from src.domain.enums.user_role import UserRole
 
 Base = declarative_base()
 
@@ -82,3 +84,22 @@ class UserModel(Base):
 
     def __str__(self):
         return f"Ім'я: {self.name}"
+
+
+class ContactModel(Base):
+    __tablename__ = "contacts"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    phone_number = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    telegram_link = Column(String, nullable=True)
+    instagram_link = Column(String, nullable=True)
+    google_maps_link = Column(String, nullable=True)
+    about = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(True), nullable=False, default=func.now())
+    updated_at = Column(
+        DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
+    )
+
+    user = relationship("UserModel", back_populates="contact")
