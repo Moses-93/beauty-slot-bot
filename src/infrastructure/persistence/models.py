@@ -100,6 +100,8 @@ class ContactModel(Base):
     instagram_link = Column(String, nullable=True)
     google_maps_link = Column(String, nullable=True)
     about = Column(Text, nullable=True)
+    work_start_time = Column(Time(True), nullable=False)
+    work_end_time = Column(Time(True), nullable=False)
 
     created_at = Column(DateTime(True), nullable=False, default=func.now())
     updated_at = Column(
