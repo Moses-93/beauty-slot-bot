@@ -2,6 +2,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     Boolean,
+    Enum,
     Interval,
     Text,
     Time,
@@ -73,7 +74,9 @@ class UserModel(Base):
     name = Column(String, nullable=False)
     username = Column(String, nullable=True, unique=True)
     chat_id = Column(String, nullable=False, unique=True, index=True)
-    role = Column(String, default="client", nullable=False)
+    role = Column(
+        Enum(UserRole, native_enum=False), default=UserRole.CLIENT, nullable=False
+    )
 
     created_at = Column(DateTime(True), nullable=False, default=func.now())
     updated_at = Column(
@@ -81,6 +84,7 @@ class UserModel(Base):
     )
 
     bookings = relationship("BookingModel", back_populates="user")
+    contact = relationship("ContactModel", back_populates="user", uselist=False)
 
     def __str__(self):
         return f"Ім'я: {self.name}"
