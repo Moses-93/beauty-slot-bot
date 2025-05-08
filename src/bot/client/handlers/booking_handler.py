@@ -5,8 +5,8 @@ from aiogram.types import Message, CallbackQuery
 
 from datetime import datetime
 
-from src.bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from src.bot.user.keyboards.reminder_keyboard import reminder_button
+from src.bot.client.keyboards.booking_keyboard import free_dates_keyboard
+from src.bot.client.keyboards.reminder_keyboard import reminder_button
 
 from src.decorators.validation import require_field
 from src.decorators.cache_tools import user_caching
