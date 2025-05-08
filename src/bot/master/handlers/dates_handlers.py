@@ -12,8 +12,8 @@ from ..middleware import AdminMiddleware
 
 from src.db.crud import dates_manager
 
-from src.bot.user.keyboards.booking_keyboard import free_dates_keyboard
-from src.bot.admin.keyboards.general_keyboards import main_keyboard
+from src.bot.client.keyboards.booking_keyboard import free_dates_keyboard
+from src.bot.master.keyboards.general_keyboards import main_keyboard
 
 
 from src.decorators.validation import validate_date, block_if_booked

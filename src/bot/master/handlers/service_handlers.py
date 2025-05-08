@@ -13,9 +13,9 @@ from ..middleware import AdminMiddleware
 from src.db.crud import services_manager
 from src.db.models import Service
 
-from src.bot.admin.states import ServiceForm, UpdateServiceForm
-from src.bot.user.keyboards.booking_keyboard import services_keyboard
-from src.bot.admin.keyboards.general_keyboards import main_keyboard
+from src.bot.master.states import ServiceForm, UpdateServiceForm
+from src.bot.client.keyboards.booking_keyboard import services_keyboard
+from src.bot.master.keyboards.general_keyboards import main_keyboard
 
 from src.utils.message_sender import manager
 from src.utils.message_templates import template_manager
