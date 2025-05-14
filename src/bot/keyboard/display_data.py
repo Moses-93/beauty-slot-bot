@@ -8,7 +8,7 @@ from aiogram.types import (
 class DisplayData:
 
     @staticmethod
-    def generate_keyboard(
+    def create_button(
         data: List[Dict],
         text_keys: Tuple[str],
         callback_key: Tuple[str],
