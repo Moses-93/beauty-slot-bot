@@ -11,7 +11,7 @@ class DisplayData:
     def create_button(
         data: List[Dict],
         text_keys: Tuple[str],
-        callback_key: Tuple[str],
+        callback_keys: Tuple[str],
     ) -> InlineKeyboardMarkup:
         """
         Generates an InlineKeyboardMarkup from a list of dictionaries.
@@ -26,7 +26,7 @@ class DisplayData:
             [
                 InlineKeyboardButton(
                     text=" - ".join(str(i.get(key, "...")) for key in text_keys),
-                    callback_data=f"{" ".join(str(i.get(key, "...")) for key in callback_key)}",
+                    callback_data=f"{" ".join(str(i.get(key, "...")) for key in callback_keys)}",
                 )
             ]
             for i in data
