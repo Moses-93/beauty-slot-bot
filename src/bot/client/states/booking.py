@@ -11,3 +11,4 @@ class BookingStates(StatesGroup):
     date = State()
     time = State()
     reminder = State()
+    confirm = State()
