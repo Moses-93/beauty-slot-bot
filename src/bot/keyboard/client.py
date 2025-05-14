@@ -23,9 +23,7 @@ class ClientKeyboard:
                     KeyboardButton(text="📋 Послуги"),
                     KeyboardButton(text="🗓 Доступні дати"),
                 ],
-                [
-                    KeyboardButton(text="📕 Контакти")
-                ]
+                [KeyboardButton(text="📕 Контакти")],
             ],
             resize_keyboard=True,
             one_time_keyboard=True,
