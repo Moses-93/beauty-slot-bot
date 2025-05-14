@@ -1,16 +1,6 @@
 class TemplateManager:
 
     @staticmethod
-    def get_contacts_info():
-        message = (
-            "Адреса: [Вул. Перлинна 3](https://maps.app.goo.gl/coiRjcbFzwMTzppz8)\n"
-            "Telegram: @chashurina\n"
-            "Instagram: [chashurina_brows](https://www.instagram.com/chashurina_brows?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)\n"
-            "Телефон: +380934050798"
-        )
-        return message
-
-    @staticmethod
     async def message_to_the_master(
         username: str, service: str, date, time, booking_cancel=False
     ):
@@ -42,47 +32,12 @@ class TemplateManager:
         return message
 
     @staticmethod
-    def get_add_new_service(
-        name=False, price=False, duration=False, success=False, service=None
-    ):
-        if name:
-            message = (
-                "Для того, щоб додати послугу - заповніть всі запропоновані поля.\n"
-                "Введіть назву послуги:"
-            )
-            return message
-        elif price:
-            message = "Введіть ціну послуги:"
-            return message
-        elif duration:
-            message = "Вкажіть тривалість послуги у хвилинах:"
-            return message
-        elif success:
-            message = f"Послуга - {service} успішно додана!"
-            return message
-
-    @staticmethod
     def get_add_new_date(add=False, date=None):
         if add:
             message = "Введіть дату в форматі YYYY-MM-DD:"
             return message
         if date:
             message = f"Дата - {date} успішно додана!"
-            return message
-
-    @staticmethod
-    def get_edit_service(choice=False, field=None, new_value=None):
-        if field and new_value:
-            message = f"Значення поля {field} успішно змінено на {new_value}!"
-            return message
-        elif choice:
-            message = "Оберіть, яке поле Ви хочете редагувати"
-            return message
-        elif field:
-            message = f"Введіть нове значення поля {field} {"в хвилинах:" if field == "duration" else":"}"
-            return message
-        else:
-            message = "Оберіть, яку послугу Ви хочете редагувати"
             return message
 
     @staticmethod
@@ -109,7 +64,6 @@ class TemplateManager:
     def elapsed_time_warning(time):
         message = f"Ви не можете обрати {time.time()}, оскільки він вже пройшов"
         return message
-
 
     @staticmethod
     def get_greeting_message():
