@@ -21,25 +21,25 @@ class DateHandler:
             reply_markup=MasterKeyboard.dates_section(),
         )
 
-    async def handle_start_add_date(message: Message, state: FSMContext):
+    async def handle_start_add_date(self, message: Message, state: FSMContext):
         await state.set_state(CreateDateStates.date)
         await message.answer(text=...)
 
-    async def handle_start_delete_date(message: Message, state: FSMContext):
+    async def handle_start_delete_date(self, message: Message, state: FSMContext):
         await state.set_state(DeleteDateStates.date_id)
         await message.answer(text=..., reply_markup=...)
 
-    async def show_dates_list(message: Message): ...
+    async def show_dates_list(self, message: Message): ...
 
-    async def handle_set_date(message: Message, state: FSMContext, date: str):
+    async def handle_set_date(self, message: Message, state: FSMContext, date: str):
         await state.set_state(CreateDateStates.deactivation_time)
         await state.update_data(date=date)
         await message.answer(text=...)
 
     async def handle_set_deactivation_time(
-        message: Message, state: FSMContext, deactivation_time: str
+        self, message: Message, state: FSMContext, deactivation_time: str
     ):
         await state.update_data(deactivation_time=deactivation_time)
 
-    async def handle_delete_date(callback: CallbackQuery, state: FSMContext):
+    async def handle_delete_date(self, callback: CallbackQuery, state: FSMContext):
         pass
