@@ -33,4 +33,4 @@ class DateMessage:
 
     @staticmethod
     def success_deactivate(date: str) -> str:
-        return f"Послуга {date} успішно видалена! ❌\nТепер вона недоступна для запису."
+        return f"Дата {date} успішно видалена! ❌\nТепер вона недоступна для запису."
