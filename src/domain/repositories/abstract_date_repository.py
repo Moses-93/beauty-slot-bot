@@ -29,3 +29,8 @@ class AbstractDateRepository(ABC):
     async def delete(self, date_id: int) -> None:
         """Delete a date by its ID."""
         pass
+
+    @abstractmethod
+    async def deactivate(self, date_id: int) -> bool:
+        """Deactivate a date by ID"""
+        pass
