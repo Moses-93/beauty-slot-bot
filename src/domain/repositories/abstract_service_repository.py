@@ -1,27 +1,22 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from src.domain.entities.service import Service
+from src.application.dto.service import ServiceDTO
 
 
 class AbstractServiceRepository(ABC):
     @abstractmethod
-    async def get_services(self) -> List[Service]:
+    async def get_active_services(self) -> List[ServiceDTO]:
         """Get all services."""
         pass
 
     @abstractmethod
-    async def get_service_by_id(self, service_id: int) -> Service:
-        """Get a service by its ID."""
-        pass
-
-    @abstractmethod
-    async def create(self, service_data: Service) -> Service:
+    async def create(self, service_data: ServiceDTO) -> ServiceDTO:
         """Create a new service."""
         pass
 
     @abstractmethod
-    async def update(self, service_id: int, service: Service) -> Service:
+    async def update(self, service_id: int, **kwargs) -> bool:
         """Update an existing service."""
         pass
 
