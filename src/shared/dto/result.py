@@ -16,4 +16,3 @@ class ResultDTO(Generic[T]):
     @classmethod
     def fail(cls) -> "ResultDTO[None]":
         return cls(is_success=False)
-
