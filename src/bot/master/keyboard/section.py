@@ -4,7 +4,7 @@ from aiogram.types import (
 )
 
 
-class MasterKeyboard:
+class Sections:
 
     @staticmethod
     def main_section() -> ReplyKeyboardMarkup:
