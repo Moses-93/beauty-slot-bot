@@ -10,7 +10,7 @@ class ResultDTO(Generic[T]):
     data: Optional[T] = None
 
     @classmethod
-    def success(cls, data: T) -> "ResultDTO[T]":
+    def success(cls, data: Optional[T] = None) -> "ResultDTO[T]":
         return cls(is_success=True, data=data)
 
     @classmethod
