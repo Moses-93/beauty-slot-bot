@@ -25,6 +25,5 @@ class UpdateServiceStates(StatesGroup):
     """
 
     service_id = State()
-    title = State()
-    price = State()
-    duration = State()
+    field = State()
+    value = State()
