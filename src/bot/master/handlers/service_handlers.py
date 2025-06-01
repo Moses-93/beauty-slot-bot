@@ -1,31 +1,24 @@
-import ast
 import logging
-
-from aiogram import Router, F
+from punq import Container
+from typing import Dict
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from datetime import timedelta
-
-from ..keyboards.service_keybord import edit_service_keyboard
-from ..middleware import AdminMiddleware
-
-from src.db.crud import services_manager
-from src.db.models import Service
-
-from src.bot.master.states import ServiceForm, UpdateServiceForm
-from src.bot.client.keyboards.booking_keyboard import services_keyboard
-from src.bot.master.keyboards.general_keyboards import main_keyboard
-
-from src.utils.message_sender import manager
-from src.utils.message_templates import template_manager
-
-from src.decorators.permissions import admin_only
-from src.decorators.validation import (
-    block_if_booked,
-    validate_service_name as val_srvc_name,
-    validate_service_price as val_srvc_price,
-    validate_service_duration as val_srvc_durations,
+from src.bot.master.states.service import (
+    CreateServiceStates,
+    DeleteServiceStates,
+    UpdateServiceStates,
+)
+from src.shared.dto.result import ResultDTO
+from src.bot.master.messages.service import ServiceMessage
+from src.bot.shared.keyboard.display_data import DisplayData
+from src.application.dto.service import ServiceDTO
+from src.bot.master.messages.service import ServiceMessage
+from src.application.use_cases.service import (
+    CreateServiceUseCase,
+    EditServiceUseCase,
+    GetServicesUseCase,
 )
 
 
