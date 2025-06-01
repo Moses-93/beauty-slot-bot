@@ -36,7 +36,7 @@ class GetServicesUseCase:
         self._repo = service_repo
 
     async def __call__(self, *args, **kwds) -> ResultDTO[List[ServiceDTO]]:
-        services = await self._repo.get_active_services()
+        services = await self._repo.get_active()
 
         if services is not None:
             return ResultDTO.success(services)
