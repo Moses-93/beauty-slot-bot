@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from src.application.dto.date import DateDTO
 
@@ -11,12 +11,12 @@ class AbstractDateRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_date_by_id(self, date_id: int) -> DateDTO:
+    async def get_date_by_id(self, date_id: int) -> Optional[DateDTO]:
         """Get a date by its ID."""
         pass
 
     @abstractmethod
-    async def create(self, date_data: DateDTO) -> DateDTO:
+    async def create(self, date_data: DateDTO) -> Optional[DateDTO]:
         """Create a new date."""
         pass
 
