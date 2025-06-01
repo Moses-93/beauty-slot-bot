@@ -6,7 +6,7 @@ from src.application.dto.date import DateDTO
 
 class AbstractDateRepository(ABC):
     @abstractmethod
-    async def get_dates(self) -> List[DateDTO]:
+    async def get_active_dates(self) -> List[DateDTO]:
         """Get all dates."""
         pass
 
@@ -28,9 +28,4 @@ class AbstractDateRepository(ABC):
     @abstractmethod
     async def delete(self, date_id: int) -> None:
         """Delete a date by its ID."""
-        pass
-
-    @abstractmethod
-    async def deactivate(self, date_id: int) -> bool:
-        """Deactivate a date by ID"""
         pass
