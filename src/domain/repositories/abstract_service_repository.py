@@ -1,13 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from src.application.dto.service import ServiceDTO
 
 
 class AbstractServiceRepository(ABC):
     @abstractmethod
-    async def get_active_services(self) -> List[ServiceDTO]:
-        """Get all services."""
+    async def get_active(self) -> List[ServiceDTO]:
+        """Get all active services."""
+        pass
+
+    @abstractmethod
+    async def get_by_id(self, service_id: int) -> Optional[ServiceDTO]:
+        """Get a service by its ID."""
         pass
 
     @abstractmethod
