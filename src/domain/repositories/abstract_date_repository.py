@@ -21,11 +21,11 @@ class AbstractDateRepository(ABC):
         pass
 
     @abstractmethod
-    async def update(self, date_id: int, date: DateDTO) -> DateDTO:
+    async def update(self, date_id: int, **kwargs) -> bool:
         """Update an existing date."""
         pass
 
     @abstractmethod
-    async def delete(self, date_id: int) -> None:
+    async def delete(self, date_id: int) -> bool:
         """Delete a date by its ID."""
         pass
