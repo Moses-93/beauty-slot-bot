@@ -119,7 +119,7 @@ class EditServiceHandler:
 
     async def _build_keyboard(self):
         keyboard = InlineKeyboardBuilder()
-        keyboard.button(text="...") #TODO: Add actual fields
+        keyboard.button(text="...")  # TODO: Add actual fields
 
     async def _edit_service(
         self, message: Message, service_id: int, field: str, new_value: str
