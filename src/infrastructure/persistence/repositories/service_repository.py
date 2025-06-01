@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy import select, update, delete
 
 from src.domain.repositories.abstract_service_repository import (
@@ -27,6 +27,18 @@ class ServiceRepository(AbstractServiceRepository):
             )
             for service in result
         ]
+
+    async def get_by_id(self, service_id: int) -> Optional[ServiceDTO]:
+        """Get a service by its ID"""
+        service = await self._base_repo.read_by_id(service_id)
+        if service:
+            return ServiceDTO(
+                id=service.id,
+                title=service.title,
+                price=service.price,
+                duration=service.duration,
+                is_active=service.is_active,
+            )
 
     async def create(self, service: ServiceDTO) -> ServiceDTO:
         """Create a new service."""
