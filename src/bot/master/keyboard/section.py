@@ -4,10 +4,10 @@ from aiogram.types import (
 )
 
 
-class Sections:
+class SectionKeyboards:
 
     @staticmethod
-    def main_section() -> ReplyKeyboardMarkup:
+    def main() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="📒 Записи")],
@@ -20,7 +20,7 @@ class Sections:
         )
 
     @staticmethod
-    def services_section() -> ReplyKeyboardMarkup:
+    def services() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
@@ -34,7 +34,7 @@ class Sections:
         )
 
     @staticmethod
-    def dates_section() -> ReplyKeyboardMarkup:
+    def dates() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
@@ -48,7 +48,7 @@ class Sections:
         )
 
     @staticmethod
-    def bookings_section() -> ReplyKeyboardMarkup:
+    def bookings() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
