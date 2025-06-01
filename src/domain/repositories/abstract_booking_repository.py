@@ -8,13 +8,15 @@ from src.domain.entities.time import TimeSlot
 class AbstractBookingRepository(ABC):
 
     @abstractmethod
-    async def get_bookings(self, limit: int, offset: int) -> Optional[List[Booking]]:
+    async def get_bookings(
+        self, is_active: bool, limit: int, offset: int
+    ) -> Optional[List[Booking]]:
         """Get all bookings."""
         pass
 
     @abstractmethod
     async def get_bookings_by_user_id(
-        self, user_id: int, limit: int, offset: int
+        self, user_id: int, is_active: bool, limit: int, offset: int
     ) -> Optional[List[Booking]]:
         """Get all bookings for a specific user."""
         pass
