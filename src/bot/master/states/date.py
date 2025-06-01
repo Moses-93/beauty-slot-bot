@@ -1,9 +1,9 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
-class DeleteDateStates(StatesGroup):
+class DeactivateDateStates(StatesGroup):
     """
-    This class defines states for the date deletion process
+    This class defines states for the date deactivation process
     """
 
     date_id = State()
