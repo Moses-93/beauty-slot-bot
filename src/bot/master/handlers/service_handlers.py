@@ -24,153 +24,137 @@ from src.application.use_cases.service import (
 
 logger = logging.getLogger(__name__)
 
-router = Router()
-router.message.middleware(AdminMiddleware())
-router.callback_query.middleware(AdminMiddleware())
+
+class CreateServiceHandler:
+    def __init__(self, container: Container):
+        self.container = container
+
+    async def handle_start(self, message: Message, state: FSMContext):
+        await state.set_state(CreateServiceStates.title)
+        await message.answer(
+            text=ServiceMessage.enter_title(),
+        )
+
+    async def handle_set_title(self, message: Message, state: FSMContext, title: str):
+        await state.update_data(title=title)
+        await state.set_state(CreateServiceStates.price)
+
+        await message.answer(text=ServiceMessage.enter_price())
+
+    async def handle_set_price(self, message: Message, state: FSMContext, price: int):
+        await state.update_data(price=price)
+        await state.set_state(CreateServiceStates.duration)
+
+        await message.answer(text=ServiceMessage.enter_duration())
+
+    async def handle_set_duration(
+        self, message: Message, state: FSMContext, duration: int
+    ):
+        state_data = await state.update_data(duration=duration)
+        await self._add_service(message, state_data)
+        await state.clear()
+
+    async def _add_service(self, message: Message, raw_state_data: Dict):
+        use_case: CreateServiceUseCase = self.container.resolve(CreateServiceUseCase)
+        service_dto = ServiceDTO(**raw_state_data)
+        result = await use_case(service_dto)
+        if result.is_success:
+            await message.answer(
+                text=ServiceMessage.success_create(
+                    service_dto.title, service_dto.price, service_dto.duration
+                )
+            )
+        else:
+            await message.answer(text=ServiceMessage.fail_create())
 
 
-@router.message(F.text == "Додати послугу")
-@admin_only
-async def add_service(message: Message, state: FSMContext, *args, **kwargs):
-    msg = template_manager.get_add_new_service(name=True)
-    logger.info(f"TYPE MSG: {type(msg)}")
-    await message.answer(text=msg)
-    await state.set_state(ServiceForm.name)
-    return
+class EditServiceHandler:
+    def __init__(self, container: Container):
+        self.container = container
+
+    async def show_service(self, message: Message, state: FSMContext):
+        use_case: GetServicesUseCase = self.container.resolve(GetServicesUseCase)
+        result = await use_case()
+        keyboard = DisplayData.create_button(result.data, ("data",), ("id",))
+        await state.set_state(UpdateServiceStates.service_id)
+        await message.answer(text=ServiceMessage.edit(), reply_markup=keyboard)
+
+    async def handle_set_selected_service(
+        self, callback: CallbackQuery, state: FSMContext
+    ):
+        service_id = await callback.data
+        await state.update_data(id=service_id)
+        await state.set_state(UpdateServiceStates.field)
+        keyboard = await self._build_keyboard()
+        await callback.message.answer(
+            text=ServiceMessage.select_field(), reply_markup=keyboard
+        )
+
+    async def handle_set_selected_field(
+        self, callback: CallbackQuery, state: FSMContext
+    ):
+        field = callback.data
+        await state.update_data(field=field)
+        await state.set_state(UpdateServiceStates.value)
+        await callback.message.answer(text=...)
+
+    async def handle_set_new_value(
+        self, message: Message, state: FSMContext, new_value
+    ):
+        state_data = await state.update_data(value=new_value)
+        await self._edit_service(
+            message, state_data["id"], state_data["field"], new_value
+        )
+        await state.clear()
+
+    async def _send_success_message(
+        self, message: Message, service_title: str, field: str, new_value: str
+    ):
+        await message.answer(
+            text=ServiceMessage.success_edit(service_title, field, new_value)
+        )
+
+    async def _send_fail_message(self, message: Message):
+        await message.answer(text=ServiceMessage.fail_edit())
+
+    async def _build_keyboard(self):
+        keyboard = InlineKeyboardBuilder()
+        keyboard.button(text="...") #TODO: Add actual fields
+
+    async def _edit_service(
+        self, message: Message, service_id: int, field: str, new_value: str
+    ) -> ResultDTO:
+        use_case: EditServiceUseCase = self.container.resolve(EditServiceUseCase)
+        result = await use_case(service_id, **{field: new_value})
+        if result.is_success:
+            await self._send_success_message(
+                message, result.data.title, field, new_value
+            )
+        else:
+            await self._send_fail_message(message)
 
 
-@router.message(F.text == "Видалити послугу")
-@admin_only
-async def delete_service(message: Message, *args, **kwargs):
-    services = await services_manager.read()
-    if not services:
-        msg = "Список послуг пустий"
-        await message.answer(text=msg)
-        return
-    delete = await services_keyboard(act="delete", services=services)
-    msg = template_manager.get_select_service_or_date_del()
-    await message.answer(text=msg, reply_markup=delete)
-    return
+class DeactivateServiceHandler:
+    def __init__(self, container: Container):
+        self.container = container
 
+    async def show_service(self, message: Message, state: FSMContext):
+        use_case: GetServicesUseCase = self.container.resolve(GetServicesUseCase)
+        result = await use_case()
+        keyboard = DisplayData.create_button(result.data, ("data",), ("id",))
+        await state.set_state(DeleteServiceStates.service_id)
+        await message.answer(text=ServiceMessage.deactivate(), reply_markup=keyboard)
 
-@router.message(F.text == "Редагувати послугу")
-@admin_only
-async def choosing_service(message: Message, state: FSMContext, *args, **kwargs):
-    services = await services_manager.read()
-    if not services:
-        msg = template_manager.booking_not_found
-        await message.answer(text=msg)
-        return
-    await state.set_state("editing_service")
-    edit = await services_keyboard(act="edit", services=services)
-    msg = template_manager.get_edit_service()
-    await message.answer(text=msg, reply_markup=edit)
-    return
-
-
-@router.message(F.text == "Назад")
-@admin_only
-async def back_to_main(message: Message, state: FSMContext, *args, **kwargs):
-    await state.clear()
-    msg = "Ви повернулися до головного меню"
-    await message.answer(text=msg, reply_markup=main_keyboard)
-    return
-
-
-@router.message(ServiceForm.name)
-@val_srvc_name
-async def set_service_name(
-    message: Message, service_name: str, state: FSMContext, **kwargs
-):
-
-    await state.update_data(name=service_name)
-    msg = template_manager.get_add_new_service(price=True)
-    await message.answer(text=msg)
-    await state.set_state(ServiceForm.price)
-
-
-@router.message(ServiceForm.price)
-@val_srvc_price
-async def set_service_price(message: Message, price, state: FSMContext, **kwargs):
-
-    await state.update_data(price=price)
-    msg = template_manager.get_add_new_service(duration=True)
-    await message.answer(text=msg)
-    await state.set_state(ServiceForm.duration)
-
-
-@router.message(ServiceForm.duration)
-@val_srvc_durations
-async def set_service_duration(
-    message: Message, duration: timedelta, state: FSMContext, **kwargs
-):
-    user_data = await state.get_data()
-    name = user_data.get("name")
-    price = user_data.get("price")
-    await services_manager.create(name=name, price=price, duration=duration)
-    await state.clear()
-    msg = template_manager.get_add_new_service(success=True, service=name)
-    await message.answer(text=msg)
-
-
-@router.callback_query(lambda c: c.data.startswith("edit_service_"))
-async def choosing_field(callback: CallbackQuery, state: FSMContext):
-    logger.info(f"CALLBACK DATA(in choosing_field): {callback.data}")
-    service_id = int(callback.data.split("_")[2])
-    await state.update_data(service_id=service_id)
-    msg = template_manager.get_edit_service(choice=True)
-    await callback.message.answer(text=msg, reply_markup=edit_service_keyboard)
-    await callback.answer()
-
-
-@router.callback_query(lambda c: c.data.startswith("field_"))
-async def set_field_value(callback: CallbackQuery, state: FSMContext):
-    field = callback.data.split("_")[1]
-    logger.info(f"FIELD: {field}")
-    await state.update_data(field=field)
-
-    await state.set_state(UpdateServiceForm.field)
-    msg = template_manager.get_edit_service(field=field)
-    await callback.message.answer(text=msg)
-    await callback.answer()
-
-
-@router.message(UpdateServiceForm.field)
-async def set_new_field_value(message: Message, state: FSMContext):
-    new_value = message.text
-    data = await state.get_data()
-    field = data.get("field")
-    service_id = data.get("service_id")
-    if field == "price":
-        new_value = int(new_value)
-    elif field == "duration":
-        new_value = timedelta(minutes=int(new_value))
-    msg = template_manager.get_edit_service(field=field, new_value=new_value)
-    await services_manager.update(Service.id == service_id, **{field: new_value})
-    logger.info(f"Поле {field} послуги з ID: {service_id} оновлено на {new_value}")
-    await message.answer(text=msg)
-    await state.clear()
-    return True
-
-
-@router.callback_query(lambda c: c.data.startswith("delete_service_"))
-@block_if_booked("service_id")
-async def delete_selected_service(callback: CallbackQuery, service_id, *args, **kwargs):
-    await services_manager.delete(id=service_id)
-    msg = template_manager.get_select_service_or_date_del(id=service_id, success=True)
-    await callback.message.answer(text=msg)
-    await callback.answer()
-
-
-@router.callback_query(lambda c: c.data.startswith("del_service_id_"))
-async def delete_booking(callback: CallbackQuery):
-    logger.info(f"CALLBACK: {callback.data}")
-    service_id = int(callback.data.split("_")[3])
-    user_ids = ast.literal_eval(callback.data.split("_")[4])
-    await services_manager.delete(id=service_id)
-    msg_fo_user = template_manager.get_delete_notification()
-    for user_id in user_ids:
-        await manager.send_message(chat_id=user_id, message=msg_fo_user)
-    msg = template_manager.get_select_service_or_date_del(active=True)
-    await callback.message.answer(text=msg)
-    await callback.answer()
+    async def handle_set_selected_service(
+        self, callback: CallbackQuery, state: FSMContext
+    ):
+        service_id = await callback.data
+        use_case: EditServiceUseCase = self.container.resolve(EditServiceUseCase)
+        result = await use_case(service_id, is_active=False)
+        if result.is_success:
+            await callback.message.answer(
+                text=ServiceMessage.success_deactivate(result.data.title)
+            )
+        else:
+            await callback.message.answer(text=ServiceMessage.fail_deactivate())
+        await state.clear()
