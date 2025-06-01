@@ -21,8 +21,6 @@ class DateHandler:
         await state.set_state(DeactivateDateStates.date_id)
         await message.answer(text=..., reply_markup=...)
 
-    async def show_dates_list(self, message: Message): ...
-
     async def handle_set_date(self, message: Message, state: FSMContext, date: str):
         await state.set_state(CreateDateStates.deactivation_time)
         await state.update_data(date=date)
@@ -34,4 +32,10 @@ class DateHandler:
         await state.update_data(deactivation_time=deactivation_time)
 
     async def handle_delete_date(self, callback: CallbackQuery, state: FSMContext):
+        pass
+
+    async def _add_date(self, date: str, deactivation_time: str):
+        pass
+
+    async def _deactivate_date(self, date_id: int):
         pass
