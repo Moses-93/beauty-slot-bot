@@ -30,6 +30,16 @@ class ServiceMessage:
             "Наприклад: 30 або 45"
         )
 
+    def select_field() -> str:
+        return "Оберіть поле, яке ви бажаєте оновити"
+
+    def enter_new_value(field: str) -> str:
+        return (
+            f"Введіть нове значення для поля {field}.\n"
+            "Наприклад: для ціни - 250 або 499.90 грн, "
+            "для тривалості - 30 або 45 хвилин."
+        )
+
     @staticmethod
     def success_create(title: str, price: int, duration: int) -> str:
         return (
