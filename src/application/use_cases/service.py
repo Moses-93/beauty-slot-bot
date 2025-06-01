@@ -22,12 +22,13 @@ class EditServiceUseCase:
     def __init__(self, service_repo: AbstractServiceRepository):
         self._repo = service_repo
 
-    async def __call__(self, service_id: int, *args, **kwds) -> ResultDTO:
+    async def __call__(self, service_id: int, *args, **kwds) -> ResultDTO[ServiceDTO]:
         result = await self._repo.update(service_id, **kwds)
 
         if result is False:
             return ResultDTO.fail()
-        return ResultDTO.success()
+        updated_service = await self._repo.get_by_id(service_id)
+        return ResultDTO.success(updated_service)
 
 
 class GetServicesUseCase:
