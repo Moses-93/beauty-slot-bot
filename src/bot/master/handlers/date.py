@@ -3,9 +3,7 @@ from punq import Container
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
-from src.bot.keyboard.master import MasterKeyboard
-from src.bot.master.states.date import CreateDateStates, DeleteDateStates
-from src.bot.messages.date import DateMessage
+from src.bot.master.states.date import CreateDateStates, DeactivateDateStates
 
 
 logger = logging.getLogger(__name__)
@@ -14,12 +12,6 @@ logger = logging.getLogger(__name__)
 class DateHandler:
     def __init__(self, container: Container):
         self._container = container
-
-    async def show_dates_menu(self, message: Message):
-        await message.answer(
-            text=DateMessage.start(),
-            reply_markup=MasterKeyboard.dates_section(),
-        )
 
     async def handle_start_add_date(self, message: Message, state: FSMContext):
         await state.set_state(CreateDateStates.date)
