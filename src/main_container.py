@@ -1,10 +1,12 @@
 from punq import Container
+from functools import lru_cache
 
 from infrastructure import container as infra_di
 from application import container as app_di
 
 
-def create_container() -> Container:
+@lru_cache()
+def get_container() -> Container:
     """
     Create the main container for dependency injection.
     """
