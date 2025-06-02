@@ -3,7 +3,7 @@ from src.domain.repositories.abstract_booking_repository import (
     AbstractBookingRepository,
 )
 from src.domain.entities.time import TimeSlot
-from src.application.dto import TimeCheckResultDTO
+from src.application.dto.time import TimeCheckResultDTO
 from src.application.services.time_finder import AvailableTimeFinder
 
 
