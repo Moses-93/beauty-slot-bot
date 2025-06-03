@@ -1,24 +1,24 @@
 from typing import List
 
 from src.domain.repositories.abstract_date_repository import AbstractDateRepository
-from application.services.date_scheduler import DeactivationScheduler
+from src.infrastructure.celery.tasks.deactivation.date import deactivate
 from src.application.dto.date import DateDTO
 from src.shared.dto.result import ResultDTO
 
 
 class CreateDateUseCase:
-    def __init__(
-        self, date_repo: AbstractDateRepository, scheduler: DeactivationScheduler
-    ):
+    def __init__(self, date_repo: AbstractDateRepository):
         self._repo = date_repo
-        self._scheduler = scheduler
 
     async def __call__(self, date_dto: DateDTO, *args, **kwds) -> ResultDTO[DateDTO]:
         created_date = await self._repo.create(date_dto)
 
         if created_date is None:
             return ResultDTO.fail()
-        self._scheduler.schedule(created_date.id, created_date.deactivation_time)
+        deactivate.apply_async(
+            args=[created_date.id],
+            eta=created_date.deactivation_time,
+        )
         return ResultDTO.success(
             DateDTO(
                 id=created_date.id,
