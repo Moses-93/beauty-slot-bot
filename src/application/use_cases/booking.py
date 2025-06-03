@@ -24,3 +24,19 @@ class CreateBookingUseCase:
             return ResultDTO.success(created_booking)
 
         return ResultDTO.fail()
+
+
+class DeactivateBookingUseCase:
+    def __init__(self, booking_repo: AbstractBookingRepository):
+        self._booking_repo = booking_repo
+
+    async def __call__(self, id: int, *args, **kwds) -> ResultDTO:
+        """
+        Execute the use case to deactivate a booking.
+        """
+        result = await self._booking_repo.update(id, is_active=False)
+
+        if result:
+            return ResultDTO.success()
+
+        return ResultDTO.fail()
