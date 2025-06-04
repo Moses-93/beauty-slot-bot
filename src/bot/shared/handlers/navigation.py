@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 logger = logging.getLogger(__name__)
 
 
-class MenuHandler:
+class DisplayHandler:
     def __init__(self, container: Container):
         self._container = container
 
