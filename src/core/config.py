@@ -27,6 +27,18 @@ class Settings(BaseSettings):
         logger.info(f"{url=}")
         return url
 
+    def redis_url(self, database_name: Literal["cache", "broker"]) -> str:
+        db_map = {
+            "cache": 0,
+            "broker": 1,
+        }
+        if database_name not in db_map:
+            raise ValueError(
+                f"Invalid database name: {database_name}. Choose from {list(db_map.keys())}."
+            )
+        db_index = db_map[database_name]
+        return f"redis://localhost:6379/{db_index}"
+
 
 @lru_cache()
 def get_settings() -> Settings:
