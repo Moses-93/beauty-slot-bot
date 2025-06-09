@@ -24,7 +24,6 @@ class Settings(BaseSettings):
     def database_url(self, driver: Literal["asyncpg", "psycopg2"] = "asyncpg") -> str:
         """Generates a URL to connect to the database."""
         url = f"postgresql+{driver}://{self.pg_user}:{self.pg_password}@{self.pg_host}:{self.pg_port}/{self.pg_db}"
-        logger.info(f"{url=}")
         return url
 
     def redis_url(self, database_name: Literal["cache", "broker"]) -> str:
