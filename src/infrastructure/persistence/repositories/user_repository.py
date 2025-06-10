@@ -19,6 +19,7 @@ class UserRepository(AbstractUserRepository):
         result = await self._base_repo.read(query, single=True)
         if result:
             return User(
+                id=result.id,
                 name=result.name,
                 username=result.username,
                 chat_id=result.chat_id,
