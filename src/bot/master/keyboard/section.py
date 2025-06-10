@@ -51,13 +51,17 @@ class SectionKeyboards:
         )
 
     @staticmethod
-    def bookings() -> ReplyKeyboardMarkup:
+    def contacts() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
-                    KeyboardButton(text="Активні записи"),
-                    KeyboardButton(text="Всі записи"),
+                    KeyboardButton(text="➕ Додати контакти"),
                 ],
+                [
+                    KeyboardButton(text="✏️ Редагувати контакти"),
+                    KeyboardButton(text="➖ Видалити контакти"),
+                ],
+                [KeyboardButton(text="📕 Мої контакти")],
                 [KeyboardButton(text="🔙 Назад")],
             ],
             resize_keyboard=True,
