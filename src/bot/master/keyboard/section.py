@@ -10,10 +10,13 @@ class SectionKeyboards:
     def main() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
-                [KeyboardButton(text="📒 Записи")],
                 [
+                    KeyboardButton(text="📒 Записи"),
                     KeyboardButton(text="📖 Послуги"),
+                ],
+                [
                     KeyboardButton(text="📅 Дати"),
+                    KeyboardButton(text="📔 Контакти"),
                 ],
             ],
             resize_keyboard=True,
