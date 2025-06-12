@@ -1,4 +1,6 @@
 from datetime import date, time, datetime
+
+from src.domain.entities.user import User
 from src.domain.entities.booking import Booking
 from src.domain.repositories.abstract_booking_repository import (
     AbstractBookingRepository,
@@ -57,3 +59,26 @@ class DeactivateBookingUseCase:
             return ResultDTO.success()
 
         return ResultDTO.fail()
+
+
+class GetBookingUseCase:
+    def __init__(self, booking_repo: AbstractBookingRepository):
+        self._booking_repo = booking_repo
+
+    async def __call__(
+        self,
+        user: User,
+        is_active: bool,
+        limit: int = 5,
+        offset: int = 0,
+        *args,
+        **kwds
+    ) -> ResultDTO[Booking]:
+        """Execute the use case to get a booking by its status and user."""
+        if user.is_client:
+            bookings = await self._booking_repo.get_bookings_by_user_id(
+                user.id, is_active, limit, offset
+            )
+        else:
+            bookings = await self._booking_repo.get_bookings(is_active, limit, offset)
+        return ResultDTO.success(bookings) if bookings else ResultDTO.fail()
