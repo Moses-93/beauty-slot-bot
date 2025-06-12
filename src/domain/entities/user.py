@@ -10,7 +10,7 @@ class User:
     id: Optional[int] = None
     name: str
     username: Optional[str] = None
-    chat_id: str
+    chat_id: int
     role: UserRole
     bookings: Optional[List[Booking]] = None
 
