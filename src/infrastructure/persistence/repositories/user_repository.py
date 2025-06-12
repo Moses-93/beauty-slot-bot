@@ -13,6 +13,24 @@ class UserRepository(AbstractUserRepository):
     def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, UserModel)
 
+    async def create(self, user: User) -> Optional[User]:
+        """Create a new user."""
+        created_user = await self._base_repo.create(
+            name=user.name,
+            username=user.username,
+            chat_id=user.chat_id,
+            role=user.role,
+        )
+        if created_user:
+            return User(
+                id=created_user.id,
+                name=created_user.name,
+                username=created_user.username,
+                chat_id=created_user.chat_id,
+                role=created_user.role,
+            )
+        return None
+
     async def get_user_by_chat_id(self, chat_id: str) -> Optional[User]:
         """Get a user by their chat ID."""
         query = select(UserModel).filter(UserModel.chat_id == chat_id)
