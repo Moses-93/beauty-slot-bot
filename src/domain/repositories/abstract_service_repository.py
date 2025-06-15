@@ -6,7 +6,7 @@ from src.application.dto.service import ServiceDTO
 
 class AbstractServiceRepository(ABC):
     @abstractmethod
-    async def get_active(self) -> List[ServiceDTO]:
+    async def get_active(self, limit: int, offset: int) -> List[ServiceDTO]:
         """Get all active services."""
         pass
 

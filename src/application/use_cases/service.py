@@ -35,8 +35,8 @@ class GetServicesUseCase:
     def __init__(self, service_repo: AbstractServiceRepository):
         self._repo = service_repo
 
-    async def __call__(self, *args, **kwds) -> ResultDTO[List[ServiceDTO]]:
-        services = await self._repo.get_active()
+    async def __call__(self, limit: int, offset: int) -> ResultDTO[List[ServiceDTO]]:
+        services = await self._repo.get_active(limit, offset)
 
         if services is not None:
             return ResultDTO.success(services)

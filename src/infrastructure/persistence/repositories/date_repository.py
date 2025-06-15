@@ -11,9 +11,11 @@ class DateRepository(AbstractDateRepository):
     def __init__(self, factory_session):
         self._base_repo = BaseRepository(factory_session, DateModel)
 
-    async def get_active_dates(self) -> list[DateDTO]:
+    async def get_active_dates(self, limit: int, offset: int) -> list[DateDTO]:
         """Get all dates."""
-        result = await self._base_repo.read(select(DateModel).filter_by(is_active=True))
+        result = await self._base_repo.read(
+            select(DateModel).filter_by(is_active=True).limit(limit).offset(offset)
+        )
         return [
             DateDTO(
                 date=date.date,

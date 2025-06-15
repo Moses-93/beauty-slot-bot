@@ -13,10 +13,10 @@ class ServiceRepository(AbstractServiceRepository):
     def __init__(self, factory_session):
         self._base_repo = BaseRepository(factory_session, ServiceModel)
 
-    async def get_active(self) -> List[ServiceDTO]:
+    async def get_active(self, limit: int, offset: int) -> List[ServiceDTO]:
         """Get active services."""
         result = await self._base_repo.read(
-            select(ServiceModel).filter_by(is_active=True)
+            select(ServiceModel).filter_by(is_active=True).limit(limit).offset(offset)
         )
         return [
             ServiceDTO(

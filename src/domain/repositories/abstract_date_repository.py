@@ -6,7 +6,7 @@ from src.application.dto.date import DateDTO
 
 class AbstractDateRepository(ABC):
     @abstractmethod
-    async def get_active_dates(self) -> List[DateDTO]:
+    async def get_active_dates(self, limit: int, offset: int) -> List[DateDTO]:
         """Get all dates."""
         pass
 

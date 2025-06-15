@@ -57,8 +57,8 @@ class GetAvailableDateUseCase:
     def __init__(self, date_repo: AbstractDateRepository):
         self._repo = date_repo
 
-    async def __call__(self, *args, **kwds) -> ResultDTO[List[DateDTO]]:
-        dates = await self._repo.get_active_dates()
+    async def __call__(self, limit: int, offset: int) -> ResultDTO[List[DateDTO]]:
+        dates = await self._repo.get_active_dates(limit, offset)
         if dates is None:
             return ResultDTO.fail()
         return ResultDTO.success(dates)
