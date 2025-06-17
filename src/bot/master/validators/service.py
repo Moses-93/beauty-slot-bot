@@ -13,11 +13,12 @@ class ServiceValidators:
         return None
 
     @staticmethod
-    def parse_price(price_str: str) -> Union[float, None]:
+    def parse_price(price_str: str) -> Union[int, None]:
 
         try:
             price = float(price_str.replace(",", "."))
-            return price if price >= 0 else None
+            if price >= 0:
+                return int(round(price * 100))
         except ValueError:
             return None
 
