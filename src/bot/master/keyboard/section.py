@@ -30,7 +30,10 @@ class SectionKeyboards:
                     KeyboardButton(text="➕ Додати послугу"),
                     KeyboardButton(text="➖ Видалити послугу"),
                 ],
-                [KeyboardButton(text="📋 Список послуг")],
+                [
+                    KeyboardButton(text="🔄 Оновити послугу"),
+                    KeyboardButton(text="📋 Список послуг"),
+                ],
                 [KeyboardButton(text="🔙 Назад")],
             ],
             resize_keyboard=True,
