@@ -26,8 +26,8 @@ class SectionHandler:
             reply_markup=SectionKeyboards.services(),
         )
 
-    async def show_booking_section(self, message: Message):
+    async def show_contacts_section(self, message: Message):
         await message.answer(
-            text=SectionMessages.bookings(),
-            reply_markup=SectionKeyboards.bookings(),
+            text=SectionMessages.contacts(),
+            reply_markup=SectionKeyboards.contacts(),
         )
