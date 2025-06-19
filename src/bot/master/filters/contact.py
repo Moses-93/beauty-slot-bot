@@ -15,7 +15,7 @@ class LinkValidatorFilter(BaseFilter):
 
 
 class PhoneValidatorFilter(BaseFilter):
-    
+
     async def __call__(self, message: Message) -> Union[bool, Dict[str, str]]:
         parsed_phone = ContactValidators.parse_phone(message.text)
         if parsed_phone:
