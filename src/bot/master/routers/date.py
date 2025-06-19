@@ -1,31 +1,44 @@
 from aiogram import Router, F
 from punq import Container
 
-from src.bot.master.states.date import CreateDateStates, DeleteDateStates
-from src.bot.master.handlers.date import DateHandler
+from src.bot.master.states.date import CreateDateStates, DeactivateDateStates
+from src.bot.master.handlers.date import CreateDateHandler, DeactivateDateHandler
+from src.bot.master.filters.date import DateValidatorFilter, TimeValidatorFilter
+from src.bot.master.routers.base import BaseRouter
+
+_date_router = Router()
 
 
-class DateRouter:
+class CreateDateRouter(BaseRouter):
     def __init__(self, container: Container):
-        self._container = container
-        self.router = Router()
-        self.handler = DateHandler(container)
-        self.register()
+        self.handler = CreateDateHandler(container)
+        super().__init__(router=_date_router)
 
-    def register(self):
-        self.router.message(F.text == "📅 Дати")(self.handler.show_dates_menu)
-        self.router.message(F.text == "➕ Додати дату")(
-            self.handler.handle_start_add_date
+    def _register(self):
+        self.router.message.register(
+            self.handler.handle_start_add_date, F.text == "➕ Додати дату"
         )
-        self.router.message(F.text == "➖ Видалити дату")(
-            self.handler.handle_start_delete_date
+
+        self.router.message.register(
+            self.handler.handle_set_date, CreateDateStates.date, DateValidatorFilter()
         )
-        self.router.message(F.text == "📋 Список дат")(self.handler.show_dates_list)
-        self.router.message(CreateDateStates.date, self.handler.handle_set_date)
-        self.router.message(
-            CreateDateStates.deactivation_time,
+        self.router.message.register(
             self.handler.handle_set_deactivation_time,
+            CreateDateStates.deactivation_time,
+            TimeValidatorFilter(),
         )
-        self.router.callback_query(
-            DeleteDateStates.date_id, self.handler.handle_delete_date
+
+
+class DeactivateDateRouter(BaseRouter):
+    def __init__(self, container: Container):
+        self.handler = DeactivateDateHandler(container)
+        super().__init__()
+
+    def _register(self):
+        self.router.message(F.text == "➖ Видалити дату")(
+            self.handler.handle_start_deactivate_date
+        )
+        self.router.callback_query.register(
+            self.handler.handle_delete_date,
+            DeactivateDateStates.date_id,
         )
