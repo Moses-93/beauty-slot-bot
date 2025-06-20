@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-class ClientKeyboard:
+class SectionKeyboards:
     """
     This class is responsible for generating the client keyboard for the bot.
     It provides methods to create different types of keyboards used in the bot.
