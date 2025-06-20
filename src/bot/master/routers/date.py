@@ -4,7 +4,7 @@ from punq import Container
 from src.bot.master.states.date import CreateDateStates, DeactivateDateStates
 from src.bot.master.handlers.date import CreateDateHandler, DeactivateDateHandler
 from src.bot.master.filters.date import DateValidatorFilter, TimeValidatorFilter
-from src.bot.master.routers.base import BaseRouter
+from src.bot.shared.routers.base import BaseRouter
 from src.bot.shared.filters.user import RoleFilter
 from src.domain.enums.user_role import UserRole
 
