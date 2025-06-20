@@ -7,7 +7,7 @@ from src.bot.shared.enums.pagination import PaginationCategory
 from src.bot.shared.routers.base import BaseRouter
 
 
-class ContactDisplayRouter(BaseRouter):
+class DateDisplayRouter(BaseRouter):
     def __init__(self, container: Container):
         self._handler = DateDisplayHandler(container)
         super().__init__(Router())
