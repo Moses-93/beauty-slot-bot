@@ -17,7 +17,7 @@ class BookingRouter(BaseRouter):
         self.router.message.register(
             self.handler.make_appointment,
             F.text == "📝 Записатися",
-            RoleFilter(roles={UserRole.MASTER}),
+            RoleFilter(roles={UserRole.CLIENT}),
         )
         self.router.callback_query.register(
             self.handler.handle_set_service, BookingStates.service
