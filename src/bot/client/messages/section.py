@@ -1,4 +1,4 @@
-class SectionMessage:
+class SectionMessages:
 
     @staticmethod
     def main(name: str) -> str:
