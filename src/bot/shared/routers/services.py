@@ -4,25 +4,25 @@ from punq import Container
 from src.bot.shared.handlers.service import ServiceDisplayHandler
 from src.bot.shared.filters.pagination import PaginationCallback
 from src.bot.shared.enums.pagination import PaginationCategory
+from src.bot.shared.routers.base import BaseRouter
 
 
-class ContactDisplayRouter:
+class ContactDisplayRouter(BaseRouter):
     def __init__(self, container: Container):
-        self._container = container
-        self._router = Router()
-        self._handler = ServiceDisplayHandler(self._container)
+        self._handler = ServiceDisplayHandler(container)
+        super().__init__(Router())
 
     def register(self):
-        self._router.message.register(
+        self.router.message.register(
             self._handler.show_services,
             F.text.in_("📋 Послуги", "📋 Список послуг"),
         )
 
-        self._router.callback_query.register(
+        self.router.callback_query.register(
             self._handler.paginate_service,
             PaginationCallback.filter(category=PaginationCategory.SERVICES),
         )
 
     @property
     def router(self) -> Router:
-        return self._router
+        return self.router
