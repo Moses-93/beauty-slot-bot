@@ -3,19 +3,32 @@ from punq import Container
 
 from src.bot.client.states.booking import BookingStates
 from src.bot.client.handlers.booking import BookingHandler
+from src.bot.shared.filters.user import RoleFilter
+from src.domain.enums.user_role import UserRole
+from src.bot.shared.routers.base import BaseRouter
 
 
-class BookingRouter:
+class BookingRouter(BaseRouter):
     def __init__(self, container: Container):
-        self._container = container
-        self.router = Router()
+        super().__init__(Router())
         self.handler = BookingHandler(container)
-        self.register_routes()
 
-    def register_routes(self):
-        self.router.message(self.handler.start)
-        self.router.callback_query(BookingStates.service, self.handler.handle_service)
-        self.router.callback_query(BookingStates.date, self.handler.handle_date)
-        self.router.message(BookingStates.time, self.handler.handle_time)
-        self.router.message(BookingStates.reminder, self.handler.handle_reminder)
-        self.router.callback_query(BookingStates.confirm, self.handler.handle_confirm)
+    def _register(self):
+        self.router.message.register(
+            self.handler.make_appointment,
+            F.text == "📝 Записатися",
+            RoleFilter(roles={UserRole.MASTER}),
+        )
+        self.router.callback_query.register(
+            self.handler.handle_set_service, BookingStates.service
+        )
+        self.router.callback_query.register(
+            self.handler.handle_set_date, BookingStates.date
+        )
+        self.router.message.register(self.handler.handle_set_time, BookingStates.time)
+        self.router.message.register(
+            self.handler.handle_set_reminder, BookingStates.reminder
+        )
+        self.router.callback_query.register(
+            self.handler.handle_confirm, BookingStates.confirm
+        )
