@@ -13,19 +13,18 @@ class SectionRouter(BaseRouter):
         super().__init__(Router(name="section"))
 
     def _register(self) -> None:
-        self._router.message.register(self._handler.show_sections, CommandStart)
-        self._router.message.register(
-            self._handler.show_dates_section,
-            F.text == "📅 Дати",
+        self.router.message.filter(
             RoleFilter({UserRole.MASTER}),
         )
-        self._router.message.register(
+        self.router.message.register(
+            self._handler.show_dates_section,
+            F.text == "📅 Дати",
+        )
+        self.router.message.register(
             self._handler.show_services_section,
             F.text == "📖 Послуги",
-            RoleFilter(roles={UserRole.MASTER}),
         )
-        self._router.message.register(
-            self._handler.show_booking_section,
-            F.text == "📒 Записи",
-            RoleFilter(roles={UserRole.MASTER}),
+        self.router.message.register(
+            self._handler.show_contacts_section,
+            F.text == "📔 Контакти",
         )
