@@ -2,7 +2,7 @@ from aiogram import F, Router
 from punq import Container
 
 from src.bot.client.states.booking import BookingStates
-from src.bot.client.handlers.booking_handler import BookingHandler
+from src.bot.client.handlers.booking import BookingHandler
 
 
 class BookingRouter:
