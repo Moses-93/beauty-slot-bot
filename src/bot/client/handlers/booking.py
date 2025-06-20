@@ -17,27 +17,27 @@ class BookingHandler:
     def __init__(self, container: Container):
         self._container = container
 
-    async def start(self, callback: CallbackQuery, state: FSMContext):
+    async def make_appointment(self, message: Message, state: FSMContext):
 
         await state.set_state(BookingStates.service)
 
-    async def handle_service(
+    async def handle_set_service(
         self, callback: CallbackQuery, state: FSMContext, service_id: int
     ):
         await state.update_data(service_id=service_id)
         await state.set_state(BookingStates.date)
 
-    async def handle_date(
+    async def handle_set_date(
         self, callback: CallbackQuery, state: FSMContext, date_id: int
     ):
         await state.update_data(date_id=date_id)
         await state.set_state(BookingStates.time)
 
-    async def handle_time(self, message: Message, state: FSMContext, time: str):
+    async def handle_set_time(self, message: Message, state: FSMContext, time: str):
         await state.update_data(time=time)
         await state.set_state(BookingStates.reminder)
 
-    async def handle_reminder(
+    async def handle_set_reminder(
         self, message: Message, state: FSMContext, reminder_offset: int
     ): ...
 
