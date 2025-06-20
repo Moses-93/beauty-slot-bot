@@ -13,6 +13,8 @@ from src.bot.master.filters.service import (
     PriceValidatorFilter,
     DurationValidatorFilter,
 )
+from src.bot.shared.filters.user import RoleFilter
+from src.domain.enums.user_role import UserRole
 
 
 _service_router = Router(name="service")
@@ -25,7 +27,9 @@ class CreateServiceRouter(BaseRouter):
 
     def _register(self):
         self._router.message.register(
-            self._handler.handle_start, F.text == "➕ Додати послугу"
+            self._handler.handle_start,
+            F.text == "➕ Додати послугу",
+            RoleFilter(UserRole.MASTER),
         )
 
         self._router.message.register(
@@ -54,11 +58,14 @@ class DeactivateServiceRouter(BaseRouter):
 
     def _register(self):
         self._router.message.register(
-            self._handler.show_service, F.text == "➖ Видалити послугу"
+            self._handler.show_service,
+            F.text == "➖ Видалити послугу",
+            RoleFilter(UserRole.MASTER),
         )
 
         self._router.callback_query.register(
-            self._handler.handle_set_selected_service, DeleteServiceStates.service_id
+            self._handler.handle_set_selected_service,
+            DeleteServiceStates.service_id,
         )
 
 
@@ -69,7 +76,9 @@ class EditServiceRouter(BaseRouter):
 
     def _register(self):
         self._router.message.register(
-            self._handler.show_service, F.text == "🔄 Оновити послугу"
+            self._handler.show_service,
+            F.text == "🔄 Оновити послугу",
+            RoleFilter(UserRole.MASTER),
         )
 
         self._router.callback_query.register(
@@ -83,5 +92,6 @@ class EditServiceRouter(BaseRouter):
         )
 
         self._router.message.register(
-            self._handler.handle_set_new_value, UpdateServiceStates.value
+            self._handler.handle_set_new_value,
+            UpdateServiceStates.value,
         )

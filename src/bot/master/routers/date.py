@@ -5,6 +5,8 @@ from src.bot.master.states.date import CreateDateStates, DeactivateDateStates
 from src.bot.master.handlers.date import CreateDateHandler, DeactivateDateHandler
 from src.bot.master.filters.date import DateValidatorFilter, TimeValidatorFilter
 from src.bot.master.routers.base import BaseRouter
+from src.bot.shared.filters.user import RoleFilter
+from src.domain.enums.user_role import UserRole
 
 _date_router = Router()
 
@@ -16,7 +18,9 @@ class CreateDateRouter(BaseRouter):
 
     def _register(self):
         self.router.message.register(
-            self.handler.handle_start_add_date, F.text == "➕ Додати дату"
+            self.handler.handle_start_add_date,
+            F.text == "➕ Додати дату",
+            RoleFilter(roles=UserRole.MASTER),
         )
 
         self.router.message.register(
@@ -36,7 +40,7 @@ class DeactivateDateRouter(BaseRouter):
 
     def _register(self):
         self.router.message(F.text == "➖ Видалити дату")(
-            self.handler.handle_start_deactivate_date
+            self.handler.handle_start_deactivate_date, RoleFilter(roles=UserRole.MASTER)
         )
         self.router.callback_query.register(
             self.handler.handle_delete_date,
