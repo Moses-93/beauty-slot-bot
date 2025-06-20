@@ -22,7 +22,7 @@ class AbstractContactRepository(ABC):
         pass
 
     @abstractmethod
-    async def update(self, **kwargs) -> bool:
+    async def update(self, id: int, **kwargs) -> bool:
         """
         Update an existing contact.
         """
