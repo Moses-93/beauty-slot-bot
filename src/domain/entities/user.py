@@ -1,14 +1,14 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, List
 
 from src.domain.enums.user_role import UserRole
 from src.domain.entities.booking import Booking
 
 
-@dataclass
+@dataclass(kw_only=True)
 class User:
     id: Optional[int] = None
-    name: str
+    name: str = field()
     username: Optional[str] = None
     chat_id: int
     role: UserRole

@@ -4,7 +4,7 @@ from typing import Optional
 from src.domain.enums.user_role import UserRole
 
 
-@dataclass
+@dataclass(kw_only=True)
 class UserDTO:
     name: str
     username: Optional[str] = None
