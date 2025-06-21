@@ -2,8 +2,8 @@ from aiogram import Router
 from punq import Container
 
 from .navigation import SectionRouter
-from .date import CreateDateRouter, DeactivateDateRouter
-from .service import CreateServiceRouter, EditServiceRouter, DeactivateServiceRouter
+from .date import DateRouter
+from .service import ServiceRouter
 from .start import StartRouter
 
 
@@ -13,21 +13,14 @@ def build_master_router(container: Container) -> Router:
     start_router = StartRouter().router
     navigation_router = SectionRouter(container).router
 
-    service_routers = (
-        CreateServiceRouter(container).router,
-        EditServiceRouter(container).router,
-        DeactivateServiceRouter(container).router,
-    )
+    service_router = ServiceRouter(container).router
 
-    date_routers = (
-        CreateDateRouter(container).router,
-        DeactivateDateRouter(container).router,
-    )
+    date_router = DateRouter(container).router
 
     router.include_routers(
         navigation_router,
         start_router,
-        *service_routers,
-        *date_routers,
+        service_router,
+        date_router,
     )
     return router
