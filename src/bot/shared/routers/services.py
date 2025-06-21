@@ -20,9 +20,5 @@ class ServiceDisplayRouter(BaseRouter):
 
         self.router.callback_query.register(
             self._handler.paginate_service,
-            PaginationCallback.filter(category=PaginationCategory.SERVICES),
+            PaginationCallback.filter((PaginationCategory.SERVICES,)),
         )
-
-    @property
-    def router(self) -> Router:
-        return self.router

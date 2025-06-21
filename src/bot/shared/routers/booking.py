@@ -25,7 +25,7 @@ class BookingDisplayRouter(BaseRouter):
         self.router.callback_query.register(
             self._handler.paginate_bookings,
             or_f(
-                PaginationCallback.filter(category=PaginationCategory.ACTIVE_BOOKINGS),
-                PaginationCallback.filter(category=PaginationCategory.ALL_BOOKINGS),
+                PaginationCallback.filter((PaginationCategory.ACTIVE_BOOKINGS,)),
+                PaginationCallback.filter((PaginationCategory.ALL_BOOKINGS,)),
             ),
         )

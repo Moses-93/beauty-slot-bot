@@ -20,5 +20,5 @@ class DateDisplayRouter(BaseRouter):
 
         self.router.callback_query.register(
             self._handler.paginate_dates,
-            PaginationCallback.filter(category=PaginationCategory.DATES),
+            PaginationCallback.filter((PaginationCategory.DATES,)),
         )
