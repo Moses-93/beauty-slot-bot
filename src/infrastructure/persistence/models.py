@@ -1,6 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Enum,
     Interval,
@@ -73,7 +74,7 @@ class UserModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     username = Column(String, nullable=True, unique=True)
-    chat_id = Column(String, nullable=False, unique=True, index=True)
+    chat_id = Column(BigInteger, nullable=False, unique=True, index=True)
     role = Column(
         Enum(UserRole, native_enum=False), default=UserRole.CLIENT, nullable=False
     )
