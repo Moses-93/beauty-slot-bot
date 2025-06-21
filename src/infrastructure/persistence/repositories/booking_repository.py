@@ -1,6 +1,7 @@
 from typing import List, Optional
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.domain.repositories.abstract_booking_repository import (
     AbstractBookingRepository,
@@ -11,7 +12,7 @@ from .base_repository import BaseRepository
 
 
 class BookingRepository(AbstractBookingRepository):
-    def __init__(self, factory_session):
+    def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, BookingModel)
 
     async def get_bookings(

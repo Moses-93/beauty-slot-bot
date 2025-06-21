@@ -1,5 +1,7 @@
 from typing import Union
 from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from src.domain.repositories.abstract_contact_repository import (
     AbstractContactRepository,
 )
@@ -9,7 +11,7 @@ from src.infrastructure.persistence.models import ContactModel
 
 
 class ContactRepository(AbstractContactRepository):
-    def __init__(self, factory_session):
+    def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, ContactModel)
 
     async def get(self) -> Union[ContactDTO, None]:

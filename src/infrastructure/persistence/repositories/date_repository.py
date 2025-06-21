@@ -1,5 +1,6 @@
 from typing import Optional
 from sqlalchemy import select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.domain.repositories.abstract_date_repository import AbstractDateRepository
 from src.application.dto.date import DateDTO
@@ -8,7 +9,7 @@ from .base_repository import BaseRepository
 
 
 class DateRepository(AbstractDateRepository):
-    def __init__(self, factory_session):
+    def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, DateModel)
 
     async def get_active_dates(self, limit: int, offset: int) -> list[DateDTO]:

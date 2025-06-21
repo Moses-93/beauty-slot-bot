@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlalchemy import select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.domain.repositories.abstract_service_repository import (
     AbstractServiceRepository,
@@ -10,7 +11,7 @@ from .base_repository import BaseRepository
 
 
 class ServiceRepository(AbstractServiceRepository):
-    def __init__(self, factory_session):
+    def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, ServiceModel)
 
     async def get_active(self, limit: int, offset: int) -> List[ServiceDTO]:
