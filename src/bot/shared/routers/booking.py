@@ -13,7 +13,7 @@ class BookingDisplayRouter(BaseRouter):
         self._handler = BookingDisplayHandler(container)
         super().__init__(Router())
 
-    def register(self):
+    def _register(self):
         self.router.callback_query.register(
             self._handler.show_active_bookings,
             F.data == "active_bookings",

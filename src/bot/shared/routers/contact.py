@@ -10,7 +10,7 @@ class ContactDisplayRouter(BaseRouter):
         self._handler = ContactDisplayHandler(container)
         super().__init__(Router())
 
-    def register(self):
+    def _register(self):
         self.router.message.register(
             self._handler.show_contact,
             F.text.in_(["📕 Контакти", "📕 Мої контакти"]),

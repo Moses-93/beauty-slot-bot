@@ -12,7 +12,7 @@ class DateDisplayRouter(BaseRouter):
         self._handler = DateDisplayHandler(container)
         super().__init__(Router())
 
-    def register(self):
+    def _register(self):
         self.router.message.register(
             self._handler.show_dates,
             F.text.in_("🗓 Доступні дати", "📅 Список дат"),

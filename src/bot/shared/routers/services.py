@@ -12,7 +12,7 @@ class ServiceDisplayRouter(BaseRouter):
         self._handler = ServiceDisplayHandler(container)
         super().__init__(Router())
 
-    def register(self):
+    def _register(self):
         self.router.message.register(
             self._handler.show_services,
             F.text.in_("📋 Послуги", "📋 Список послуг"),
