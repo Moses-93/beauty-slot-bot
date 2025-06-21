@@ -14,10 +14,11 @@ logger = logging.getLogger(__name__)
 
 class ServiceDisplayHandler(BaseDisplayHandler):
     def __init__(self, container: Container):
-        super().__init__(container)
+        super().__init__(
+            container=container, formatter=ServiceFormatter(parse_mode="HTML")
+        )
         self._service_uc: GetServicesUseCase = self.resolve(GetServicesUseCase)
         self.category = PaginationCategory.SERVICES
-        self._formatter = ServiceFormatter(parse_mode="HTML")
 
     async def show_services(self, message: Message):
         result = await self._service_uc(limit=5 + 1, offset=0)

@@ -14,10 +14,11 @@ logger = logging.getLogger(__name__)
 
 class DateDisplayHandler(BaseDisplayHandler):
     def __init__(self, container: Container):
-        super().__init__(container)
+        super().__init__(
+            container=container, formatter=DateFormatter(parse_mode="HTML")
+        )
         self._date_uc: GetAvailableDateUseCase = self.resolve(GetAvailableDateUseCase)
         self.category = PaginationCategory.DATES
-        self._formatter = DateFormatter(parse_mode="HTML")
 
     async def show_dates(self, message: Message):
         result = await self._date_uc(5 + 1, 5)
