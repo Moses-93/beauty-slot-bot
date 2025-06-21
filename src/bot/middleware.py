@@ -11,5 +11,4 @@ def setup_middlewares(dispatcher: Dispatcher, container: Container):
 
     attach_user = AttachUserMiddleware(ensure_user_uc)
 
-    dispatcher.message.middleware.register(attach_user)
-    dispatcher.callback_query.middleware.register(attach_user)
+    dispatcher.update.outer_middleware(attach_user)
