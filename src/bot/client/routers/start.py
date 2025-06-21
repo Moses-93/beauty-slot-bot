@@ -9,11 +9,11 @@ from src.domain.enums.user_role import UserRole
 
 class StartRouter(BaseRouter):
     def __init__(self):
-        super().__init__(router=Router())
         self._handler = StartHandler()
+        super().__init__(router=Router())
 
     def _register(self):
-        self._router.message.register(
+        self.router.message.register(
             self._handler.show_sections,
             CommandStart,
             RoleFilter(roles={UserRole.CLIENT}),

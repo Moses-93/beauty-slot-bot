@@ -10,8 +10,8 @@ from src.bot.shared.routers.base import BaseRouter
 
 class BookingRouter(BaseRouter):
     def __init__(self, container: Container):
-        super().__init__(Router())
         self.handler = BookingHandler(container)
+        super().__init__(Router())
 
     def _register(self):
         self.router.message.register(
