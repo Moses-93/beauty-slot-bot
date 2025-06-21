@@ -1,7 +1,5 @@
 from asgiref.sync import async_to_sync
 
-from src.main_container import get_container
-from src.application.use_cases.date import DeactivateDateUseCase
 from src.infrastructure.celery.celery_app import celery_app
 
 
@@ -17,6 +15,8 @@ async def _deactivate(date_id: int) -> None:
     """
     Internal function to deactivate a date by its ID.
     """
+    from src.main_container import get_container
+
     container = get_container()
-    use_case = container.resolve(DeactivateDateUseCase)
+    use_case = container.resolve("DeactivateDateUseCase")
     await use_case(date_id)
