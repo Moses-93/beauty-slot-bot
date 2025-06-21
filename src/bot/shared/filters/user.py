@@ -1,4 +1,4 @@
-from typing import Set, Union
+from typing import Optional, Set, Union
 from aiogram.filters import BaseFilter
 from aiogram.types import Message, CallbackQuery
 
@@ -10,8 +10,10 @@ class RoleFilter(BaseFilter):
     def __init__(self, roles: Set[UserRole]):
         self.roles = roles
 
-    async def __call__(self, event: Union[Message, CallbackQuery], user: User) -> bool:
+    async def __call__(
+        self, event: Union[Message, CallbackQuery], *, user: Optional[User] = None
+    ) -> bool:
         """
         Check if the user has one of the specified roles.
         """
-        return user.role in self.roles
+        return bool(user) and user.role in self.roles
