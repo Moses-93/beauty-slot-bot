@@ -6,7 +6,7 @@ from .start import StartRouter
 
 
 def build_client_router(container: Container) -> Router:
-    router = Router("client")
+    router = Router(name="client")
 
     booking_router = BookingRouter(container).router
     start_router = StartRouter().router

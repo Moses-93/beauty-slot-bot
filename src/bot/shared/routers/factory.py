@@ -8,7 +8,7 @@ from .contact import ContactDisplayRouter
 
 
 def build_shared_router(container: Container) -> Router:
-    router = Router("master")
+    router = Router(name="shared")
 
     service_router = ServiceDisplayRouter(container).router
     booking_router = BookingDisplayRouter(container).router

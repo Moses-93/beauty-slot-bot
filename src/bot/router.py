@@ -7,7 +7,7 @@ from src.bot.shared.routers.factory import build_shared_router
 
 
 def build_bot_router(container: Container) -> Router:
-    router = Router("bot")
+    router = Router(name="bot")
     router.include_routers(
         build_master_router(container),
         build_client_router(container),

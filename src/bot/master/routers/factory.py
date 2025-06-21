@@ -8,7 +8,7 @@ from .start import StartRouter
 
 
 def build_master_router(container: Container) -> Router:
-    router = Router("master")
+    router = Router(name="master")
 
     start_router = StartRouter().router
     navigation_router = SectionRouter(container).router
