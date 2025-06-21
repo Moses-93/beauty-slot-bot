@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from src.bot.client.states.booking import BookingStates
-from application.use_cases.booking import CreateBookingUseCase
+from src.application.use_cases.booking import CreateBookingUseCase
 from src.application.use_cases.time_checker import CheckBookingAvailabilityUseCase
 from src.bot.shared.keyboard.display_data import DisplayData
 from src.bot.client.messages.booking import BookingMessage

@@ -1,8 +1,8 @@
 from punq import Container
 from functools import lru_cache
 
-from infrastructure import container as infra_di
-from application import container as app_di
+from src.infrastructure import container as infra_di
+from src.application import container as app_di
 
 
 @lru_cache()

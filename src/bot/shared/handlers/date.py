@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 
 from src.bot.shared.handlers.base import BaseDisplayHandler
 
-from bot.shared.filters.pagination import PaginationCallback
+from src.bot.shared.filters.pagination import PaginationCallback
 from src.application.use_cases.date import GetAvailableDateUseCase
 from src.bot.shared.formatters.date import DateFormatter
 from src.bot.shared.enums.pagination import PaginationCategory
