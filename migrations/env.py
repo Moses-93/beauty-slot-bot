@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from src.db.models import Base
+from src.infrastructure.persistence.models import Base
 from src.core.config import get_settings
 
 
@@ -12,7 +12,6 @@ config = context.config
 
 url = get_settings().database_url("psycopg2")
 
-print(f"Set URL: {url}")
 if not url:
     raise ValueError("URL variable not set in environment variable")
 

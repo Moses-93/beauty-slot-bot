@@ -1,6 +1,1 @@
-aiogram==3.13.1
-asyncio==3.4.3
-aiocache==0.12.3
-sqlalchemy==2.0.35
-apscheduler==3.10.4
-asyncpg==0.30.0
+-r base.txt

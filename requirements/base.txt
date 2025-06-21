@@ -1,0 +1,11 @@
+aiogram==3.13.1
+asyncio==3.4.3
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+asyncpg==0.30.0
+pydantic-settings==2.9.1
+celery==5.5.2
+punq==0.7.0
+phonenumbers==9.0.7
+validators==0.35.0
+asgiref==3.8.1
