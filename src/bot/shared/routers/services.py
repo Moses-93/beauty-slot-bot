@@ -15,7 +15,7 @@ class ServiceDisplayRouter(BaseRouter):
     def _register(self):
         self.router.message.register(
             self._handler.show_services,
-            F.text.in_("📋 Послуги", "📋 Список послуг"),
+            F.text.in_(("📋 Послуги", "📋 Список послуг")),
         )
 
         self.router.callback_query.register(

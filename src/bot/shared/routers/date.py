@@ -15,7 +15,7 @@ class DateDisplayRouter(BaseRouter):
     def _register(self):
         self.router.message.register(
             self._handler.show_dates,
-            F.text.in_("🗓 Доступні дати", "📅 Список дат"),
+            F.text.in_(("🗓 Доступні дати", "📅 Список дат")),
         )
 
         self.router.callback_query.register(
