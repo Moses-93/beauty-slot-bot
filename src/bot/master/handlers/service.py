@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class CreateServiceHandler:
     def __init__(self, container: Container):
-        self.container = container
+        self._service_uc: CreateServiceUseCase = container.resolve(CreateServiceUseCase)
 
     async def handle_start(self, message: Message, state: FSMContext):
         await state.set_state(CreateServiceStates.title)
@@ -55,9 +55,8 @@ class CreateServiceHandler:
         await state.clear()
 
     async def _add_service(self, message: Message, raw_state_data: Dict):
-        use_case: CreateServiceUseCase = self.container.resolve(CreateServiceUseCase)
         service_dto = ServiceDTO(**raw_state_data)
-        result = await use_case(service_dto)
+        result = await self._service_uc(service_dto)
         if result.is_success:
             await message.answer(
                 text=ServiceMessage.success_create(
@@ -70,11 +69,13 @@ class CreateServiceHandler:
 
 class EditServiceHandler:
     def __init__(self, container: Container):
-        self.container = container
+        self._get_service_us: GetServicesUseCase = container.resolve(GetServicesUseCase)
+        self._edit_service_uc: EditServiceUseCase = container.resolve(
+            EditServiceUseCase
+        )
 
     async def show_service(self, message: Message, state: FSMContext):
-        use_case: GetServicesUseCase = self.container.resolve(GetServicesUseCase)
-        result = await use_case()
+        result = await self._get_service_us()
         keyboard = DisplayData.create_button(result.data, ("data",), ("id",))
         await state.set_state(UpdateServiceStates.service_id)
         await message.answer(text=ServiceMessage.edit(), reply_markup=keyboard)
@@ -124,8 +125,7 @@ class EditServiceHandler:
     async def _edit_service(
         self, message: Message, service_id: int, field: str, new_value: str
     ) -> ResultDTO:
-        use_case: EditServiceUseCase = self.container.resolve(EditServiceUseCase)
-        result = await use_case(service_id, **{field: new_value})
+        result = await self._edit_service_uc(service_id, **{field: new_value})
         if result.is_success:
             await self._send_success_message(
                 message, result.data.title, field, new_value
@@ -136,11 +136,13 @@ class EditServiceHandler:
 
 class DeactivateServiceHandler:
     def __init__(self, container: Container):
-        self.container = container
+        self._get_service_us: GetServicesUseCase = container.resolve(GetServicesUseCase)
+        self._edit_service_uc: EditServiceUseCase = container.resolve(
+            EditServiceUseCase
+        )
 
     async def show_service(self, message: Message, state: FSMContext):
-        use_case: GetServicesUseCase = self.container.resolve(GetServicesUseCase)
-        result = await use_case()
+        result = await self._get_service_us()
         keyboard = DisplayData.create_button(result.data, ("data",), ("id",))
         await state.set_state(DeleteServiceStates.service_id)
         await message.answer(text=ServiceMessage.deactivate(), reply_markup=keyboard)
@@ -149,8 +151,7 @@ class DeactivateServiceHandler:
         self, callback: CallbackQuery, state: FSMContext
     ):
         service_id = await callback.data
-        use_case: EditServiceUseCase = self.container.resolve(EditServiceUseCase)
-        result = await use_case(service_id, is_active=False)
+        result = await self._edit_service_uc(service_id, is_active=False)
         if result.is_success:
             await callback.message.answer(
                 text=ServiceMessage.success_deactivate(result.data.title)
