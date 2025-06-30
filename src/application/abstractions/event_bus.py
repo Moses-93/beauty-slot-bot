@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Callable, Awaitable, Type
 
-from .events.base import Event
+from .base_event import Event
 
 
 E = TypeVar("E", bound=Event)
