@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Callable, Awaitable, Type
 
-from .base_event import Event
+from src.application.events.base_event import Event
 
 
 E = TypeVar("E", bound=Event)
