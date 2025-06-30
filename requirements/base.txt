@@ -9,3 +9,4 @@ punq==0.7.0
 phonenumbers==9.0.7
 validators==0.35.0
 asgiref==3.8.1
+aiopubsub==3.0.0

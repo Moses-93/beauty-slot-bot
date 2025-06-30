@@ -180,6 +180,19 @@ yarl = ">=1.12.0,<2.0"
 speedups = ["Brotli", "aiodns (>=3.2.0)", "brotlicffi"]
 
 [[package]]
+name = "aiopubsub"
+version = "3.0.0"
+description = "Simple pubsub pattern for asyncio applications"
+optional = false
+python-versions = "*"
+files = [
+    {file = "aiopubsub-3.0.0.tar.gz", hash = "sha256:41de577f8552006d8a0885b5ed468f1216ccf594b695cc1d89aa5eba838c4ad3"},
+]
+
+[package.extras]
+logwood = ["logwood (>=3.1.0,<4.0.0)"]
+
+[[package]]
 name = "aiosignal"
 version = "1.3.1"
 description = "aiosignal: a list of registered asynchronous callbacks"
@@ -1751,4 +1764,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.12.3"
-content-hash = "6a37d40276cb3bb35b18482d9b37f5b477564b45641e56ff588b31f34348d2aa"
+content-hash = "4f033a69557918cb791c995eea4fd5f4054e7b70ebc011e93418b84e2de142f3"
