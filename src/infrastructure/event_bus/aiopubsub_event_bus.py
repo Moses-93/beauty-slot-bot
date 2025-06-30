@@ -14,13 +14,19 @@ class AiopubsubEventBus(AbstractEventBus):
     def _get_key(self, event_type: Type[E]) -> Key:
         return Key(f"{event_type.__module__}.{event_type.__name__}")
 
-    def subscribe(self, event_type: Type[E], handler: Handler):
+    def _adapt_handler(self, handler: Handler[E]):
+        async def wrapper(_key: Key, event: Type[E]):
+            return await handler(event)
+
+        return wrapper
+
+    def subscribe(self, event_type: Type[E], handler: Handler[E]):
         if not inspect.iscoroutinefunction(handler):
             raise TypeError(
                 f"Handler for {event_type} must be async"
             )  # TODO: Add custom exception - InvalidEventHandlerTypeError
         key = self._get_key(event_type)
-        self._subscriber.add_async_listener(key, handler)
+        self._subscriber.add_async_listener(key, self._adapt_handler(handler))
 
     def publish(self, event: E) -> None:
         key = self._get_key(type(event))
