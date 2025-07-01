@@ -20,8 +20,14 @@ class AiopubsubEventBus(AbstractEventBus):
 
         return wrapper
 
+    def _is_async_callable(self, handler: Handler[E]) -> bool:
+        """Check if an object is an async callable (function or class instance)."""
+        return inspect.iscoroutinefunction(handler) or inspect.iscoroutinefunction(
+            getattr(handler, "__call__", None)
+        )
+
     def subscribe(self, event_type: Type[E], handler: Handler[E]):
-        if not inspect.iscoroutinefunction(handler):
+        if not self._is_async_callable(handler):
             raise TypeError(
                 f"Handler for {event_type} must be async"
             )  # TODO: Add custom exception - InvalidEventHandlerTypeError
