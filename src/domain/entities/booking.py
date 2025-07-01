@@ -5,7 +5,7 @@ from .service import Service
 from .date import DateSlot
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Booking:
     id: Optional[int] = field(default=None)
     user_id: int
