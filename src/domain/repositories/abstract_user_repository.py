@@ -20,6 +20,11 @@ class AbstractUserRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        """Get a user by their ID"""
+        pass
+
+    @abstractmethod
     async def is_exist(self, chat_id: str) -> bool:
         """
         Check if a user exists by their chat ID.
