@@ -13,7 +13,7 @@ from src.infrastructure.persistence.models import BookingModel
 from .base_repository import BaseRepository
 
 
-class BookingRepository(AbstractBookingRepository): #TODO: Add custom exceptions
+class BookingRepository(AbstractBookingRepository):  # TODO: Add custom exceptions
     def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, BookingModel)
 
