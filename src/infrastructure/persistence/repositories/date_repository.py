@@ -1,63 +1,94 @@
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.domain.repositories.abstract_date_repository import AbstractDateRepository
-from src.application.dto.date import DateDTO
-from src.infrastructure.persistence.models import DateModel
+from src.domain.repositories.abstract_date_repository import AbstractTimeSlotRepository
+from src.domain.entities.time import TimeSlot
+from src.infrastructure.persistence.models import TimeSlotModel
 from .base_repository import BaseRepository
 
 
-class DateRepository(AbstractDateRepository):
+class TimeSlotRepository(AbstractTimeSlotRepository):
     def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
-        self._base_repo = BaseRepository(factory_session, DateModel)
+        self._base_repo = BaseRepository(factory_session, TimeSlotModel)
 
-    async def get_active_dates(self, limit: int, offset: int) -> list[DateDTO]:
-        """Get all dates."""
-        result = await self._base_repo.read(
-            select(DateModel).filter_by(is_active=True).limit(limit).offset(offset)
+    async def get_active_slots(
+        self, master_id: int, limit: int, offset: int
+    ) -> Optional[List[TimeSlot]]:
+        """Get active time slots for a master."""
+        query = (
+            select(TimeSlotModel)
+            .filter_by(
+                master_id=master_id,
+                is_active=True,
+                is_booked=False,
+            )
+            .limit(limit)
+            .offset(offset)
         )
-        return [
-            DateDTO(
-                date=date.date,
-                deactivation_time=date.deactivation_time,
-                is_active=date.is_active,
-            )
-            for date in result
-        ]
+        slots = await self._base_repo.read(query)
+        if not slots:
+            return None
 
-    async def get_date_by_id(self, date_id: int) -> Optional[DateDTO]:
-        """Get a date by its ID."""
-        result = await self._base_repo.read_by_id(date_id)
-        if result:
-            return DateDTO(
-                id=result.id,
-                date=result.date,
-                deactivation_time=result.deactivation_time,
-                is_active=result.is_active,
-            )
-        return None
+        return [self._to_entity(slot) for slot in slots]
 
-    async def create(self, date: DateDTO) -> Optional[DateDTO]:
-        """Create a new date."""
-        created_date = await self._base_repo.create(date.model_dump())
-        if created_date:
-            return DateDTO(
-                id=created_date.id,
-                date=created_date.date,
-                deactivation_time=created_date.deactivation_time,
-                is_active=created_date.is_active,
-            )
-        return None
+    async def get_slot_by_id(self, slot_id: int) -> Optional[TimeSlot]:
+        """Get a time slot by its ID."""
+        slot = await self._base_repo.read_by_id(slot_id)
+        return self._to_entity(slot) if slot else None
 
-    async def update(self, date_id: int, **kwargs) -> bool:
-        """Update an existing date."""
-        query = update(DateModel).where(DateModel.id == date_id).values(**kwargs)
+    async def mark_as_booked(self, slot_id: int) -> bool:
+        """Mark a time slot as booked"""
+        query = (
+            update(TimeSlotModel)
+            .where(TimeSlotModel.id == slot_id, TimeSlotModel.is_booked == False)
+            .values(is_booked=True)
+        )
         result = await self._base_repo.update(query)
         return result
 
-    async def delete(self, date_id: int) -> bool:
-        """Delete a date."""
-        query = delete(DateModel).where(DateModel.id == date_id)
+    async def create(self, time_slot: TimeSlot) -> Optional[TimeSlot]:
+        """Create a new time slot."""
+        created_slot = await self._base_repo.create(self._to_model(time_slot))
+        if created_slot:
+            time_slot.id = created_slot.id
+            return time_slot
+
+        return None
+
+    async def update(self, slot_id: int, **kwargs) -> bool:
+        """Update an existing time slot."""
+        query = (
+            update(TimeSlotModel).where(TimeSlotModel.id == slot_id).values(**kwargs)
+        )
+        result = await self._base_repo.update(query)
+        return result
+
+    async def delete(self, slot_id: int) -> bool:
+        """Delete a time slot."""
+        query = delete(TimeSlotModel).where(TimeSlotModel.id == slot_id)
         result = await self._base_repo.delete(query)
         return result
+
+    def _to_entity(self, model: TimeSlotModel) -> TimeSlot:
+        """Convert a TimeSlotModel to a TimeSlot entity."""
+        return TimeSlot(
+            id=model.id,
+            master_id=model.master_id,
+            date=model.date,
+            start=model.start_time,
+            end=model.end_time,
+            is_active=model.is_active,
+            is_booked=model.is_booked,
+        )
+
+    def _to_model(self, entity: TimeSlot) -> TimeSlotModel:
+        """Convert a TimeSlot entity to a TimeSlotModel."""
+        return TimeSlotModel(
+            master_id=entity.master_id,
+            date=entity.date,
+            start_time=entity.start,
+            end_time=entity.end,
+            is_active=entity.is_active,
+            is_booked=entity.is_booked,
+        )
