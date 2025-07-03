@@ -1,6 +1,16 @@
 from dataclasses import dataclass
-from datetime import time
+from datetime import time, date as Date
 from typing import List
+from pydantic import BaseModel, Field
+
+
+class TimeSlotDTO(BaseModel):
+    master_id: int
+    date: Date
+    start: time
+    end: time
+    is_active: bool = Field(default=True)
+    is_booked: bool = Field(default=False)
 
 
 @dataclass
