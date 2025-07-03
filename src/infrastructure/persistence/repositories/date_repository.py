@@ -2,7 +2,9 @@ from typing import List, Optional
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.domain.repositories.abstract_date_repository import AbstractTimeSlotRepository
+from src.domain.repositories.abstract_time_slot_repository import (
+    AbstractTimeSlotRepository,
+)
 from src.domain.entities.time import TimeSlot
 from src.infrastructure.persistence.models import TimeSlotModel
 from .base_repository import BaseRepository
