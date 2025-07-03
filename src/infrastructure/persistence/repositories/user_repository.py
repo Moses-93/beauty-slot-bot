@@ -45,6 +45,19 @@ class UserRepository(AbstractUserRepository):
             )
         return None
 
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        """Get a user by their ID"""
+        result = await self._base_repo.read_by_id(user_id)
+        if result:
+            return User(
+                id=result.id,
+                name=result.name,
+                username=result.username,
+                chat_id=result.chat_id,
+                role=result.role,
+            )
+        return None
+
     async def is_exist(self, chat_id: str) -> bool:
         """Check if a user exists by their chat ID."""
         query = select(UserModel).filter(UserModel.chat_id == chat_id)

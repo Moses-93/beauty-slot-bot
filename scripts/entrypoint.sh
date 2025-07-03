@@ -4,4 +4,4 @@ echo "Applying migrations..."
 
 alembic upgrade head
 
-python -m src.main
+python -m src.bootstrap.main
