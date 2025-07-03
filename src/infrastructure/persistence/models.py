@@ -58,10 +58,10 @@ class ServiceModel(Base):
 class BookingModel(Base):
     __tablename__ = "bookings"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    master_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    client_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     service_id = Column(Integer, ForeignKey("services.id", ondelete="CASCADE"))
     date_id = Column(Integer, ForeignKey("dates.id", ondelete="CASCADE"))
-    time = Column(Time(True), nullable=False)
     reminder_time = Column(DateTime(True), nullable=True)
     is_active = Column(Boolean, default=True, index=True)
     created_at = Column(DateTime(True), nullable=False, default=func.now())
@@ -71,7 +71,6 @@ class BookingModel(Base):
 
     time_slot = relationship("TimeSlotModel", back_populates="booking", uselist=False)
     service = relationship("ServiceModel", back_populates="bookings", uselist=False)
-    user = relationship("UserModel", back_populates="bookings", uselist=False)
 
 
 class UserModel(Base):
@@ -89,7 +88,6 @@ class UserModel(Base):
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
 
-    bookings = relationship("BookingModel", back_populates="user")
     contact = relationship("ContactModel", back_populates="user", uselist=False)
 
     def __str__(self):
