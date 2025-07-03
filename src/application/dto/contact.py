@@ -5,9 +5,8 @@ from datetime import time
 
 @dataclass
 class ContactDTO:
-
     id: Optional[int] = field(default=None)
-    user_id: Optional[int] = field(default=None)
+    master_id: Optional[int] = field(default=None)
     phone_number: Optional[str] = field(default=None)
     address: str = field(default=None)
     telegram_link: Optional[str] = field(default=None)

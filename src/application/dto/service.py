@@ -5,6 +5,7 @@ from datetime import timedelta
 
 class ServiceDTO(BaseModel):
     id: Optional[int] = Field(default=None)
+    master_id: int
     title: str
     price: int
     duration: timedelta

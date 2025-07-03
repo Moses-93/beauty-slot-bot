@@ -6,6 +6,7 @@ from typing import Optional
 @dataclass(kw_only=True)
 class Service:
     id: Optional[int] = field(default=None)
+    master_id: int
     title: str
     price: int
     duration: timedelta
