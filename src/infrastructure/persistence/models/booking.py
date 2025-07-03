@@ -39,7 +39,7 @@ class BookingModel(Base):
     master_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     client_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     service_id = Column(Integer, ForeignKey("services.id", ondelete="CASCADE"))
-    date_id = Column(Integer, ForeignKey("dates.id", ondelete="CASCADE"))
+    time_slot_id = Column(Integer, ForeignKey("time_slots.id", ondelete="CASCADE"))
     reminder_time = Column(DateTime(True), nullable=True)
     is_active = Column(Boolean, default=True, index=True)
 
