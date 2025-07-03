@@ -99,7 +99,7 @@ class UserModel(Base):
 class ContactModel(Base):
     __tablename__ = "contacts"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    master_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     phone_number = Column(String, nullable=True)
     address = Column(String, nullable=True)
     telegram_link = Column(String, nullable=True)
