@@ -1,6 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Boolean,
+    ForeignKey,
     Interval,
     Integer,
     Column,
@@ -15,6 +16,9 @@ from .base import Base
 class ServiceModel(Base):
     __tablename__ = "services"
     id = Column(Integer, primary_key=True, index=True)
+    master_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     title = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
     duration = Column(Interval, nullable=False)
