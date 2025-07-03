@@ -49,6 +49,12 @@ class TimeSlotRepository(AbstractTimeSlotRepository):
         result = await self._base_repo.update(query)
         return result
 
+    async def is_booked(self, slot_id: int) -> bool:
+        """Check if a time slot is booked"""
+        query = select(TimeSlotModel.is_booked).where(TimeSlotModel.id == slot_id)
+        result = await self._base_repo.read(query)
+        return result if result is not None else True
+
     async def create(self, time_slot: TimeSlot) -> Optional[TimeSlot]:
         """Create a new time slot."""
         created_slot = await self._base_repo.create(self._to_model(time_slot))
