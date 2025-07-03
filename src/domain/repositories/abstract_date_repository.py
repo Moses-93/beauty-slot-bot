@@ -1,31 +1,38 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.application.dto.date import DateDTO
+from src.domain.entities.time import TimeSlot
 
 
-class AbstractDateRepository(ABC):
+class AbstractTimeSlotRepository(ABC):
     @abstractmethod
-    async def get_active_dates(self, limit: int, offset: int) -> List[DateDTO]:
-        """Get all dates."""
+    async def get_active_slots(
+        self, master_id: int, limit: int, offset: int
+    ) -> Optional[List[TimeSlot]]:
+        """Get active time slots."""
         pass
 
     @abstractmethod
-    async def get_date_by_id(self, date_id: int) -> Optional[DateDTO]:
-        """Get a date by its ID."""
+    async def get_slot_by_id(self, slot_id: int) -> Optional[TimeSlot]:
+        """Get a time slot by its ID."""
         pass
 
     @abstractmethod
-    async def create(self, date_data: DateDTO) -> Optional[DateDTO]:
-        """Create a new date."""
+    async def mark_as_booked(self, slot_id: int) -> bool:
+        """Mark a time slot as booked"""
         pass
 
     @abstractmethod
-    async def update(self, date_id: int, **kwargs) -> bool:
-        """Update an existing date."""
+    async def create(self, time_slot: TimeSlot) -> Optional[TimeSlot]:
+        """Create a new time slot."""
         pass
 
     @abstractmethod
-    async def delete(self, date_id: int) -> bool:
-        """Delete a date by its ID."""
+    async def update(self, slot_id: int, **kwargs) -> bool:
+        """Update an existing time slot."""
+        pass
+
+    @abstractmethod
+    async def delete(self, slot_id: int) -> bool:
+        """Delete a time slot."""
         pass
