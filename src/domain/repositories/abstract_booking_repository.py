@@ -2,23 +2,22 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.entities.booking import Booking
-from src.domain.entities.time import TimeSlot
 
 
 class AbstractBookingRepository(ABC):
 
     @abstractmethod
-    async def get_bookings(
-        self, is_active: bool, limit: int, offset: int
+    async def get_master_bookings(
+        self, is_active: bool, master_id: int, limit: int = 10, offset: int = 0
     ) -> Optional[List[Booking]]:
-        """Get all bookings."""
+        """Get bookings for a specific master."""
         pass
 
     @abstractmethod
-    async def get_bookings_by_user_id(
-        self, user_id: int, is_active: bool, limit: int, offset: int
+    async def get_client_bookings(
+        self, is_active: bool, client_id: int, limit: int = 10, offset: int = 0
     ) -> Optional[List[Booking]]:
-        """Get all bookings for a specific user."""
+        """Get bookings for a specific client."""
         pass
 
     @abstractmethod
@@ -27,12 +26,7 @@ class AbstractBookingRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_busy_slots(self, date_id: int) -> Optional[List[TimeSlot]]:
-        """Get busy slots for a specific date."""
-        pass
-
-    @abstractmethod
-    async def create(self, booking_data: Booking) -> Optional[Booking]:
+    async def create(self, book: Booking) -> Optional[Booking]:
         """Create a new booking."""
         pass
 
@@ -43,5 +37,5 @@ class AbstractBookingRepository(ABC):
 
     @abstractmethod
     async def delete(self, booking_id: int) -> bool:
-        """Delete a booking by its ID."""
+        """Delete a booking."""
         pass
