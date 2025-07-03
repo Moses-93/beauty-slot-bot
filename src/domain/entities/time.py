@@ -6,6 +6,7 @@ from typing import Optional
 @dataclass(kw_only=True)
 class TimeSlot:
     id: Optional[int] = field(default=None)
+    master_id: int
     date: Date
     start: time
     end: time
