@@ -52,6 +52,7 @@ class ServiceModel(Base):
     updated_at = Column(
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
     )
+
     bookings = relationship("BookingModel", back_populates="service")
 
 
@@ -64,6 +65,7 @@ class BookingModel(Base):
     date_id = Column(Integer, ForeignKey("dates.id", ondelete="CASCADE"))
     reminder_time = Column(DateTime(True), nullable=True)
     is_active = Column(Boolean, default=True, index=True)
+
     created_at = Column(DateTime(True), nullable=False, default=func.now())
     updated_at = Column(
         DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
