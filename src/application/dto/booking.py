@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import time as Time, datetime
+from datetime import datetime
 from typing import Optional
 
 
@@ -9,5 +9,5 @@ class BookingDTO:
     client_id: int
     service_id: int
     date_id: int
-    time: Time
+    time_slot_id: int
     reminder_time: Optional[datetime] = None
