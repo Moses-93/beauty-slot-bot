@@ -40,21 +40,6 @@ class TimeSlotModel(Base):
     booking = relationship("BookingModel", back_populates="time_slot", uselist=False)
 
 
-class DateModel(Base):
-    __tablename__ = "dates"
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, nullable=False)
-    deactivation_time = Column(DateTime(True), nullable=False)
-    is_active = Column(Boolean, default=True, index=True)
-
-    created_at = Column(DateTime(True), nullable=False, default=func.now())
-    updated_at = Column(
-        DateTime(True), nullable=False, default=func.now(), onupdate=func.now()
-    )
-
-    bookings = relationship("BookingModel", back_populates="date")
-
-
 class ServiceModel(Base):
     __tablename__ = "services"
     id = Column(Integer, primary_key=True, index=True)
