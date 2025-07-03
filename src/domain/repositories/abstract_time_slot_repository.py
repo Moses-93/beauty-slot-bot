@@ -23,6 +23,11 @@ class AbstractTimeSlotRepository(ABC):
         pass
 
     @abstractmethod
+    async def is_booked(self, slot_id: int) -> bool:
+        """Check if a time slot is booked"""
+        pass
+
+    @abstractmethod
     async def create(self, time_slot: TimeSlot) -> Optional[TimeSlot]:
         """Create a new time slot."""
         pass
