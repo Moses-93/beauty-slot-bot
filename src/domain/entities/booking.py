@@ -1,17 +1,17 @@
 from dataclasses import dataclass, field
-from datetime import time as Time, datetime
+from datetime import datetime
 from typing import Optional
 from .service import Service
-from .date import DateSlot
+from .time import TimeSlot
 
 
 @dataclass(kw_only=True)
 class Booking:
     id: Optional[int] = field(default=None)
-    user_id: int
+    master_id: int
+    client_id: int
     service: Service
-    date: DateSlot
-    time: Time
+    time_clot: TimeSlot
     reminder_time: Optional[datetime] = field(default=None)
     is_active: bool = field(default=False)
 
@@ -23,18 +23,18 @@ class Booking:
         Check if the booking is in the past, taking both date and time into account.
         """
         now = now or datetime.now()
-        return datetime.combine(self.date.date, self.time) < now
+        return datetime.combine(self.time_clot.date, self.time_clot.end) < now
 
     def confirm(self) -> None:
         """
         Confirm the booking if it is not in the past.
         """
-        if self.is_past():
+        if self.is_past() or not self.time_clot.is_active:
             raise ValueError("...")  # TODO: Add custom exception and message
         self.is_active = True
 
     def cancel(self) -> None:
         """Cancel the booking if it is active."""
-        if not self.is_active:
+        if not self.is_active or self.is_past() or not self.time_clot.is_booked:
             raise ValueError("...")  # TODO: Add custom exception and message
         self.is_active = False
