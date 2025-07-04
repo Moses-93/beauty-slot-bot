@@ -50,15 +50,13 @@ class CreateBookingUseCase:
         if not created_booking:
             return ResultDTO.fail()
 
-        if created_booking:
-            await self._schedule_deactivation(
+        if created_booking.should_schedule_reminder(datetime.now()):
+            self._schedule_deactivation(
                 created_booking.id,
-                created_booking.date.date,
-                created_booking.time,
+                created_booking.time_slot.date,
+                created_booking.time_slot.start,
             )
-            return ResultDTO.success(created_booking)
-
-        return ResultDTO.fail()
+        return ResultDTO.success(created_booking)
 
 
 class DeactivateBookingUseCase:
