@@ -5,14 +5,18 @@ from src.domain.entities.booking import Booking
 from src.domain.repositories.abstract_booking_repository import (
     AbstractBookingRepository,
 )
+from src.application.services.booking_factory import BookingFactory
 from src.shared.dto.result import ResultDTO
 from src.application.dto.booking import BookingDTO
 from src.infrastructure.celery.tasks.deactivation.booking import deactivate
 
 
 class CreateBookingUseCase:
-    def __init__(self, booking_repo: AbstractBookingRepository):
+    def __init__(
+        self, booking_repo: AbstractBookingRepository, booking_factory: BookingFactory
+    ):
         self._booking_repo = booking_repo
+        self._booking_factory = booking_factory
 
     def _schedule_deactivation(booking_id: int, date: date, time: time) -> None:
         """
