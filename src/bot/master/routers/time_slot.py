@@ -12,7 +12,7 @@ from src.bot.shared.filters.user import RoleFilter
 from src.domain.enums.user_role import UserRole
 
 
-class DateRouter(BaseRouter):
+class TimeSlotRouter(BaseRouter):
     def __init__(self, container: Container):
         self._c_handler = CreateTimeSlotHandler(container)
         self._d_handler = CancelTimeSlotHandler(container)
