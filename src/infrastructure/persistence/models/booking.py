@@ -1,6 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Boolean,
+    Enum,
     Time,
     Integer,
     Column,
@@ -10,6 +11,7 @@ from sqlalchemy import (
     func,
 )
 
+from src.domain.enums.time_slot import TimeSlotStatus
 from .base import Base
 
 
@@ -22,8 +24,12 @@ class TimeSlotModel(Base):
     date = Column(Date, nullable=False)
     start_time = Column(Time(True), nullable=False)
     end_time = Column(Time(True), nullable=False)
-    is_active = Column(Boolean, default=True, index=True)
-    is_booked = Column(Boolean, default=False, index=True)
+    status = Column(
+        Enum(TimeSlotStatus, native_enum=False, name="slot_status"),
+        default=TimeSlotStatus.AVAILABLE,
+        nullable=False,
+        index=True,
+    )
 
     created_at = Column(DateTime(True), nullable=False, default=func.now())
     updated_at = Column(
