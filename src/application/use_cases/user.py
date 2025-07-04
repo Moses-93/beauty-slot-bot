@@ -1,7 +1,6 @@
 from src.application.dto.user import UserDTO
 from src.domain.repositories.abstract_user_repository import AbstractUserRepository
 from src.domain.entities.user import User
-from src.domain.enums.user_role import UserRole
 from src.shared.dto.result import ResultDTO
 
 
@@ -9,7 +8,7 @@ class EnsureUserExistsUseCase:
     def __init__(self, user_repo: AbstractUserRepository):
         self._repo = user_repo
 
-    async def __call__(self, user_dto: UserDTO, *args, **kwds) -> ResultDTO[User]:
+    async def __call__(self, user_dto: UserDTO) -> ResultDTO[User]:
         """
         Execute the use case to create a user.
         If the user already exists, it returns the existing user.
@@ -24,7 +23,7 @@ class EnsureUserExistsUseCase:
                     name=user_dto.name,
                     username=user_dto.username,
                     chat_id=user_dto.chat_id,
-                    role=UserRole.CLIENT,
+                    role=user_dto.role,
                 )
             )
             if created_user:
