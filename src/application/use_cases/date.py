@@ -1,8 +1,12 @@
+from datetime import datetime
 from typing import List
 
-from src.domain.repositories.abstract_date_repository import AbstractDateRepository
+from src.domain.repositories.abstract_time_slot_repository import (
+    AbstractTimeSlotRepository,
+)
+from src.domain.entities.time import TimeSlot
 from src.infrastructure.celery.tasks.deactivation.date import deactivate
-from src.application.dto.date import DateDTO
+from src.application.dto.time import TimeSlotDTO
 from src.shared.dto.result import ResultDTO
 
 
