@@ -20,8 +20,8 @@ class CreateTimeSlotUseCase:
         if created_time_slot is None:
             return ResultDTO.fail()
         deactivate.apply_async(
-            args=[created_date.id],
-            eta=created_date.deactivation_time,
+            args=[created_time_slot.id],
+            eta=datetime.combine(created_time_slot.date, created_time_slot.start),
         )
         return ResultDTO.success(created_time_slot)
 
