@@ -15,7 +15,7 @@ class BookingFormatter(BaseFormatter[Booking]):
 
         return (
             f"📌 {self._bold("Послуга:")} {b.service.title}\n"
-            f"📅 {self._bold("Дата:")} {b.date.date}\n"
-            f"⏰ {self._bold("Час:")} {b.time}\n"
+            f"📅 {self._bold("Дата:")} {b.time_slot.date}\n"
+            f"⏰ {self._bold("Час:")} {b.time_slot.start}\n"
             f"💵 {self._bold("Ціна:")} {b.service.price} грн"
         )
