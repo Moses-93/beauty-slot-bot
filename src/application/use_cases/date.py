@@ -10,9 +10,9 @@ from src.application.dto.time import TimeSlotDTO
 from src.shared.dto.result import ResultDTO
 
 
-class CreateDateUseCase:
-    def __init__(self, date_repo: AbstractDateRepository):
-        self._repo = date_repo
+class CreateTimeSlotUseCase:
+    def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
+        self._time_slot_repo = time_slot_repo
 
     async def __call__(self, date_dto: DateDTO, *args, **kwds) -> ResultDTO[DateDTO]:
         created_date = await self._repo.create(date_dto)
