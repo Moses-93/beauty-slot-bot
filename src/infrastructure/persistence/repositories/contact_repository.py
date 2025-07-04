@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -14,14 +14,14 @@ class ContactRepository(AbstractContactRepository):
     def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, ContactModel)
 
-    async def get(self) -> Union[ContactDTO, None]:
-        query = select(ContactModel)
+    async def get(self, master_id: int) -> Optional[ContactDTO]:
+        query = select(ContactModel).filter_by(master_id=master_id)
         result = await self._base_repo.read(query, single=True)
         if not result:
             return None
         return ContactDTO(
             id=result.id,
-            user_id=result.user_id,
+            master_id=result.master_id,
             phone_number=result.phone_number,
             address=result.address,
             telegram_link=result.telegram_link,
@@ -32,9 +32,9 @@ class ContactRepository(AbstractContactRepository):
             work_end_time=result.work_end_time,
         )
 
-    async def create(self, contact: ContactDTO) -> Union[ContactDTO, None]:
+    async def create(self, contact: ContactDTO) -> Optional[ContactDTO]:
         result = await self._base_repo.create(
-            user_id=contact.user_id,
+            master_id=contact.master_id,
             phone_number=contact.phone_number,
             address=contact.address,
             telegram_link=contact.telegram_link,
