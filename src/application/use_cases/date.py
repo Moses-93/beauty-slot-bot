@@ -60,12 +60,16 @@ class DeleteTimeSlotUseCase:
         return ResultDTO.success()
 
 
-class GetAvailableDateUseCase:
+class GetAvailableTimeSlotUseCase:
     def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
         self._time_slot_repo = time_slot_repo
 
-    async def __call__(self, limit: int, offset: int) -> ResultDTO[List[DateDTO]]:
-        dates = await self._repo.get_active_dates(limit, offset)
-        if dates is None:
+    async def __call__(
+        self, master_id: int, limit: int, offset: int
+    ) -> ResultDTO[List[TimeSlot]]:
+        time_slots = await self._time_slot_repo.get_active_slots(
+            master_id, limit, offset
+        )
+        if time_slots is None:
             return ResultDTO.fail()
-        return ResultDTO.success(dates)
+        return ResultDTO.success(time_slots)
