@@ -1,4 +1,4 @@
-class DateMessage:
+class TimeSlotMessages:
 
     @staticmethod
     def enter_date() -> str:

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Union
 
 
-class DateValidators:
+class TimeSlotValidators:
 
     @staticmethod
     def parse_date(date_str: str) -> Union[str, None]:
