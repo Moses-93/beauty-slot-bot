@@ -17,8 +17,8 @@ class SectionRouter(BaseRouter):
             RoleFilter({UserRole.MASTER}),
         )
         self.router.message.register(
-            self._handler.show_dates_section,
-            F.text == "📅 Дати",
+            self._handler.show_time_slots_section,
+            F.text == "📅 Віконця",
         )
         self.router.message.register(
             self._handler.show_services_section,

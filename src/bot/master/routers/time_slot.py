@@ -21,13 +21,13 @@ class TimeSlotRouter(BaseRouter):
     def _register(self):
         self.router.message.register(
             self._c_handler.handle_add_time_slot,
-            F.text == "➕ Додати дату",
+            F.text == "➕ Нове віконце",
             RoleFilter(roles=UserRole.MASTER),
         )
 
         self.router.message.register(
             self._d_handler.handle_start_cancel_time_slot,
-            F.text == "➖ Видалити дату",
+            F.text == "➖ Прибрати віконце",
             RoleFilter(roles=UserRole.MASTER),
         )
 

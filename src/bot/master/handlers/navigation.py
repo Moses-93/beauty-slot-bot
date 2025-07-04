@@ -15,9 +15,9 @@ class SectionHandler:
             text=SectionMessages.start(), reply_markup=SectionKeyboards.main()
         )
 
-    async def show_dates_section(self, message: Message):
+    async def show_time_slots_section(self, message: Message):
         await message.answer(
-            text=SectionMessages.dates(), reply_markup=SectionKeyboards.dates()
+            text=SectionMessages.time_slots(), reply_markup=SectionKeyboards.time_slots()
         )
 
     async def show_services_section(self, message: Message):
