@@ -28,15 +28,18 @@ class BookingFactory:
                 error="SERVICE_NOT_FOUND"
             )  # TODO: Add enum for errors
 
-        date = await self._date_repo.get_date_by_id(date_id)
-        if not date:
-            return ResultDTO.fail(error="DATE_NOT_FOUND")  # TODO: Add enum for errors
+        time_slot = await self._time_slot_repo.get_slot_by_id(book_dto.time_slot_id)
+        if not time_slot:
+            return ResultDTO.fail(
+                error="TIME_SLOT_NOT_FOUND"
+            )  # TODO: Add enum for errors
         return ResultDTO.success(
             Booking(
-                user_id=user_id,
+                master_id=book_dto.master_id,
+                client_id=book_dto.client_id,
                 service=service,
-                date=date,
-                time=time,
-                reminder_time=reminder_time,
+                time_slot=time_slot,
+                reminder_time=book_dto.reminder_time,
+                is_active=True,
             )
         )
