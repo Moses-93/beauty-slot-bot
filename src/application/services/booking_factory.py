@@ -1,12 +1,11 @@
-from datetime import time, datetime
-from typing import Optional
 from src.domain.entities.booking import Booking
+from src.application.dto.booking import BookingDTO
 from src.shared.dto.result import ResultDTO
 from src.domain.repositories.abstract_service_repository import (
     AbstractServiceRepository,
 )
-from src.domain.repositories.abstract_date_repository import (
-    AbstractDateRepository,
+from src.domain.repositories.abstract_time_slot_repository import (
+    AbstractTimeSlotRepository,
 )
 
 
