@@ -9,10 +9,10 @@ class GetContactsUseCase:
     def __init__(self, contact_repo: AbstractContactRepository):
         self._repo = contact_repo
 
-    async def __call__(self, *args, **kwds) -> ResultDTO[ContactDTO]:
-        contacts = (
-            await self._repo.get()
+    async def __call__(self, master_id: int) -> ResultDTO[ContactDTO]:
+        contact = await self._repo.get(
+            master_id
         )  # TODO: Add try/except for error handling and logging
-        if contacts:
-            return ResultDTO.success(contacts)
+        if contact:
+            return ResultDTO.success(contact)
         return ResultDTO.fail()
