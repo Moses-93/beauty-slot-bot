@@ -14,23 +14,16 @@ class CreateTimeSlotUseCase:
     def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
         self._time_slot_repo = time_slot_repo
 
-    async def __call__(self, date_dto: DateDTO, *args, **kwds) -> ResultDTO[DateDTO]:
-        created_date = await self._repo.create(date_dto)
+    async def __call__(self, time_slot_dto: TimeSlotDTO) -> ResultDTO[TimeSlot]:
+        created_time_slot = await self._time_slot_repo.create(time_slot_dto)
 
-        if created_date is None:
+        if created_time_slot is None:
             return ResultDTO.fail()
         deactivate.apply_async(
             args=[created_date.id],
             eta=created_date.deactivation_time,
         )
-        return ResultDTO.success(
-            DateDTO(
-                id=created_date.id,
-                date=created_date.date,
-                deactivation_time=created_date.deactivation_time,
-                is_active=created_date.is_active,
-            )
-        )
+        return ResultDTO.success(created_time_slot)
 
 
 class DeactivateDateUseCase:
