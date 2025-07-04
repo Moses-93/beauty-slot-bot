@@ -14,12 +14,12 @@ class CreateBookingUseCase:
     def __init__(self, booking_repo: AbstractBookingRepository):
         self._booking_repo = booking_repo
 
-    async def _schedule_deactivation(booking_id: int, date: date, time: time) -> None:
+    def _schedule_deactivation(booking_id: int, date: date, time: time) -> None:
         """
         Schedule a deactivation task for the booking.
         """
         deactivation_time = datetime.combine(date, time)
-        await deactivate.apply_async(
+        deactivate.apply_async(
             args=[booking_id],
             eta=deactivation_time,
         )
