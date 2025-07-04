@@ -2,7 +2,10 @@ from aiogram import Router, F
 from punq import Container
 
 from src.bot.master.states.time_slot import CreateTimeSlotStates, CancelTimeSlotStates
-from src.bot.master.handlers.time_slot import CreateTimeSlotHandler, CancelTimeSlotHandler
+from src.bot.master.handlers.time_slot import (
+    CreateTimeSlotHandler,
+    CancelTimeSlotHandler,
+)
 from src.bot.master.filters.time_slot import DateValidatorFilter, TimeValidatorFilter
 from src.bot.shared.routers.base import BaseRouter
 from src.bot.shared.filters.user import RoleFilter
