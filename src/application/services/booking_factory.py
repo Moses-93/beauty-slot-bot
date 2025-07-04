@@ -18,18 +18,11 @@ class BookingFactory:
         self._time_slot_repo = time_slot_repo
         self._service_repo = service_repo
 
-    async def create(
-        self,
-        user_id: int,
-        service_id: int,
-        date_id: str,
-        time: time,
-        reminder_time: Optional[datetime] = None,
-    ) -> ResultDTO[Booking]:
+    async def create(self, book_dto: BookingDTO) -> ResultDTO[Booking]:
         """
         Create a new booking instance.
         """
-        service = await self._service_repo.get_by_id(service_id)
+        service = await self._service_repo.get_by_id(book_dto.service_id)
         if not service:
             return ResultDTO.fail(
                 error="SERVICE_NOT_FOUND"
