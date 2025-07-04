@@ -27,8 +27,8 @@ class CreateTimeSlotUseCase:
 
 
 class DeactivateDateUseCase:
-    def __init__(self, date_repo: AbstractDateRepository):
-        self._repo = date_repo
+    def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
+        self._time_slot_repo = time_slot_repo
 
     async def __call__(self, id: int, *args, **kwds) -> ResultDTO:
         result = await self._repo.update(id, is_active=False)
@@ -39,8 +39,8 @@ class DeactivateDateUseCase:
 
 
 class DeleteDateUseCase:
-    def __init__(self, date_repo: AbstractDateRepository):
-        self._repo = date_repo
+    def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
+        self._time_slot_repo = time_slot_repo
 
     async def __call__(self, id: int, *args, **kwds) -> ResultDTO:
         result = await self._repo.delete(id)
@@ -51,8 +51,8 @@ class DeleteDateUseCase:
 
 
 class GetAvailableDateUseCase:
-    def __init__(self, date_repo: AbstractDateRepository):
-        self._repo = date_repo
+    def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
+        self._time_slot_repo = time_slot_repo
 
     async def __call__(self, limit: int, offset: int) -> ResultDTO[List[DateDTO]]:
         dates = await self._repo.get_active_dates(limit, offset)
