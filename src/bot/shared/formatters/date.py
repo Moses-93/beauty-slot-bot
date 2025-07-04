@@ -1,16 +1,18 @@
 from typing import Literal
-from src.application.dto.date import DateDTO
+from src.domain.entities.time import TimeSlot
 from src.bot.shared.formatters.base import BaseFormatter
 
 
-class DateFormatter(BaseFormatter):
+class TimeSlotFormatter(BaseFormatter):
     def __init__(self, parse_mode: Literal["Markdown", "HTML"]):
         super().__init__(
-            header="📅 ДОСТУПНІ ДАТИ",
+            header="📅 ВІЛЬНІ ВІКОНЦЯ",
             separator="\n" + "=" * 30 + "\n",
             parse_mode=parse_mode,
         )
 
-    def _render_item(self, d: DateDTO):
+    def _render_item(self, t: TimeSlot) -> str:
 
-        return f"📅 {self._bold("Дата:")} {d.date}"
+        return (
+            f"📅 {self._bold("Дата:")} {t.date}\n" f"🕔 {self._bold("Час:")} {t.start}"
+        )
