@@ -8,9 +8,9 @@ class AbstractContactRepository(ABC):
     """
 
     @abstractmethod
-    async def get(self) -> ContactDTO:
+    async def get(self, master_id: int) -> ContactDTO:
         """
-        Retrieve a contact by its ID.
+        Retrieve a contact by master ID.
         """
         pass
 
