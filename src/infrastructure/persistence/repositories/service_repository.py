@@ -64,3 +64,13 @@ class ServiceRepository(AbstractServiceRepository):
         query = delete(ServiceModel).where(ServiceModel.id == service_id)
         result = await self._base_repo.delete(query)
         return result
+
+    def _to_entity(self, model: ServiceModel) -> Service:
+        """Convert a ServiceModel to a Service entity."""
+        return Service(
+            id=model.id,
+            master_id=model.master_id,
+            title=model.title,
+            price=model.price,
+            duration=model.duration,
+        )
