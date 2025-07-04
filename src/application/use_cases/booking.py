@@ -88,9 +88,11 @@ class GetBookingUseCase:
     ) -> ResultDTO[Booking]:
         """Execute the use case to get a booking by its status and user."""
         if user.is_client:
-            bookings = await self._booking_repo.get_bookings_by_user_id(
-                user.id, is_active, limit, offset
+            bookings = await self._booking_repo.get_client_bookings(
+                is_active, user.id, limit, offset
             )
         else:
-            bookings = await self._booking_repo.get_bookings(is_active, limit, offset)
+            bookings = await self._booking_repo.get_master_bookings(
+                is_active, user.id, limit, offset
+            )
         return ResultDTO.success(bookings) if bookings else ResultDTO.fail()
