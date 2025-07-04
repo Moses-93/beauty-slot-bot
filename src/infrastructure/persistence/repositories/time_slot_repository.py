@@ -6,6 +6,7 @@ from src.domain.repositories.abstract_time_slot_repository import (
     AbstractTimeSlotRepository,
 )
 from src.domain.entities.time import TimeSlot
+from src.domain.enums.time_slot import TimeSlotStatus
 from src.infrastructure.persistence.models import TimeSlotModel
 from .base_repository import BaseRepository
 
@@ -20,11 +21,7 @@ class TimeSlotRepository(AbstractTimeSlotRepository):
         """Get active time slots for a master."""
         query = (
             select(TimeSlotModel)
-            .filter_by(
-                master_id=master_id,
-                is_active=True,
-                is_booked=False,
-            )
+            .filter_by(master_id=master_id, status=TimeSlotStatus.AVAILABLE)
             .limit(limit)
             .offset(offset)
         )
@@ -43,17 +40,20 @@ class TimeSlotRepository(AbstractTimeSlotRepository):
         """Mark a time slot as booked"""
         query = (
             update(TimeSlotModel)
-            .where(TimeSlotModel.id == slot_id, TimeSlotModel.is_booked == False)
-            .values(is_booked=True)
+            .where(
+                TimeSlotModel.id == slot_id,
+                TimeSlotModel.status == TimeSlotStatus.AVAILABLE,
+            )
+            .values(status=TimeSlotStatus.BOOKED)
         )
         result = await self._base_repo.update(query)
         return result
 
     async def is_booked(self, slot_id: int) -> bool:
         """Check if a time slot is booked"""
-        query = select(TimeSlotModel.is_booked).where(TimeSlotModel.id == slot_id)
-        result = await self._base_repo.read(query)
-        return result if result is not None else True
+        query = select(TimeSlotModel.status).where(TimeSlotModel.id == slot_id)
+        status = await self._base_repo.read(query)
+        return status is None or status == TimeSlotStatus.BOOKED
 
     async def create(self, time_slot: TimeSlot) -> Optional[TimeSlot]:
         """Create a new time slot."""
@@ -86,8 +86,7 @@ class TimeSlotRepository(AbstractTimeSlotRepository):
             date=model.date,
             start=model.start_time,
             end=model.end_time,
-            is_active=model.is_active,
-            is_booked=model.is_booked,
+            status=model.status,
         )
 
     def _to_model(self, entity: TimeSlot) -> TimeSlotModel:
@@ -97,6 +96,5 @@ class TimeSlotRepository(AbstractTimeSlotRepository):
             date=entity.date,
             start_time=entity.start,
             end_time=entity.end,
-            is_active=entity.is_active,
-            is_booked=entity.is_booked,
+            status=entity.status,
         )
