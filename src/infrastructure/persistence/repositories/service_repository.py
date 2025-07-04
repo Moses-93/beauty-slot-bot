@@ -37,13 +37,17 @@ class ServiceRepository(AbstractServiceRepository):
 
     async def create(self, service: Service) -> Service:
         """Create a new service."""
-        created_service = await self._base_repo.create(service.model_dump())
-        return Service(
-            id=created_service.id,
-            title=created_service.title,
-            price=created_service.price,
-            duration=created_service.duration,
+        created_service = await self._base_repo.create(
+            master_id=service.master_id,
+            title=service.title,
+            price=service.price,
+            duration=service.duration,
+            is_active=True,
         )
+        if created_service is None:
+            return None
+        service.id = created_service.id
+        return service
 
     async def update(self, service_id: int, **kwargs) -> bool:
         """Update an existing service."""
