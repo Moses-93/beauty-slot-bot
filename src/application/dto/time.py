@@ -9,8 +9,6 @@ class TimeSlotDTO(BaseModel):
     date: Date
     start: time
     end: time
-    is_active: bool = Field(default=True)
-    is_booked: bool = Field(default=False)
 
 
 @dataclass
