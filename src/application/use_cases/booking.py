@@ -32,9 +32,23 @@ class CreateBookingUseCase:
         """
         Execute the use case to create a booking.
         """
-        booking = Booking(booking_dto.model_dump())
+        result = await self._booking_factory.create(booking_dto)
+        if not result.is_success:
+            return ResultDTO.fail()  # TODO: Add error message return
 
-        created_booking = await self._booking_repo.create(booking)
+        booking = result.data
+
+        try:
+            booking.confirm()
+        except ValueError as e:  # TODO: Replace with custom exception
+            return ResultDTO.fail(
+                error=str(e), message="..."
+            )  # TODO: Add custom error message
+
+        created_booking = await self._booking_repo.create(result.data)
+
+        if not created_booking:
+            return ResultDTO.fail()
 
         if created_booking:
             await self._schedule_deactivation(
