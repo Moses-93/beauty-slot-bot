@@ -63,7 +63,7 @@ class DeactivateBookingUseCase:
     def __init__(self, booking_repo: AbstractBookingRepository):
         self._booking_repo = booking_repo
 
-    async def __call__(self, id: int, *args, **kwds) -> ResultDTO:
+    async def __call__(self, id: int) -> ResultDTO:
         """
         Execute the use case to deactivate a booking.
         """
@@ -85,8 +85,6 @@ class GetBookingUseCase:
         is_active: bool,
         limit: int = 5,
         offset: int = 0,
-        *args,
-        **kwds
     ) -> ResultDTO[Booking]:
         """Execute the use case to get a booking by its status and user."""
         if user.is_client:
