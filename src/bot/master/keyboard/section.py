@@ -15,7 +15,7 @@ class SectionKeyboards:
                     KeyboardButton(text="📖 Послуги"),
                 ],
                 [
-                    KeyboardButton(text="📅 Дати"),
+                    KeyboardButton(text="📅 Віконця"),
                     KeyboardButton(text="📔 Контакти"),
                 ],
             ],
@@ -40,14 +40,14 @@ class SectionKeyboards:
         )
 
     @staticmethod
-    def dates() -> ReplyKeyboardMarkup:
+    def time_slots() -> ReplyKeyboardMarkup:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
-                    KeyboardButton(text="➕ Додати дату"),
-                    KeyboardButton(text="➖ Видалити дату"),
+                    KeyboardButton(text="➕ Нове віконце"),
+                    KeyboardButton(text="➖ Прибрати віконце"),
                 ],
-                [KeyboardButton(text="📅 Список дат")],
+                [KeyboardButton(text="📅 Всі віконця")],
                 [KeyboardButton(text="🔙 Назад")],
             ],
             resize_keyboard=True,
