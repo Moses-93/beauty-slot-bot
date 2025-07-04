@@ -12,10 +12,10 @@ from src.domain.repositories.abstract_time_slot_repository import (
 class BookingFactory:
     def __init__(
         self,
-        date_repo: AbstractDateRepository,
+        time_slot_repo: AbstractTimeSlotRepository,
         service_repo: AbstractServiceRepository,
     ):
-        self._date_repo = date_repo
+        self._time_slot_repo = time_slot_repo
         self._service_repo = service_repo
 
     async def create(
