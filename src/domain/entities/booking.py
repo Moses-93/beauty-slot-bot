@@ -4,6 +4,8 @@ from typing import Optional
 from .service import Service
 from .time import TimeSlot
 
+from src.domain.enums.time_slot import TimeSlotStatus
+
 
 @dataclass(kw_only=True)
 class Booking:
@@ -29,12 +31,16 @@ class Booking:
         """
         Confirm the booking if it is not in the past.
         """
-        if self.is_past() or not self.time_slot.is_active:
+        if self.is_past() or not self.time_slot.status != TimeSlotStatus.AVAILABLE:
             raise ValueError("...")  # TODO: Add custom exception and message
         self.is_active = True
 
     def cancel(self) -> None:
         """Cancel the booking if it is active."""
-        if not self.is_active or self.is_past() or not self.time_slot.is_booked:
+        if (
+            not self.is_active
+            or self.is_past()
+            or self.time_slot.status != TimeSlotStatus.BOOKED
+        ):
             raise ValueError("...")  # TODO: Add custom exception and message
         self.is_active = False
