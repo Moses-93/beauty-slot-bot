@@ -20,13 +20,13 @@ class DateRouter(BaseRouter):
 
     def _register(self):
         self.router.message.register(
-            self._c_handler.handle_start_add_date,
+            self._c_handler.handle_add_time_slot,
             F.text == "➕ Додати дату",
             RoleFilter(roles=UserRole.MASTER),
         )
 
         self.router.message.register(
-            self._d_handler.handle_start_deactivate_date,
+            self._d_handler.handle_start_cancel_time_slot,
             F.text == "➖ Видалити дату",
             RoleFilter(roles=UserRole.MASTER),
         )
@@ -37,12 +37,18 @@ class DateRouter(BaseRouter):
             DateValidatorFilter(),
         )
         self.router.message.register(
-            self._c_handler.handle_set_deactivation_time,
+            self._c_handler.handle_set_start_time,
             CreateTimeSlotStates.start_time,
             TimeValidatorFilter(),
         )
 
+        self.router.message.register(
+            self._c_handler.handle_set_end_time,
+            CreateTimeSlotStates.end_time,
+            TimeValidatorFilter(),
+        )
+
         self.router.callback_query.register(
-            self._d_handler.handle_delete_date,
+            self._d_handler.handle_cancel_time_slot,
             CancelTimeSlotStates.time_slot_id,
         )
