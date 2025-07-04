@@ -28,9 +28,7 @@ class CreateBookingUseCase:
             eta=deactivation_time,
         )
 
-    async def __call__(
-        self, booking_dto: BookingDTO, *args, **kwds
-    ) -> ResultDTO[Booking]:
+    async def __call__(self, booking_dto: BookingDTO) -> ResultDTO[Booking]:
         """
         Execute the use case to create a booking.
         """
