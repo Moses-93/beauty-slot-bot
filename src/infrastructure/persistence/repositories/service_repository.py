@@ -14,32 +14,26 @@ class ServiceRepository(AbstractServiceRepository):
     def __init__(self, factory_session: async_sessionmaker[AsyncSession]):
         self._base_repo = BaseRepository(factory_session, ServiceModel)
 
-    async def get_active(self, limit: int, offset: int) -> List[Service]:
+    async def get(
+        self, master_id: int, limit: int, offset: int
+    ) -> Optional[List[Service]]:
         """Get active services."""
         result = await self._base_repo.read(
-            select(ServiceModel).filter_by(is_active=True).limit(limit).offset(offset)
+            select(ServiceModel)
+            .filter_by(is_active=True, master_id=master_id)
+            .limit(limit)
+            .offset(offset)
         )
-        return [
-            Service(
-                title=service.title,
-                price=service.price,
-                duration=service.duration,
-                is_active=service.is_active,
-            )
-            for service in result
-        ]
+        if result is None:
+            return None
+        return [self._to_entity(service) for service in result]
 
     async def get_by_id(self, service_id: int) -> Optional[Service]:
         """Get a service by its ID"""
         service = await self._base_repo.read_by_id(service_id)
-        if service:
-            return Service(
-                id=service.id,
-                title=service.title,
-                price=service.price,
-                duration=service.duration,
-                is_active=service.is_active,
-            )
+        if service is None:
+            return None
+        return self._to_entity(service)
 
     async def create(self, service: Service) -> Service:
         """Create a new service."""
