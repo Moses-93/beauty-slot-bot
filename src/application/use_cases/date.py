@@ -36,12 +36,12 @@ class CreateTimeSlotUseCase:
         return ResultDTO.success(created_time_slot)
 
 
-class DeactivateDateUseCase:
+class CancelTimeSlotUseCase:
     def __init__(self, time_slot_repo: AbstractTimeSlotRepository):
         self._time_slot_repo = time_slot_repo
 
-    async def __call__(self, id: int, *args, **kwds) -> ResultDTO:
-        result = await self._repo.update(id, is_active=False)
+    async def __call__(self, id: int) -> ResultDTO:
+        result = await self._time_slot_repo.update(id, status=TimeSlotStatus.CANCELLED)
 
         if result is False:
             return ResultDTO.fail()
