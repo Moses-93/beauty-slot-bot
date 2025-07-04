@@ -35,7 +35,7 @@ class DateRouter(BaseRouter):
         )
         self.router.message.register(
             self._c_handler.handle_set_deactivation_time,
-            CreateTimeSlotStates.deactivation_time,
+            CreateTimeSlotStates.start_time,
             TimeValidatorFilter(),
         )
 

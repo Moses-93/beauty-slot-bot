@@ -18,7 +18,7 @@ class CreateTimeSlotHandler:
         await message.answer(text=...)
 
     async def handle_set_date(self, message: Message, state: FSMContext, date: str):
-        await state.set_state(CreateTimeSlotStates.deactivation_time)
+        await state.set_state(CreateTimeSlotStates.start_time)
         await state.update_data(date=date)
         await message.answer(text=...)
 

@@ -15,4 +15,5 @@ class CreateTimeSlotStates(StatesGroup):
     """
 
     date = State()
-    deactivation_time = State()
+    start_time = State()
+    end_time = State()
