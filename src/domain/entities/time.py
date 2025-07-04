@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from datetime import time, timedelta, datetime, date as Date
 from typing import Optional
 
+from src.domain.enums.time_slot import TimeSlotStatus
+
 
 @dataclass(kw_only=True)
 class TimeSlot:
@@ -10,8 +12,7 @@ class TimeSlot:
     date: Date
     start: time
     end: time
-    is_active: bool = field(default=True)
-    is_booked: bool = field(default=False)
+    status: TimeSlotStatus = field(default=TimeSlotStatus.AVAILABLE)
 
     @classmethod
     def from_start_and_duration(
